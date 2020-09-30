@@ -20,6 +20,23 @@ namespace Graphyte.Build
         public IReadOnlyList<ConfigurationType> ConfigurationTypes => this.m_ConfigurationTypes;
         #endregion
 
+        #region Solution Name
+        private string m_Name = null;
+        public string Name
+        {
+            get
+            {
+                if (this.m_Name == null)
+                {
+                    return this.GetType().Name;
+                }
+
+                return this.m_Name;
+            }
+            set => this.m_Name = value;
+        }
+        #endregion
+
         #region Solution Setup
         protected void AddProject(Project project)
         {
@@ -48,11 +65,11 @@ namespace Graphyte.Build
         #endregion
 
         #region Configuration
-        protected internal virtual void PreConfigureTarget(ConfiguredTarget target)
+        protected internal virtual void PreConfigureTarget(Target target, IContext context)
         {
         }
 
-        protected internal virtual void PostConfigureTarget(ConfiguredTarget target)
+        protected internal virtual void PostConfigureTarget(Target target, IContext context)
         {
         }
         #endregion

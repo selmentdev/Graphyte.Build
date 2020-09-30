@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Graphyte.Build
 {
-    public sealed class ConfiguredTarget
+    public sealed class Target
     {
         public Project Project { get; }
         public TargetType Type { get; set; }
@@ -12,7 +12,9 @@ namespace Graphyte.Build
 
         private readonly Dictionary<string, DependencyType> m_Dependencies = new Dictionary<string, DependencyType>();
 
-        public ConfiguredTarget(Project project)
+        public IReadOnlyDictionary<string, DependencyType> Dependencies => this.m_Dependencies;
+
+        public Target(Project project)
         {
             this.Project = project;
             this.Name = project.Name;

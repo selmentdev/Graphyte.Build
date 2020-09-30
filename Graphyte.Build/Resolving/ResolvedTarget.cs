@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Graphyte.Build.Resolving
 {
-    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "}")]
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public sealed partial class ResolvedTarget
     {
         #region Debug View
@@ -17,11 +17,13 @@ namespace Graphyte.Build.Resolving
 
         #region Properties
         public ResolvedSolution Solution { get; }
-        public ConfiguredTarget SourceTarget { get; }
+        public Target SourceTarget { get; }
+
+        private readonly Dictionary<ResolvedTarget, DependencyType> m_Dependencies = new Dictionary<ResolvedTarget, DependencyType>();
         #endregion
 
         #region Constructors
-        public ResolvedTarget(ResolvedSolution solution, ConfiguredTarget target)
+        public ResolvedTarget(ResolvedSolution solution, Target target)
         {
             this.Solution = solution;
             this.SourceTarget = target;

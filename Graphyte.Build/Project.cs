@@ -11,7 +11,7 @@ namespace Graphyte.Build
 
     public abstract class Project
     {
-        public abstract void Configure(ConfiguredTarget target, ConfigurationContext context);
+        public abstract void Configure(Target target, IContext context);
 
         public string Name
         {
