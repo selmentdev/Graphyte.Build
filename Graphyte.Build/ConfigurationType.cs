@@ -9,7 +9,7 @@ namespace Graphyte.Build
     public readonly struct ConfigurationType
         : IEquatable<ConfigurationType>
     {
-        public static ConfigurationType Debug = new ConfigurationType("Testing");
+        public static ConfigurationType Debug = new ConfigurationType("Debug");
         public static ConfigurationType Checked = new ConfigurationType("Checked");
         public static ConfigurationType Profile = new ConfigurationType("Profile");
         public static ConfigurationType Release = new ConfigurationType("Release");

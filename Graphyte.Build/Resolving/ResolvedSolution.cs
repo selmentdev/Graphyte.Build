@@ -59,12 +59,6 @@ namespace Graphyte.Build.Resolving
 
             foreach (var target in this.m_Targets)
             {
-                target.FindDependencies();
-                target.ImportProperties();
-            }
-
-            foreach (var target in this.m_Targets)
-            {
                 target.Resolve(trace);
             }
 

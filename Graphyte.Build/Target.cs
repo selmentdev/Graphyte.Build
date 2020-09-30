@@ -10,7 +10,9 @@ namespace Graphyte.Build
         public TargetType Type { get; set; }
         public string Name { get; set; }
 
-        private readonly Dictionary<string, DependencyType> m_Dependencies = new Dictionary<string, DependencyType>();
+        public List<string> PublicDependencies { get; } = new List<string>();
+        public List<string> PrivateDependencies { get; } = new List<string>();
+        public List<string> InterfaceDependencies { get; } = new List<string>();
 
         public List<string> PublicIncludePaths { get; } = new List<string>();
         public List<string> PrivateIncludePaths { get; } = new List<string>();
@@ -28,42 +30,28 @@ namespace Graphyte.Build
         public Dictionary<string, string> PrivateDefines { get; } = new Dictionary<string, string>();
         public Dictionary<string, string> InterfaceDefines { get; } = new Dictionary<string, string>();
 
-        public IReadOnlyDictionary<string, DependencyType> Dependencies => this.m_Dependencies;
-
         public Target(Project project)
         {
             this.Project = project;
             this.Name = project.Name;
         }
 
-        private void AddDependency(Type project, DependencyType dependencyType)
-        {
-            var name = project.Name;
-
-            if (this.m_Dependencies.TryGetValue(name, out DependencyType existing))
-            {
-                throw new Exception($@"Cannot add {dependencyType} to project {name}, because it is already specified as {existing} dependency");
-            }
-
-            this.m_Dependencies.Add(name, dependencyType);
-        }
-
         public void AddPublicDependency<T>()
             where T : Project
         {
-            this.AddDependency(typeof(T), DependencyType.Public);
+            this.PublicDependencies.Add(typeof(T).Name);
         }
 
         public void AddPrivateDependency<T>()
             where T : Project
         {
-            this.AddDependency(typeof(T), DependencyType.Private);
+            this.PrivateDependencies.Add(typeof(T).Name);
         }
 
         public void AddInterfaceDependency<T>()
             where T : Project
         {
-            this.AddDependency(typeof(T), DependencyType.Interface);
+            this.InterfaceDependencies.Add(typeof(T).Name);
         }
     }
 }

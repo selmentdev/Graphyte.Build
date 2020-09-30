@@ -58,5 +58,20 @@ namespace Graphyte.Build
 
             throw new ArgumentOutOfRangeException(nameof(type));
         }
+
+        public static bool IsImportable(this TargetType type)
+        {
+            switch (type)
+            {
+                case TargetType.StaticLibrary:
+                case TargetType.HeaderLibrary:
+                    return true;
+                case TargetType.SharedLibrary:
+                case TargetType.Application:
+                    return false;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(type));
+        }
     }
 }

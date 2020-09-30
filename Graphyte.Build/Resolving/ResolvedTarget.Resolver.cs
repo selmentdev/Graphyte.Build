@@ -1,6 +1,7 @@
 ﻿using Graphyte.Build.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Graphyte.Build.Resolving
@@ -10,14 +11,14 @@ namespace Graphyte.Build.Resolving
         #region Resolving
         private void ValidateDependencyCycle(Stack<ResolvedTarget> trace)
         {
-            if(trace.Contains(this))
+            if (trace.Contains(this))
             {
                 var message = new StringBuilder();
-                message.AppendLine($@"Cycle detected when resolving target {this.SourceTarget.Name}");
+                message.AppendLine($@"Cycle detected when resolving target {this.Name}");
 
                 foreach (var item in trace)
                 {
-                    message.AppendLine($@"  - required by {item.SourceTarget.Name}");
+                    message.AppendLine($@"  - required by {item.Name}");
                 }
 
                 throw new ResolverException(message.ToString());
@@ -26,16 +27,7 @@ namespace Graphyte.Build.Resolving
 
         private bool m_IsResolved = false;
 
-        public void FindDependencies()
-        {
-            foreach (var dependency in this.SourceTarget.Dependencies)
-            {
-                var targetDependency = this.Solution.FindTargetByProjectName(dependency.Key);
-                this.m_Dependencies.Add(targetDependency, dependency.Value);
-            }
-        }
-        
-        public void ImportProperties()
+        private void ImportProperties()
         {
             //
             // Include paths.
@@ -87,56 +79,62 @@ namespace Graphyte.Build.Resolving
             {
                 this.m_IsResolved = true;
 
-                foreach (var dependency in this.m_Dependencies)
-                {
-                    dependency.Key.Resolve(trace);
-                }
 
-                this.ResolveDependencies();
+                this.ImportProperties();
+
+                //
+                // Find dependencies from target.
+                //
+
+                var publicDependencies = this.SourceTarget.PublicDependencies.Select(this.Solution.FindTargetByProjectName).ToArray();
+                var privateDependencies = this.SourceTarget.PrivateDependencies.Select(this.Solution.FindTargetByProjectName).ToArray();
+                var interfaceDependencies = this.SourceTarget.InterfaceDependencies.Select(this.Solution.FindTargetByProjectName).ToArray();
+
+                //
+                // Resolve dependencies recursively.
+                //
+
+                Array.ForEach(publicDependencies, x => x.Resolve(trace));
+                Array.ForEach(privateDependencies, x => x.Resolve(trace));
+                Array.ForEach(interfaceDependencies, x => x.Resolve(trace));
+
+                //
+                // Import properties from dependencies.
+                //
+                // Rules:
+                //      Public Dependency:
+                //
+                //          Imports source interface properties as private and interface properties of current target.
+                //
+                //      Private Dependency:
+                //
+                //          Imports source interface properties as private only properties of current target.
+                //
+                //      Interface Dependency:
+                //
+                //          Imports source interface properties as interface only properties of current target.
+                //
+
+                Array.ForEach(publicDependencies, this.ResolvePublicDependency);
+                Array.ForEach(privateDependencies, this.ResolvePrivateDependency);
+                Array.ForEach(interfaceDependencies, this.ResolveInterfaceDependency);
             }
 
             trace.Pop();
         }
 
-
-        private void ResolveDependencies()
-        {
-            //
-            // Import properties from dependencies.
-            //
-            // Rules:
-            //      Public Dependency:
-            //
-            //          Imports source interface properties as private and interface properties of current target.
-            //
-            //      Private Dependency:
-            //
-            //          Imports source interface properties as private only properties of current target.
-            //
-            //      Interface Dependency:
-            //
-            //          Imports source interface properties as interface only properties of current target.
-            //
-
-            foreach (var dependency in this.m_Dependencies)
-            {
-                switch (dependency.Value)
-                {
-                    case DependencyType.Public:
-                        this.ResolvePublicDependency(dependency.Key);
-                        break;
-                    case DependencyType.Private:
-                        this.ResolvePrivateDependency(dependency.Key);
-                        break;
-                    case DependencyType.Interface:
-                        this.ResolveInterfaceDependency(dependency.Key);
-                        break;
-                }
-            }
-        }
-
         private void ResolvePublicDependency(ResolvedTarget dependency)
         {
+            this.PublicDependencies.Import(dependency);
+            this.PrivateDependencies.Import(dependency);
+
+            if (dependency.SourceTarget.Type.IsImportable())
+            {
+                this.PrivateDependencies.Import(dependency.PublicDependencies);
+                this.PublicDependencies.Import(dependency.PublicDependencies);
+            }
+
+
             //
             // Include paths.
             //
@@ -171,6 +169,14 @@ namespace Graphyte.Build.Resolving
 
         private void ResolvePrivateDependency(ResolvedTarget dependency)
         {
+            this.PrivateDependencies.Import(dependency);
+
+            if (dependency.SourceTarget.Type.IsImportable())
+            {
+                this.PrivateDependencies.Import(dependency.PublicDependencies);
+            }
+
+
             //
             // Include paths.
             //
@@ -201,6 +207,14 @@ namespace Graphyte.Build.Resolving
 
         private void ResolveInterfaceDependency(ResolvedTarget dependency)
         {
+            this.PublicDependencies.Import(dependency);
+
+            if (dependency.SourceTarget.Type.IsImportable())
+            {
+                this.PublicDependencies.Import(dependency.PublicDependencies);
+            }
+
+
             //
             // Include paths.
             //
