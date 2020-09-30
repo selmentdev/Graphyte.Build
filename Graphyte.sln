@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graphyte.Build.Platforms", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graphyte.Build.Tests", "Graphyte.Build.Tests\Graphyte.Build.Tests.csproj", "{9C03420D-5A87-4385-8E5F-7FE2570F68B5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graphyte.Build.Toolchains", "Graphyte.Build.Toolchains\Graphyte.Build.Toolchains.csproj", "{744CC380-DB06-4AD7-A8B7-083213A12242}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,5 +74,17 @@ Global
 		{9C03420D-5A87-4385-8E5F-7FE2570F68B5}.Release|x64.Build.0 = Release|Any CPU
 		{9C03420D-5A87-4385-8E5F-7FE2570F68B5}.Release|x86.ActiveCfg = Release|Any CPU
 		{9C03420D-5A87-4385-8E5F-7FE2570F68B5}.Release|x86.Build.0 = Release|Any CPU
+		{744CC380-DB06-4AD7-A8B7-083213A12242}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{744CC380-DB06-4AD7-A8B7-083213A12242}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{744CC380-DB06-4AD7-A8B7-083213A12242}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{744CC380-DB06-4AD7-A8B7-083213A12242}.Debug|x64.Build.0 = Debug|Any CPU
+		{744CC380-DB06-4AD7-A8B7-083213A12242}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{744CC380-DB06-4AD7-A8B7-083213A12242}.Debug|x86.Build.0 = Debug|Any CPU
+		{744CC380-DB06-4AD7-A8B7-083213A12242}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{744CC380-DB06-4AD7-A8B7-083213A12242}.Release|Any CPU.Build.0 = Release|Any CPU
+		{744CC380-DB06-4AD7-A8B7-083213A12242}.Release|x64.ActiveCfg = Release|Any CPU
+		{744CC380-DB06-4AD7-A8B7-083213A12242}.Release|x64.Build.0 = Release|Any CPU
+		{744CC380-DB06-4AD7-A8B7-083213A12242}.Release|x86.ActiveCfg = Release|Any CPU
+		{744CC380-DB06-4AD7-A8B7-083213A12242}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
