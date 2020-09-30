@@ -20,6 +20,18 @@ namespace Graphyte.Build.Resolving
         public Target SourceTarget { get; }
 
         private readonly Dictionary<ResolvedTarget, DependencyType> m_Dependencies = new Dictionary<ResolvedTarget, DependencyType>();
+
+        public List<string> PrivateIncludePaths { get; } = new List<string>();
+        public List<string> PublicIncludePaths { get; } = new List<string>();
+
+        public List<string> PrivateLibraryPaths { get; } = new List<string>();
+        public List<string> PublicLibraryPaths { get; } = new List<string>();
+
+        public List<string> PrivateLibraries { get; } = new List<string>();
+        public List<string> PublicLibraries { get; } = new List<string>();
+
+        public Dictionary<string, string> PrivateDefines { get; } = new Dictionary<string, string>();
+        public Dictionary<string, string> PublicDefines { get; } = new Dictionary<string, string>();
         #endregion
 
         #region Constructors

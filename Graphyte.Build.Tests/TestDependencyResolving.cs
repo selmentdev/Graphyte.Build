@@ -29,6 +29,10 @@ namespace Graphyte.Build.Tests
                 target.AddPublicDependency<AA>();
                 target.AddPrivateDependency<AB>();
                 target.AddInterfaceDependency<AC>();
+
+                target.PublicIncludePaths.Add($@"include/{this.Name}/public");
+                target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
+                target.InterfaceIncludePaths.Add($@"include/{this.Name}/interface");
             }
         }
 
@@ -41,6 +45,10 @@ namespace Graphyte.Build.Tests
                 target.AddPrivateDependency<AAA>();
                 target.AddInterfaceDependency<AAB>();
                 target.AddPublicDependency<AAC>();
+
+                target.PublicIncludePaths.Add($@"include/{this.Name}/public");
+                target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
+                target.InterfaceIncludePaths.Add($@"include/{this.Name}/interface");
             }
         }
 
@@ -53,6 +61,10 @@ namespace Graphyte.Build.Tests
                 target.AddPublicDependency<ABA>();
                 target.AddPrivateDependency<ABB>();
                 target.AddInterfaceDependency<ABC>();
+
+                target.PublicIncludePaths.Add($@"include/{this.Name}/public");
+                target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
+                target.InterfaceIncludePaths.Add($@"include/{this.Name}/interface");
             }
         }
 
@@ -65,6 +77,10 @@ namespace Graphyte.Build.Tests
                 target.AddInterfaceDependency<ACA>();
                 target.AddPublicDependency<ACB>();
                 target.AddPrivateDependency<ACC>();
+
+                target.PublicIncludePaths.Add($@"include/{this.Name}/public");
+                target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
+                target.InterfaceIncludePaths.Add($@"include/{this.Name}/interface");
             }
         }
 
@@ -73,6 +89,10 @@ namespace Graphyte.Build.Tests
             public override void Configure(Target target, IContext context)
             {
                 target.Type = TargetType.SharedLibrary;
+
+                target.PublicIncludePaths.Add($@"include/{this.Name}/public");
+                target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
+                target.InterfaceIncludePaths.Add($@"include/{this.Name}/interface");
             }
         }
 
@@ -81,6 +101,10 @@ namespace Graphyte.Build.Tests
             public override void Configure(Target target, IContext context)
             {
                 target.Type = TargetType.StaticLibrary;
+
+                target.PublicIncludePaths.Add($@"include/{this.Name}/public");
+                target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
+                target.InterfaceIncludePaths.Add($@"include/{this.Name}/interface");
             }
         }
 
@@ -89,6 +113,10 @@ namespace Graphyte.Build.Tests
             public override void Configure(Target target, IContext context)
             {
                 target.Type = TargetType.HeaderLibrary;
+
+                target.PublicIncludePaths.Add($@"include/{this.Name}/public");
+                target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
+                target.InterfaceIncludePaths.Add($@"include/{this.Name}/interface");
             }
         }
 
@@ -97,6 +125,10 @@ namespace Graphyte.Build.Tests
             public override void Configure(Target target, IContext context)
             {
                 target.Type = TargetType.SharedLibrary;
+
+                target.PublicIncludePaths.Add($@"include/{this.Name}/public");
+                target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
+                target.InterfaceIncludePaths.Add($@"include/{this.Name}/interface");
             }
         }
 
@@ -105,6 +137,10 @@ namespace Graphyte.Build.Tests
             public override void Configure(Target target, IContext context)
             {
                 target.Type = TargetType.StaticLibrary;
+
+                target.PublicIncludePaths.Add($@"include/{this.Name}/public");
+                target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
+                target.InterfaceIncludePaths.Add($@"include/{this.Name}/interface");
             }
         }
 
@@ -113,6 +149,10 @@ namespace Graphyte.Build.Tests
             public override void Configure(Target target, IContext context)
             {
                 target.Type = TargetType.HeaderLibrary;
+
+                target.PublicIncludePaths.Add($@"include/{this.Name}/public");
+                target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
+                target.InterfaceIncludePaths.Add($@"include/{this.Name}/interface");
             }
         }
 
@@ -121,6 +161,10 @@ namespace Graphyte.Build.Tests
             public override void Configure(Target target, IContext context)
             {
                 target.Type = TargetType.SharedLibrary;
+
+                target.PublicIncludePaths.Add($@"include/{this.Name}/public");
+                target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
+                target.InterfaceIncludePaths.Add($@"include/{this.Name}/interface");
             }
         }
 
@@ -129,6 +173,10 @@ namespace Graphyte.Build.Tests
             public override void Configure(Target target, IContext context)
             {
                 target.Type = TargetType.StaticLibrary;
+
+                target.PublicIncludePaths.Add($@"include/{this.Name}/public");
+                target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
+                target.InterfaceIncludePaths.Add($@"include/{this.Name}/interface");
             }
         }
 
@@ -137,6 +185,10 @@ namespace Graphyte.Build.Tests
             public override void Configure(Target target, IContext context)
             {
                 target.Type = TargetType.HeaderLibrary;
+
+                target.PublicIncludePaths.Add($@"include/{this.Name}/public");
+                target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
+                target.InterfaceIncludePaths.Add($@"include/{this.Name}/interface");
             }
         }
 
