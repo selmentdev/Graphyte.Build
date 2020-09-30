@@ -3,7 +3,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Linq;
-using System.Text.Json;
 using System.Collections.Generic;
 
 namespace Graphyte.Build.Tests
@@ -146,72 +145,7 @@ namespace Graphyte.Build.Tests
             var resolved = new ResolvedSolution(solution, context);
 
             resolved.Resolve();
-
-            ConvertToString(resolved);
         }
 
-        private static void ConvertToString(ResolvedSolution solution)
-        {
-            using var stream = System.IO.File.Create("d:/output2.json");
-            using var writer = new System.Text.Json.Utf8JsonWriter(stream, new JsonWriterOptions()
-            {
-                Indented = true
-            });
-
-            writer.WriteStartObject();
-
-            foreach (var target in solution.Targets)
-            {
-                writer.WriteStartObject(target.Name);
-                SerializeTarget(writer, target);
-                writer.WriteEndObject();
-            }
-
-            writer.WriteEndObject();
-        }
-
-        private static void SerializeTarget(Utf8JsonWriter writer, ResolvedTarget target)
-        {
-            writer.WriteString("TargetType", target.SourceTarget.Type.ToString());
-
-            SerializeList(writer, nameof(target.PublicIncludePaths), target.PublicIncludePaths);
-            SerializeList(writer, nameof(target.PrivateIncludePaths), target.PrivateIncludePaths);
-
-            SerializeList(writer, nameof(target.PublicLibraryPaths), target.PublicLibraryPaths);
-            SerializeList(writer, nameof(target.PrivateLibraryPaths), target.PrivateLibraryPaths);
-
-            SerializeList(writer, nameof(target.PublicLibraries), target.PublicLibraries);
-            SerializeList(writer, nameof(target.PrivateLibraries), target.PrivateLibraries);
-
-            SerializeList(writer, nameof(target.PublicDependencies), target.PublicDependencies.Select(x => x.Name));
-            SerializeList(writer, nameof(target.PrivateDependencies), target.PrivateDependencies.Select(x => x.Name));
-
-            SerializeDictionary(writer, nameof(target.PublicDefines), target.PublicDefines);
-            SerializeDictionary(writer, nameof(target.PrivateDefines), target.PrivateDefines);
-        }
-
-        private static void SerializeList(Utf8JsonWriter writer, string name, IEnumerable<string> items)
-        {
-            writer.WriteStartArray(name);
-
-            foreach (var item in items)
-            {
-                writer.WriteStringValue(item);
-            }
-
-            writer.WriteEndArray();
-        }
-
-        private static void SerializeDictionary(Utf8JsonWriter writer, string name, IEnumerable<KeyValuePair<string, string>> items)
-        {
-            writer.WriteStartObject(name);
-
-            foreach (var item in items)
-            {
-                writer.WriteString(item.Key, item.Value);
-            }
-
-            writer.WriteEndObject();
-        }
     }
 }
