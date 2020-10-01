@@ -4,13 +4,15 @@ using System.Text;
 
 namespace Graphyte.Build
 {
-    public struct TargetTuple
+    public readonly struct TargetTuple
     {
-        public PlatformType Platform;
-        public ArchitectureType Architecture;
+        public readonly PlatformKind Kind;
+        public readonly PlatformType Platform;
+        public readonly ArchitectureType Architecture;
 
         public TargetTuple(PlatformType platform, ArchitectureType architecture)
         {
+            this.Kind = PlatformKind.None;
             this.Platform = platform;
             this.Architecture = architecture;
         }
