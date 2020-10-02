@@ -33,8 +33,8 @@ namespace Graphyte.Build.Resolving
         public List<string> PublicLibraries { get; } = new List<string>();
         public List<string> PrivateLibraries { get; } = new List<string>();
 
-        public Dictionary<string, string> PublicDefines { get; } = new Dictionary<string, string>();
-        public Dictionary<string, string> PrivateDefines { get; } = new Dictionary<string, string>();
+        public List<string> PublicDefines { get; } = new List<string>();
+        public List<string> PrivateDefines { get; } = new List<string>();
         #endregion
 
         #region Constructors

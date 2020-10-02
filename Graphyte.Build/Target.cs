@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Graphyte.Build
 {
-    public sealed class Target
+    public sealed partial class Target
     {
         public Project Project { get; }
         public TargetType Type { get; set; }
@@ -26,9 +24,9 @@ namespace Graphyte.Build
         public List<string> PrivateLibraries { get; } = new List<string>();
         public List<string> InterfaceLibraries { get; } = new List<string>();
 
-        public Dictionary<string, string> PublicDefines { get; } = new Dictionary<string, string>();
-        public Dictionary<string, string> PrivateDefines { get; } = new Dictionary<string, string>();
-        public Dictionary<string, string> InterfaceDefines { get; } = new Dictionary<string, string>();
+        public List<string> PublicDefines { get; } = new List<string>();
+        public List<string> PrivateDefines { get; } = new List<string>();
+        public List<string> InterfaceDefines { get; } = new List<string>();
 
         public Target(Project project)
         {

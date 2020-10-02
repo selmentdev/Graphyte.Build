@@ -35,9 +35,9 @@ namespace Graphyte.Build.Tests
                 target.PrivateLibraries.Add($@"{this.Name}-private.lib");
                 target.InterfaceLibraries.Add($@"{this.Name}-interface.lib");
 
-                target.PublicDefines[$@"PUBLIC_DEFINE_{this.Name}"] = this.Name;
-                target.PrivateDefines[$@"PRIVATE_DEFINE_{this.Name}"] = this.Name;
-                target.InterfaceDefines[$@"INTERFACE_DEFINE_{this.Name}"] = this.Name;
+                target.PublicDefines.Add($@"PUBLIC_DEFINE_{this.Name}={this.Name}");
+                target.PrivateDefines.Add($@"PUBLIC_DEFINE_{this.Name}={this.Name}");
+                target.InterfaceDefines.Add($@"PUBLIC_DEFINE_{this.Name}={this.Name}");
             }
         }
 

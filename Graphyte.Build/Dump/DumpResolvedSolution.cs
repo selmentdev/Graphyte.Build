@@ -46,8 +46,8 @@ namespace Graphyte.Build.Dump
             SerializeList(writer, nameof(target.PublicDependencies), target.PublicDependencies.Select(x => x.Name));
             SerializeList(writer, nameof(target.PrivateDependencies), target.PrivateDependencies.Select(x => x.Name));
 
-            SerializeDictionary(writer, nameof(target.PublicDefines), target.PublicDefines);
-            SerializeDictionary(writer, nameof(target.PrivateDefines), target.PrivateDefines);
+            SerializeList(writer, nameof(target.PublicDefines), target.PublicDefines);
+            SerializeList(writer, nameof(target.PrivateDefines), target.PrivateDefines);
         }
 
         private static void SerializeList(Utf8JsonWriter writer, string name, IEnumerable<string> items)
