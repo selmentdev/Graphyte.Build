@@ -1,6 +1,7 @@
 namespace Graphyte.Build
 {
-    public enum PlatformKind {
+    public enum PlatformKind
+    {
         None,
         Desktop,
         Mobile,

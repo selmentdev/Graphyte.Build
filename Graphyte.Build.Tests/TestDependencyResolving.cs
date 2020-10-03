@@ -235,10 +235,7 @@ namespace Graphyte.Build.Tests
                 build: BuildType.Developer,
                 configuration: ConfigurationType.Debug);
 
-            Assert.ThrowsException<ResolverException>(() =>
-            {
-                new ResolvedSolution(solution, context);
-            });
+            Assert.ThrowsException<ResolverException>(() => new ResolvedSolution(solution, context));
         }
 
         [TestMethod]

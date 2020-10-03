@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Graphyte.Build
 {
@@ -24,15 +23,7 @@ namespace Graphyte.Build
         private string m_Name = null;
         public string Name
         {
-            get
-            {
-                if (this.m_Name == null)
-                {
-                    return this.GetType().Name;
-                }
-
-                return this.m_Name;
-            }
+            get => this.m_Name ?? this.GetType().Name;
             set => this.m_Name = value;
         }
         #endregion

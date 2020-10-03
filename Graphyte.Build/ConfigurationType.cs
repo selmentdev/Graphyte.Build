@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Graphyte.Build
 {
@@ -61,14 +58,8 @@ namespace Graphyte.Build
             return this.m_Value.GetHashCode();
         }
 
-        public static bool operator ==(ConfigurationType left, ConfigurationType right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(ConfigurationType left, ConfigurationType right) => left.Equals(right);
 
-        public static bool operator !=(ConfigurationType left, ConfigurationType right)
-        {
-            return !(left == right);
-        }
+        public static bool operator !=(ConfigurationType left, ConfigurationType right) => !(left == right);
     }
 }

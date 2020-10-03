@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace Graphyte.Build.Resolving
 {
@@ -17,12 +15,12 @@ namespace Graphyte.Build.Resolving
             : base(message)
         {
         }
-        
+
         public ResolverException(string message, Exception inner)
             : base(message, inner)
         {
         }
-        
+
         protected ResolverException(
           SerializationInfo info,
           StreamingContext context)

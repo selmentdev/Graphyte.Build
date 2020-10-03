@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Graphyte.Build.Resolving
 {
@@ -72,13 +71,8 @@ namespace Graphyte.Build.Resolving
         {
             var found = this.m_Targets.FirstOrDefault(x => x.SourceTarget.Project.Name == name);
 
-            if (found == null)
-            {
-                throw new ResolverException(
-                    $@"Cannot resolve project target {name} for solution {this.Solution.Name} in configuration {this.Context}");
-            }
-
-            return found;
+            return found ?? throw new ResolverException(
+                $@"Cannot resolve project target {name} for solution {this.Solution.Name} in configuration {this.Context}");
         }
     }
 }

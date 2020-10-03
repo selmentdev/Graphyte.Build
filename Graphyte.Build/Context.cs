@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Graphyte.Build
+﻿namespace Graphyte.Build
 {
     public interface IContext
     {

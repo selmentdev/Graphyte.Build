@@ -1,9 +1,5 @@
 ﻿using Graphyte.Build.Resolving;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace Graphyte.Build.Tests
 {
@@ -85,7 +81,7 @@ namespace Graphyte.Build.Tests
             private readonly DependencyType m_DependencyType;
 
             public RootProject(TargetType type, DependencyType dependency)
-                :base(type)
+                : base(type)
             {
                 this.m_DependencyType = dependency;
             }

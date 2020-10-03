@@ -66,14 +66,8 @@ namespace Graphyte.Build
             return this.m_Value.GetHashCode();
         }
 
-        public static bool operator ==(WindowsTargetPlatformVersion left, WindowsTargetPlatformVersion right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(WindowsTargetPlatformVersion left, WindowsTargetPlatformVersion right) => left.Equals(right);
 
-        public static bool operator !=(WindowsTargetPlatformVersion left, WindowsTargetPlatformVersion right)
-        {
-            return !(left == right);
-        }
+        public static bool operator !=(WindowsTargetPlatformVersion left, WindowsTargetPlatformVersion right) => !(left == right);
     }
 }

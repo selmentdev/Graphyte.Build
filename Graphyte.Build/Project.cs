@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Graphyte.Build
+﻿namespace Graphyte.Build
 {
     public enum ProjectLanguage
     {
@@ -13,12 +11,6 @@ namespace Graphyte.Build
     {
         public abstract void Configure(Target target, IContext context);
 
-        public string Name
-        {
-            get
-            {
-                return this.GetType().Name;
-            }
-        }
+        public string Name => this.GetType().Name;
     }
 }
