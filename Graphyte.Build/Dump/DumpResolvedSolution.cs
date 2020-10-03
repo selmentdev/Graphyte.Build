@@ -33,6 +33,8 @@ namespace Graphyte.Build.Dump
         private static void SerializeTarget(Utf8JsonWriter writer, ResolvedTarget target)
         {
             writer.WriteString("TargetType", target.SourceTarget.Type.ToString());
+            writer.WriteString("ProjectName", target.SourceTarget.Name);
+            writer.WriteString("ProjectGuid", target.SourceTarget.ProjectGuid.ToString());
 
             SerializeList(writer, nameof(target.PublicIncludePaths), target.PublicIncludePaths);
             SerializeList(writer, nameof(target.PrivateIncludePaths), target.PrivateIncludePaths);
@@ -60,18 +62,6 @@ namespace Graphyte.Build.Dump
             }
 
             writer.WriteEndArray();
-        }
-
-        private static void SerializeDictionary(Utf8JsonWriter writer, string name, IEnumerable<KeyValuePair<string, string>> items)
-        {
-            writer.WriteStartObject(name);
-
-            foreach (var item in items)
-            {
-                writer.WriteString(item.Key, item.Value);
-            }
-
-            writer.WriteEndObject();
         }
     }
 }

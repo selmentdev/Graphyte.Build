@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Graphyte.Build
 {
@@ -7,6 +8,7 @@ namespace Graphyte.Build
         public Project Project { get; }
         public TargetType Type { get; set; }
         public string Name { get; set; }
+        public Guid ProjectGuid { get; set; }
 
         public List<string> PublicDependencies { get; } = new List<string>();
         public List<string> PrivateDependencies { get; } = new List<string>();
@@ -32,6 +34,7 @@ namespace Graphyte.Build
         {
             this.Project = project;
             this.Name = project.Name;
+            this.ProjectGuid = Tools.Utils.MakeGuid(this.Name);
         }
 
         public void AddPublicDependency<T>()

@@ -230,10 +230,10 @@ namespace Graphyte.Build.Tests
         {
             var solution = new SampleSolution();
             var context = new Context(
-                PlatformType.Windows,
-                ArchitectureType.PowerPC64,
-                BuildType.Developer,
-                ConfigurationType.Debug);
+                platform: PlatformType.Windows,
+                architecture: ArchitectureType.PowerPC64,
+                build: BuildType.Developer,
+                configuration: ConfigurationType.Debug);
 
             Assert.ThrowsException<ResolverException>(() =>
             {
@@ -251,7 +251,7 @@ namespace Graphyte.Build.Tests
                 BuildType.Developer,
                 ConfigurationType.Debug);
 
-            var resolved =new ResolvedSolution(solution, context);
+            var resolved = new ResolvedSolution(solution, context);
 
             resolved.Resolve();
         }

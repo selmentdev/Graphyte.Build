@@ -12,7 +12,7 @@ namespace Graphyte.Build.Tests
     {
         public class ConfigurableProject : Project
         {
-            private TargetType m_TargetType;
+            private readonly TargetType m_TargetType;
 
             public ConfigurableProject(TargetType type)
             {
@@ -52,7 +52,7 @@ namespace Graphyte.Build.Tests
 
         public class ImmediateProject : ConfigurableProject
         {
-            private DependencyType m_DependencyType;
+            private readonly DependencyType m_DependencyType;
 
             public ImmediateProject(TargetType type, DependencyType dependency)
                 : base(type)
@@ -82,7 +82,7 @@ namespace Graphyte.Build.Tests
 
         public class RootProject : ConfigurableProject
         {
-            private DependencyType m_DependencyType;
+            private readonly DependencyType m_DependencyType;
 
             public RootProject(TargetType type, DependencyType dependency)
                 :base(type)
@@ -145,6 +145,8 @@ namespace Graphyte.Build.Tests
             var resolved = new ResolvedSolution(solution, context);
 
             resolved.Resolve();
+
+            Dump.DumpResolvedSolution.SaveToFile("d:/output.json", resolved);
         }
 
     }
