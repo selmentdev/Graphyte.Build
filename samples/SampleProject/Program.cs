@@ -7,9 +7,10 @@ namespace SampleProject
 {
     internal class Program
     {
-        private static void Main(string[] args)
+        private static int Main(string[] args)
         {
-            Graphyte.Build.Executor.Main(args);
+            return Graphyte.V2.Build.Executor.Main(args);
+            //Graphyte.Build.Executor.Main(args);
         }
     }
 }

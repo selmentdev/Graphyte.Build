@@ -4,6 +4,7 @@ using Graphyte.Build.Resolving;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime;
 
 namespace Graphyte.Build
@@ -18,6 +19,14 @@ namespace Graphyte.Build
             GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
 
             System.Diagnostics.Trace.Listeners.Add(new System.Diagnostics.ConsoleTraceListener());
+
+            var profile = new Profile()
+            {
+                Platform = PlatformType.Windows,
+                Architecture = ArchitectureType.X64,
+            };
+
+            File.WriteAllText("win64.json", ProfileSerializer.Serialize(profile));
 
             // Need inputs:
             //      - platform type
