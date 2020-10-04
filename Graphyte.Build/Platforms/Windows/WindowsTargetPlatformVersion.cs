@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Graphyte.Build
+namespace Graphyte.Build.Platforms.Windows
 {
     public readonly struct WindowsTargetPlatformVersion
-        : IEquatable<WindowsTargetPlatformVersion>
+    : IEquatable<WindowsTargetPlatformVersion>
     {
         public static WindowsTargetPlatformVersion V10_0_18362_0 = new WindowsTargetPlatformVersion("10.0.18362.0");
         public static WindowsTargetPlatformVersion V10_0_19041_0 = new WindowsTargetPlatformVersion("10.0.19041.0");
@@ -70,4 +70,5 @@ namespace Graphyte.Build
 
         public static bool operator !=(WindowsTargetPlatformVersion left, WindowsTargetPlatformVersion right) => !(left == right);
     }
+
 }

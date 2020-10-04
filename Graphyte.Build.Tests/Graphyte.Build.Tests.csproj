@@ -14,8 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Graphyte.Build.Generators\Graphyte.Build.Generators.csproj" />
-    <ProjectReference Include="..\Graphyte.Build.Platforms\Graphyte.Build.Platforms.csproj" />
     <ProjectReference Include="..\Graphyte.Build\Graphyte.Build.csproj" />
   </ItemGroup>
 

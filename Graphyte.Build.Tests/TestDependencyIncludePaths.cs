@@ -113,7 +113,7 @@ namespace Graphyte.Build.Tests
                 TargetType leafType,
                 DependencyType leafDependency)
             {
-                this.AddTargetTuple(PlatformType.Windows, ArchitectureType.X64);
+                //this.AddTargetTuple(PlatformType.Windows, ArchitectureType.X64);
                 this.AddBuildType(BuildType.Developer);
                 this.AddConfigurationType(ConfigurationType.Debug);
 
@@ -135,6 +135,7 @@ namespace Graphyte.Build.Tests
             var context = new Context(
                 PlatformType.Windows,
                 ArchitectureType.X64,
+                ToolsetType.Default,
                 BuildType.Developer,
                 ConfigurationType.Debug);
 

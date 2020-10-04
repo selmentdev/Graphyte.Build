@@ -22,10 +22,10 @@ namespace Graphyte.Build.Resolving
 
         private void Validate()
         {
-            if (!this.Solution.TargetTuples.Contains(new TargetTuple(this.Context.Platform, this.Context.Architecture)))
-            {
-                throw new ResolverException($@"Solution does not support {this.Context.Platform} {this.Context.Architecture} target tuple");
-            }
+            //if (!this.Solution.TargetTuples.Contains(new TargetTuple(this.Context.Platform, this.Context.Architecture)))
+            //{
+            //    throw new ResolverException($@"Solution does not support {this.Context.Platform} {this.Context.Architecture} target tuple");
+            //}
 
             if (!this.Solution.BuildTypes.Contains(this.Context.Build))
             {

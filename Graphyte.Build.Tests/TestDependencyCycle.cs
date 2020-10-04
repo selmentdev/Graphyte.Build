@@ -10,7 +10,7 @@ namespace Graphyte.Build.Tests
         {
             public SampleSolution()
             {
-                this.AddTargetTuple(PlatformType.Windows, ArchitectureType.X64);
+                //this.AddTargetTuple(PlatformType.Windows, ArchitectureType.X64);
 
                 this.AddBuildType(BuildType.Developer);
 
@@ -96,6 +96,7 @@ namespace Graphyte.Build.Tests
             var context = new Context(
                 PlatformType.Windows,
                 ArchitectureType.X64,
+                ToolsetType.Default,
                 BuildType.Developer,
                 ConfigurationType.Debug);
 

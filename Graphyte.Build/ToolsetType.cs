@@ -3,16 +3,19 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Graphyte.Build
 {
-    public readonly struct CompilerType
-        : IEquatable<CompilerType>
+    [Serializable]
+    public readonly struct ToolsetType
+        : IEquatable<ToolsetType>
     {
-        public static CompilerType Clang = new CompilerType("Clang");
-        public static CompilerType GCC = new CompilerType("GCC");
-        public static CompilerType MSVC = new CompilerType("MSVC");
+        public static ToolsetType Default = new ToolsetType("Default");
+        public static ToolsetType Clang = new ToolsetType("Clang");
+        public static ToolsetType ClangCL = new ToolsetType("ClangCL");
+        public static ToolsetType GCC = new ToolsetType("GCC");
+        public static ToolsetType MSVC = new ToolsetType("MSVC");
 
         private readonly string m_Value;
 
-        private CompilerType(string value)
+        internal ToolsetType(string value)
         {
             if (value == null)
             {
@@ -27,9 +30,9 @@ namespace Graphyte.Build
             this.m_Value = value;
         }
 
-        public static CompilerType Create(string value)
+        public static ToolsetType Create(string value)
         {
-            return new CompilerType(value);
+            return new ToolsetType(value);
         }
 
         public override string ToString()
@@ -37,7 +40,7 @@ namespace Graphyte.Build
             return this.m_Value ?? string.Empty;
         }
 
-        public bool Equals([AllowNull] CompilerType other)
+        public bool Equals([AllowNull] ToolsetType other)
         {
             return this.Equals(other.m_Value);
         }
@@ -49,7 +52,7 @@ namespace Graphyte.Build
 
         public override bool Equals(object obj)
         {
-            return obj is CompilerType other && this.Equals(other);
+            return obj is ToolsetType other && this.Equals(other);
         }
 
         public override int GetHashCode()
@@ -57,8 +60,7 @@ namespace Graphyte.Build
             return this.m_Value.GetHashCode();
         }
 
-        public static bool operator ==(CompilerType left, CompilerType right) => left.Equals(right);
-
-        public static bool operator !=(CompilerType left, CompilerType right) => !(left == right);
+        public static bool operator ==(ToolsetType left, ToolsetType right) => left.Equals(right);
+        public static bool operator !=(ToolsetType left, ToolsetType right) => !(left == right);
     }
 }

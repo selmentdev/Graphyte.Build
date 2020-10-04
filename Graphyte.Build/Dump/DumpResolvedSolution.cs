@@ -28,6 +28,33 @@ namespace Graphyte.Build.Dump
             writer.WriteEndObject();
         }
 
+        public static void SaveToFile(string path, IEnumerable<ResolvedSolution> solutions)
+        {
+            using var stream = File.Create(path);
+            using var writer = new System.Text.Json.Utf8JsonWriter(stream, new JsonWriterOptions()
+            {
+                Indented = true
+            });
+
+            writer.WriteStartArray();
+
+            foreach (var solution in solutions)
+            {
+                writer.WriteStartObject();
+
+                foreach (var target in solution.Targets)
+                {
+                    writer.WriteStartObject(target.Name);
+                    SerializeTarget(writer, target);
+                    writer.WriteEndObject();
+                }
+
+                writer.WriteEndObject();
+            }
+
+            writer.WriteEndArray();
+        }
+
         private static void SerializeTarget(Utf8JsonWriter writer, ResolvedTarget target)
         {
             writer.WriteString("TargetType", target.SourceTarget.Type.ToString());

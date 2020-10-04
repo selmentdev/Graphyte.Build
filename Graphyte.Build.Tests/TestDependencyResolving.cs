@@ -197,8 +197,8 @@ namespace Graphyte.Build.Tests
         {
             public SampleSolution()
             {
-                this.AddTargetTuple(PlatformType.Windows, ArchitectureType.X64);
-                this.AddTargetTuple(PlatformType.UWP, ArchitectureType.X64);
+                //this.AddTargetTuple(PlatformType.Windows, ArchitectureType.X64);
+                //this.AddTargetTuple(PlatformType.UWP, ArchitectureType.X64);
 
                 this.AddBuildType(BuildType.Developer);
                 this.AddBuildType(BuildType.Testing);
@@ -232,6 +232,7 @@ namespace Graphyte.Build.Tests
             var context = new Context(
                 platform: PlatformType.Windows,
                 architecture: ArchitectureType.PowerPC64,
+                toolset: ToolsetType.Default,
                 build: BuildType.Developer,
                 configuration: ConfigurationType.Debug);
 
@@ -245,6 +246,7 @@ namespace Graphyte.Build.Tests
             var context = new Context(
                 PlatformType.Windows,
                 ArchitectureType.X64,
+                ToolsetType.Default,
                 BuildType.Developer,
                 ConfigurationType.Debug);
 

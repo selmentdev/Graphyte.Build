@@ -1,5 +1,8 @@
-﻿namespace Graphyte.Build
+﻿using System;
+
+namespace Graphyte.Build
 {
+    [Serializable]
     public enum PlatformType
     {
         Windows,

@@ -12,5 +12,7 @@
         public abstract void Configure(Target target, IContext context);
 
         public string Name => this.GetType().Name;
+
+        public ComponentType ComponentType { get; set; } = ComponentType.Module;
     }
 }

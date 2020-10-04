@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace Graphyte.Build.Platforms.Windows
 {
-    public static class WindowsSdk
+    public sealed class WindowsSdkProvider
     {
         private static readonly string[] CPlusPlusSdkOptions = new[]
         {
@@ -16,20 +16,20 @@ namespace Graphyte.Build.Platforms.Windows
             "OptionId.UWPCPP",
         };
 
-        public static IReadOnlyList<WindowsTargetPlatformVersion> Availablle { get; }
-        public static string Location { get; }
+        public readonly WindowsTargetPlatformVersion[] Versions;
+        public readonly string Location;
+        public readonly bool IsSupported;
 
-
-        static WindowsSdk()
+        public WindowsSdkProvider()
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            this.IsSupported = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
+            if (this.IsSupported)
             {
-                #region Detect Windows SDK
                 var root = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
                 var roots = root.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Windows Kits\Installed Roots");
 
                 var kitsroot10name = roots.GetValueNames().Where(x => x.StartsWith(@"KitsRoot10")).First();
-                WindowsSdk.Location = (string)roots.GetValue(kitsroot10name);
 
                 var sdkNames = roots.GetSubKeyNames().Where(x => x.StartsWith("10."));
                 var sdksFound = new List<WindowsTargetPlatformVersion>();
@@ -40,7 +40,7 @@ namespace Graphyte.Build.Platforms.Windows
                     var installedOptions = sdk.OpenSubKey("Installed Options");
                     var options = installedOptions.GetValueNames();
 
-                    var all = WindowsSdk.CPlusPlusSdkOptions.All(x => options.Contains(x));
+                    var all = WindowsSdkProvider.CPlusPlusSdkOptions.All(x => options.Contains(x));
 
                     if (all)
                     {
@@ -48,8 +48,13 @@ namespace Graphyte.Build.Platforms.Windows
                     }
                 }
 
-                WindowsSdk.Availablle = sdksFound;
-                #endregion
+                this.Location = (string)roots.GetValue(kitsroot10name);
+                this.Versions = sdksFound.ToArray();
+            }
+            else
+            {
+                this.Location = string.Empty;
+                this.Versions = new WindowsTargetPlatformVersion[0];
             }
         }
     }

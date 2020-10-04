@@ -2,6 +2,7 @@
 
 namespace Graphyte.Build
 {
+    [Serializable]
     public enum ArchitectureType
     {
         X64,

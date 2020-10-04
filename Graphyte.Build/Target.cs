@@ -9,6 +9,10 @@ namespace Graphyte.Build
         public TargetType Type { get; set; }
         public string Name { get; set; }
         public Guid ProjectGuid { get; set; }
+        public ComponentType Component { get; }
+        public RuntimeKind Runtime { get; set; } = RuntimeKind.Release;
+
+        public List<object> Options { get; } = new List<object>();
 
         public List<string> PublicDependencies { get; } = new List<string>();
         public List<string> PrivateDependencies { get; } = new List<string>();
@@ -34,6 +38,7 @@ namespace Graphyte.Build
         {
             this.Project = project;
             this.Name = project.Name;
+            this.Component = project.ComponentType;
             this.ProjectGuid = Tools.Utils.MakeGuid(this.Name);
         }
 
