@@ -1,4 +1,7 @@
 ﻿using Graphyte.Build;
+using Graphyte.Build.Toolsets;
+using System.Diagnostics;
+using System.Text;
 
 namespace SampleProject
 {
@@ -37,21 +40,24 @@ namespace SampleProject
             target.AddPublicDependency<BaseLibrary>();
             target.AddPrivateDependency<SharedLibrary>();
 
-            if (context.Configuration == ConfigurationType.Debug)
-            {
-                target.Runtime = RuntimeKind.Debug;
-            }
-            else
-            {
-                target.Runtime = RuntimeKind.Release;
-            }
+            target.Runtime = context.Configuration
+                == ConfigurationType.Debug
+                ? RuntimeKind.Debug
+                : RuntimeKind.Release;
 
             target.Options.AddRange(new object[] {
+                (Graphyte.Build.Toolsets.Msvc.Linker.Subsystem)0,
                 new Graphyte.Build.Toolsets.DisableSpecificWarnings("1412", "2321"),
                 Graphyte.Build.Toolsets.Msvc.Compiler.InstructionSet.AVX,
                 Graphyte.Build.Toolsets.Msvc.Compiler.RuntimeLibrary.MultiThreaded,
                 new Graphyte.Build.Toolsets.Msvc.Linker.DelayLoadDlls("hello.dll"),
             });
+
+            var sb = new StringBuilder();
+            MsvcOptionsDispatcher.HandleOptions(sb, target.Options);
+
+            //MsvcOptionsDispatcher.Experimental(sb, target.Options);
+            Debug.WriteLine(sb.ToString());
         }
     }
 

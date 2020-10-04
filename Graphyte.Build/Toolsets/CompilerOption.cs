@@ -1,5 +1,15 @@
 ﻿namespace Graphyte.Build.Toolsets
 {
+    public abstract class StringOption
+    {
+        public readonly string Value;
+
+        public StringOption(string value)
+        {
+            this.Value = value;
+        }
+    }
+
     public abstract class StringListOption
     {
         public readonly string[] Values;
@@ -17,6 +27,15 @@
         {
         }
     }
+
+    namespace Compiler
+    {
+        public enum TreatWarningAsError
+        {
+            Enable,
+            Disable,
+        }
+    }
 }
 
 namespace Graphyte.Build.Toolsets.Msvc
@@ -30,6 +49,7 @@ namespace Graphyte.Build.Toolsets.Msvc
             SSE2,
             AVX,
             AVX2,
+            AVX512,
             NEON,
         }
 
@@ -39,6 +59,18 @@ namespace Graphyte.Build.Toolsets.Msvc
             MultiThreadedDebug,
             MultiThreadedDLL,
             MultiThreadedDebugDLL,
+        }
+
+        public enum RuntimeTypeInfo
+        {
+            Enable,
+            Disable,
+        }
+
+        public enum Permissive
+        {
+            Enable,
+            Disable,
         }
     }
 

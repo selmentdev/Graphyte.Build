@@ -12,8 +12,12 @@ namespace Graphyte.Build
     {
         public static void Main(string[] _)
         {
+            var stopwatch = Stopwatch.StartNew();
+
             GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.Default;
             GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
+
+            System.Diagnostics.Trace.Listeners.Add(new System.Diagnostics.ConsoleTraceListener());
 
             // Need inputs:
             //      - platform type
@@ -93,6 +97,9 @@ namespace Graphyte.Build
 #endif
 
             LogMemoryUsage();
+
+            Trace.WriteLine($@"  duration: {stopwatch.Elapsed.TotalSeconds:0.0.00} seconds");
+            Trace.WriteLine($@"  completed: {DateTime.Now}");
         }
 
         private static void LogMemoryUsage()
