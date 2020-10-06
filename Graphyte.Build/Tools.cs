@@ -19,7 +19,7 @@ namespace Graphyte.Build
     {
         public static List<T> Import<T>(this List<T> collection, T item)
         {
-            if(!collection.Contains(item))
+            if (!collection.Contains(item))
             {
                 collection.Add(item);
             }

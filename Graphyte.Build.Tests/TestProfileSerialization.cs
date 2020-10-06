@@ -1,5 +1,6 @@
 ﻿using Graphyte.Build.Profiles;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace Graphyte.Build.Tests
@@ -53,6 +54,7 @@ namespace Graphyte.Build.Tests
                         ""Value1"",
                         ""Value3"",
                     ],
+                    ""ValueNotPresent"": [1, 2, 3, 4],
                 },
                 ""TestProfileSerialization_Section2"": {
                     ""Value"": ""Value3"",
@@ -75,6 +77,8 @@ namespace Graphyte.Build.Tests
             Assert.AreEqual(SomeEnum.Value2, section1.Enums[1]);
             Assert.AreEqual(SomeEnum.Value1, section1.Enums[2]);
             Assert.AreEqual(SomeEnum.Value3, section1.Enums[3]);
+            Assert.AreEqual(1, section1.Properties.Count);
+            Assert.AreEqual("ValueNotPresent", section1.Properties.First().Key);
 
             var section2 = profile.GetSection<TestProfileSerialization_Section2>();
             Assert.IsNotNull(section2);
@@ -83,6 +87,7 @@ namespace Graphyte.Build.Tests
             Assert.AreEqual(true, section2.SomeValue);
             Assert.IsTrue(section2.OptionalValue.HasValue);
             Assert.AreEqual(43, section2.OptionalValue.Value);
+            Assert.IsNull(section2.Properties);
 
             var section3 = profile.GetSection<TestProfileSerialization_Section3>();
             Assert.IsNull(section3);

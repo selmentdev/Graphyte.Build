@@ -172,7 +172,7 @@ namespace Graphyte.Build.Profiles
 
             foreach (var section in this.Sections)
             {
-                if (section.Key.IsSubclassOf(sectionType))
+                if (section.Key == sectionType || section.Key.IsSubclassOf(sectionType))
                 {
                     return (T)section.Value;
                 }
