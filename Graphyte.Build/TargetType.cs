@@ -57,5 +57,43 @@ namespace Graphyte.Build
 
             throw new ArgumentOutOfRangeException(nameof(self));
         }
+
+        public static bool IsLibrary(this TargetType self)
+        {
+            switch (self)
+            {
+                case TargetType.Default:
+                    break;
+
+                case TargetType.SharedLibrary:
+                case TargetType.StaticLibrary:
+                case TargetType.HeaderLibrary:
+                    return true;
+
+                case TargetType.Application:
+                    return false;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(self));
+        }
+
+        public static bool IsApplication(this TargetType self)
+        {
+            switch (self)
+            {
+                case TargetType.Default:
+                    break;
+
+                case TargetType.SharedLibrary:
+                case TargetType.StaticLibrary:
+                case TargetType.HeaderLibrary:
+                    return false;
+
+                case TargetType.Application:
+                    return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(self));
+        }
     }
 }

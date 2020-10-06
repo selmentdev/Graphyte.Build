@@ -4,6 +4,8 @@ namespace Graphyte.Build.Toolchains.VisualStudio
         : BaseToolchainSettings
     {
         public string Version { get; set; } = "v142";
+
         public bool AddressSanitizer { get; set; } = false;
+        public bool StaticAnalyzer { get; set; } = false;
     }
 }

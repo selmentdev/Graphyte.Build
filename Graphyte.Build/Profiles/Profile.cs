@@ -73,11 +73,9 @@ namespace Graphyte.Build.Profiles
             }
             else
             {
-                using (var newStream = new MemoryStream())
-                {
-                    stream.CopyTo(newStream);
-                    return newStream.ToArray();
-                }
+                using var newStream = new MemoryStream();
+                stream.CopyTo(newStream);
+                return newStream.ToArray();
             }
         }
 
@@ -154,19 +152,17 @@ namespace Graphyte.Build.Profiles
 
         public void Serialize(Stream stream)
         {
-            using (var writer = new Utf8JsonWriter(stream, g_WriterOptions))
+            using var writer = new Utf8JsonWriter(stream, g_WriterOptions);
+            writer.WriteStartObject();
+
+            foreach (var section in this.Sections)
             {
-                writer.WriteStartObject();
+                writer.WritePropertyName(section.Key.Name);
 
-                foreach (var section in this.Sections)
-                {
-                    writer.WritePropertyName(section.Key.Name);
-
-                    JsonSerializer.Serialize(writer, section.Value, section.Value.GetType());
-                }
-
-                writer.WriteEndObject();
+                JsonSerializer.Serialize(writer, section.Value, section.Value.GetType());
             }
+
+            writer.WriteEndObject();
         }
 
         public T GetSection<T>()
