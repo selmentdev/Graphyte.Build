@@ -1,63 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Graphyte.Build
 {
-    public sealed partial class Target
+    public sealed class Target
     {
+        /// <summary>
+        /// Source project for which current target is being configured.
+        /// </summary>
         public Project Project { get; }
-        public TargetType Type { get; set; }
-        public string Name { get; set; }
-        public Guid ProjectGuid { get; set; }
-        public ComponentType Component { get; }
-        public RuntimeKind Runtime { get; set; } = RuntimeKind.Release;
 
-        public List<object> Options { get; } = new List<object>();
+        /// <summary>
+        /// Target tuple for current target.
+        /// </summary>
+        public TargetTuple TargetTuple { get; }
 
-        public List<string> PublicDependencies { get; } = new List<string>();
-        public List<string> PrivateDependencies { get; } = new List<string>();
-        public List<string> InterfaceDependencies { get; } = new List<string>();
+        public TargetType TargetType { get; set; } = TargetType.Default;
 
-        public List<string> PublicIncludePaths { get; } = new List<string>();
-        public List<string> PrivateIncludePaths { get; } = new List<string>();
-        public List<string> InterfaceIncludePaths { get; } = new List<string>();
+        public ComponentType ComponentType { get; set; } = ComponentType.GameApplication;
 
-        public List<string> PublicLibraryPaths { get; } = new List<string>();
-        public List<string> PrivateLibraryPaths { get; } = new List<string>();
-        public List<string> InterfaceLibraryPaths { get; } = new List<string>();
-
-        public List<string> PublicLibraries { get; } = new List<string>();
-        public List<string> PrivateLibraries { get; } = new List<string>();
-        public List<string> InterfaceLibraries { get; } = new List<string>();
-
-        public List<string> PublicDefines { get; } = new List<string>();
-        public List<string> PrivateDefines { get; } = new List<string>();
-        public List<string> InterfaceDefines { get; } = new List<string>();
-
-        public Target(Project project)
+        public Target(Project project, TargetTuple targetTuple)
         {
             this.Project = project;
-            this.Name = project.Name;
-            this.Component = project.ComponentType;
-            this.ProjectGuid = Tools.Utils.MakeGuid(this.Name);
-        }
-
-        public void AddPublicDependency<T>()
-            where T : Project
-        {
-            this.PublicDependencies.Add(typeof(T).Name);
-        }
-
-        public void AddPrivateDependency<T>()
-            where T : Project
-        {
-            this.PrivateDependencies.Add(typeof(T).Name);
-        }
-
-        public void AddInterfaceDependency<T>()
-            where T : Project
-        {
-            this.InterfaceDependencies.Add(typeof(T).Name);
+            this.TargetTuple = targetTuple;
         }
     }
 }

@@ -1,18 +1,28 @@
-﻿namespace Graphyte.Build
-{
-    public enum ProjectLanguage
-    {
-        C,
-        CPlusPlus,
-        CSharp,
-    }
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
+namespace Graphyte.Build
+{
     public abstract class Project
     {
-        public abstract void Configure(Target target, IContext context);
+        private string m_Name;
+        public string Name
+        {
+            get
+            {
+                if (this.m_Name == null)
+                {
+                    return this.GetType().Name;
+                }
+                return this.m_Name;
+            }
 
-        public string Name => this.GetType().Name;
+            protected set => this.m_Name = value;
+        }
 
-        public ComponentType ComponentType { get; set; } = ComponentType.Module;
+        protected string ProjectFileName { get; set; }
+
+        public abstract void Configure(Target target);
     }
 }

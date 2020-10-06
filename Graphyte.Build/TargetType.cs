@@ -5,71 +5,57 @@ namespace Graphyte.Build
     public enum TargetType
     {
         /// <summary>
-        /// Compiles project source code as shared library.
+        /// Platform decides how to handle compiled libraries.
+        /// </summary>
+        /// <remarks>
+        /// Depending on build configuration, this type may be expanded to SharedLibrary or
+        /// StaticLibrary.
+        /// </remarks>
+        Default,
+
+        /// <summary>
+        /// Target is linked as shared library.
         /// </summary>
         SharedLibrary,
 
         /// <summary>
-        /// Compiles project source code as static library.
+        /// Target is linked as static library.
         /// </summary>
         StaticLibrary,
 
         /// <summary>
-        /// Specifies headers only library. Target is not compiled but its used as dependency for other projects.
+        /// Target does not produce any compiler library, but may provide external dependencies.
         /// </summary>
         HeaderLibrary,
 
         /// <summary>
-        /// Compiles project as executable.
+        /// Target is an application.
         /// </summary>
+        /// <remarks>
+        /// To specify if application is an console application, please use target rules instance.
+        /// </remarks>
         Application,
     }
 
     public static class TargetTypeExtensions
     {
-        public static bool IsLibrary(this TargetType type)
+        public static bool IsImportable(this TargetType self)
         {
-            switch (type)
+            switch (self)
             {
-                case TargetType.SharedLibrary:
+                case TargetType.Default:
+                    break;
+
                 case TargetType.StaticLibrary:
                 case TargetType.HeaderLibrary:
                     return true;
-                case TargetType.Application:
-                    return false;
-            }
 
-            throw new ArgumentOutOfRangeException(nameof(type));
-        }
-
-        public static bool IsApplication(this TargetType type)
-        {
-            switch (type)
-            {
-                case TargetType.SharedLibrary:
-                case TargetType.StaticLibrary:
-                case TargetType.HeaderLibrary:
-                    return false;
-                case TargetType.Application:
-                    return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(type));
-        }
-
-        public static bool IsImportable(this TargetType type)
-        {
-            switch (type)
-            {
-                case TargetType.StaticLibrary:
-                case TargetType.HeaderLibrary:
-                    return true;
                 case TargetType.SharedLibrary:
                 case TargetType.Application:
                     return false;
             }
 
-            throw new ArgumentOutOfRangeException(nameof(type));
+            throw new ArgumentOutOfRangeException(nameof(self));
         }
     }
 }

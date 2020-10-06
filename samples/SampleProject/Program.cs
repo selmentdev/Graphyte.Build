@@ -1,20 +1,72 @@
-﻿using Graphyte.Build;
-using Graphyte.Build.Toolsets;
+﻿using System;
 using System.Diagnostics;
-using System.Text;
 
 namespace SampleProject
 {
+    [Serializable]
+    public class WindowsPlatformSettings : Graphyte.Build.PlatformSettings
+    {
+        public string WindowsSdkVersion { get; set; }
+    }
+
+    [Serializable]
+    public class XxxPlatformSettings : Graphyte.Build.PlatformSettings
+    {
+        public string StringProperty { get; set; }
+        public int IntProperty { get; set; }
+    }
+
+    [Serializable]
+    public class XxxGeneratorSettings : Graphyte.Build.GeneratorSettings
+    {
+        public string CachePath { get; set; }
+    }
+
     internal class Program
     {
         private static int Main(string[] args)
         {
-            return Graphyte.V2.Build.Executor.Main(args);
-            //Graphyte.Build.Executor.Main(args);
+            Graphyte.Build.Application.Main(args);
+
+            var settings = Graphyte.Build.Settings.Parse(@"
+{
+    ""XxxPlatformSettings"": {
+        ""StringProperty"": ""value"",
+        ""IntProperty"": 42,
+    },
+    ""WindowsPlatformSettings"": {
+        ""WindowsSdkVersion"": ""10.0.10240.0"",
+        ""UnknownProperty"": 42,
+    },
+    ""XxxGeneratorSettings"": {
+        ""CachePath"": ""some/other/path"",
+    },
+}
+");
+            {
+                var generators = settings.GetAll<Graphyte.Build.GeneratorSettings>();
+
+                foreach (var generator in generators)
+                {
+                    Trace.WriteLine($@"- generator: {generator.GetType().Name}");
+                }
+            }
+
+            {
+                var platforms = settings.GetAll<Graphyte.Build.PlatformSettings>();
+
+                foreach (var platform in platforms)
+                {
+                    Trace.WriteLine($@"- platform: {platform.GetType().Name}");
+                }
+            }
+
+            return 0;
         }
     }
 }
 
+#if false
 namespace SampleProject
 {
     public class SampleSolution : Solution
@@ -76,3 +128,4 @@ namespace SampleProject
         }
     }
 }
+#endif

@@ -1,6 +1,4 @@
-﻿using Graphyte.Build.Resolving;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+﻿#if false
 namespace Graphyte.Build.Tests
 {
     [TestClass]
@@ -148,3 +146,4 @@ namespace Graphyte.Build.Tests
 
     }
 }
+#endif
