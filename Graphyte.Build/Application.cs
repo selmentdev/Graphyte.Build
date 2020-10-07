@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Runtime;
 
@@ -47,6 +47,30 @@ namespace Graphyte.Build
                 Trace.WriteLine($@"Platform: {profile.GetSection<Graphyte.Build.Platforms.BasePlatformSettings>().GetType().Name}");
                 Trace.WriteLine($@"Toolchain: {profile.GetSection<Graphyte.Build.Toolchains.BaseToolchainSettings>().GetType().Name}");
                 Trace.WriteLine($@"Generator: {profile.GetSection<Graphyte.Build.Generators.BaseGeneratorSettings>().GetType().Name}");
+
+                var solutions = new SolutionProvider();
+
+                Trace.WriteLine("Discovering solutions");
+                Trace.Indent();
+                foreach (var solution in solutions.GetSolutions())
+                {
+                    Trace.WriteLine($@"{solution.Name}");
+                }
+                Trace.Unindent();
+                Trace.WriteLine("Done.");
+
+                var platforms = new Platforms.PlatformProvider();
+
+                Trace.WriteLine("Discovering platforms...");
+                Trace.Indent();
+                foreach (var platform in platforms.GetPlatforms())
+                {
+                    Trace.WriteLine($@"{platform.Name} (is supported: {platform.IsHostSupported})");
+                }
+                Trace.Unindent();
+                Trace.WriteLine("Done.");
+
+
                 //
                 // Report results.
                 //

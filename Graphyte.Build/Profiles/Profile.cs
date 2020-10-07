@@ -9,14 +9,6 @@ using System.Text.Json.Serialization;
 
 namespace Graphyte.Build.Profiles
 {
-#if false
-    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-    public sealed class ProfileSectionNameAttribute : System.Attribute
-    {
-        public string Name { get; set; }
-    }
-#endif
-
     public abstract class BaseProfileSection
     {
         [JsonExtensionData]
@@ -98,10 +90,12 @@ namespace Graphyte.Build.Profiles
 
 #if DEBUG
             Debug.WriteLine("Discovering profile sections...");
+            Debug.Indent();
             foreach (var type in types)
             {
-                Debug.WriteLine($@"  Section ""{type.Value.FullName}""");
+                Debug.WriteLine($@"Section ""{type.Value.FullName}""");
             }
+            Debug.Unindent();
             Debug.WriteLine("Done.");
 #endif
 

@@ -33,7 +33,7 @@ namespace Graphyte.Build.Platforms
             return this.m_Platforms.Where(x => x.IsSupported(targetTuple)).ToArray();
         }
 
-        public BasePlatform[] GetPLatforms()
+        public BasePlatform[] GetPlatforms()
         {
             return this.m_Platforms;
         }
