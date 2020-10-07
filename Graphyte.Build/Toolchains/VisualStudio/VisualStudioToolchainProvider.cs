@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 
-namespace Graphyte.Build.Platforms.Windows
+namespace Graphyte.Build.Toolchains.VisualStudio
 {
     public readonly struct VisualStudioLocation
     {
@@ -30,13 +30,13 @@ namespace Graphyte.Build.Platforms.Windows
         }
     }
 
-    public sealed class VisualStudioProvider
+    public sealed class VisualStudioToolchainProvider
     {
         public VisualStudioLocation[] Instances { get; }
 
-        public VisualStudioProvider()
+        public VisualStudioToolchainProvider()
         {
-            this.Instances = this.DiscoverInstances();
+            this.Instances = VisualStudioToolchainProvider.Discover();
         }
 
         private readonly struct VersionToolkitMapping
@@ -51,44 +51,40 @@ namespace Graphyte.Build.Platforms.Windows
             }
         }
 
-        private static readonly VersionToolkitMapping[] g_VersionToolkitMapping = new VersionToolkitMapping[]
+        private static readonly VersionToolkitMapping[] g_VersionToolkitMappings = new[]
         {
             new VersionToolkitMapping("2017", "v141"),
             new VersionToolkitMapping("2019", "v142"),
         };
 
-        private VisualStudioLocation[] DiscoverInstances()
+        private static VisualStudioLocation[] Discover()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                var msvcPath = Environment.GetEnvironmentVariable("ProgramFiles(x86)");
+                var programFiles = Environment.GetEnvironmentVariable("ProgramFiles(x86)");
 
-                if (msvcPath != null)
+                if (programFiles != null)
                 {
-                    var vswherePath = Path.Combine(
-                            msvcPath,
-                            "Microsoft Visual Studio",
-                            "Installer",
-                            "vswhere.exe");
+                    var vswhere = Path.Combine(
+                        programFiles,
+                        "Microsoft Visual Studio",
+                        "Installer",
+                        "vswhere.exe");
 
-                    var vswhere = new Process()
+                    var process = Process.Start(new ProcessStartInfo()
                     {
-                        StartInfo = new ProcessStartInfo()
-                        {
-                            FileName = vswherePath,
-                            Arguments = "-utf8 -latest -products * -format json",
-                            UseShellExecute = false,
-                            RedirectStandardOutput = true,
-                        },
-                    };
+                        FileName = vswhere,
+                        Arguments = "-utf8 -latest -products * -format json",
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                    });
 
-                    if (vswhere.Start())
-                    {
-                        var content = vswhere.StandardOutput.ReadToEnd();
-                        var document = JsonDocument.Parse(content);
+                    var content = process.StandardOutput.ReadToEnd();
+                    var document = JsonDocument.Parse(content);
 
-                        return document.RootElement.EnumerateArray().Select(ParseVisualStudioLocation).ToArray();
-                    }
+                    return document.RootElement.EnumerateArray()
+                        .Select(ParseVisualStudioLocation)
+                        .ToArray();
                 }
             }
 
@@ -105,7 +101,7 @@ namespace Graphyte.Build.Platforms.Windows
             var version = properties["catalog"].EnumerateObject()
                 .First(x => x.Name == "productLineVersion").Value.ToString();
 
-            var toolkit = g_VersionToolkitMapping.First(x => x.Version == version).Toolkit;
+            var toolkit = g_VersionToolkitMappings.First(x => x.Version == version).Toolkit;
 
             var toolset = GetToolsVersion(path, toolkit);
 

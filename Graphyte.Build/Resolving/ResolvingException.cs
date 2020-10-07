@@ -1,26 +1,26 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Graphyte.Build
+namespace Graphyte.Build.Resolving
 {
     [Serializable]
-    public class ConfigurationFailedException : Exception
+    public class ResolvingException : Exception
     {
-        public ConfigurationFailedException()
+        public ResolvingException()
         {
         }
 
-        public ConfigurationFailedException(string message)
+        public ResolvingException(string message)
             : base(message)
         {
         }
 
-        public ConfigurationFailedException(string message, Exception inner)
+        public ResolvingException(string message, Exception inner)
             : base(message, inner)
         {
         }
 
-        protected ConfigurationFailedException(
+        protected ResolvingException(
             SerializationInfo info,
             StreamingContext context)
             : base(info, context)

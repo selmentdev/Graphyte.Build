@@ -1,16 +1,17 @@
-﻿using System;
+using System;
 using System.Linq;
 
 namespace Graphyte.Build.Platforms
 {
-    public class PlatformProvider
+    public sealed class PlatformProvider
     {
         private static BasePlatform[] Discover()
         {
-            var baseType = typeof(BasePlatform);
+            var platformType = typeof(BasePlatform);
+
             return AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(x => x.GetTypes())
-                .Where(x => x.IsSubclassOf(baseType) && !x.IsAbstract && x.IsClass)
+                .Where(x => x.IsSubclassOf(platformType) && x.IsClass && !x.IsAbstract && x.IsVisible && x.IsSealed)
                 .Select(x => (BasePlatform)Activator.CreateInstance(x))
                 .ToArray();
         }
@@ -22,17 +23,17 @@ namespace Graphyte.Build.Platforms
             this.m_Platforms = PlatformProvider.Discover();
         }
 
-        public BasePlatform GetPlatform(TargetTuple tuple)
+        public BasePlatform GetPlatform(TargetTuple targetTuple)
         {
-            return this.GetPlatforms(tuple).FirstOrDefault();
+            return this.GetPlatforms(targetTuple).FirstOrDefault();
         }
 
-        public BasePlatform[] GetPlatforms(TargetTuple tuple)
+        public BasePlatform[] GetPlatforms(TargetTuple targetTuple)
         {
-            return this.m_Platforms.Where(x => x.IsSupported(tuple)).ToArray();
+            return this.m_Platforms.Where(x => x.IsSupported(targetTuple)).ToArray();
         }
 
-        public BasePlatform[] GetPlatforms()
+        public BasePlatform[] GetPLatforms()
         {
             return this.m_Platforms;
         }

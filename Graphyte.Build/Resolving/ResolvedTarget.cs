@@ -1,19 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Graphyte.Build.Resolving
 {
-    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public sealed partial class ResolvedTarget
     {
-        #region Debug View
-        private string GetDebuggerDisplay()
-        {
-            return this.SourceTarget.Name;
-        }
-        #endregion
-
-        #region Properties
         public ResolvedSolution Solution { get; }
         public Target SourceTarget { get; }
 
@@ -33,14 +23,11 @@ namespace Graphyte.Build.Resolving
 
         public List<string> PublicDefines { get; } = new List<string>();
         public List<string> PrivateDefines { get; } = new List<string>();
-        #endregion
 
-        #region Constructors
-        public ResolvedTarget(ResolvedSolution solution, Target target)
+        public ResolvedTarget(ResolvedSolution resolvedSolution, Target target)
         {
-            this.Solution = solution;
+            this.Solution = resolvedSolution;
             this.SourceTarget = target;
         }
-        #endregion
     }
 }

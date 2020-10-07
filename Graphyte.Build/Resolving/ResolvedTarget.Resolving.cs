@@ -1,5 +1,4 @@
-﻿using Graphyte.Build.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +7,6 @@ namespace Graphyte.Build.Resolving
 {
     public sealed partial class ResolvedTarget
     {
-        #region Resolving
         private void ValidateDependencyCycle(Stack<ResolvedTarget> trace)
         {
             if (trace.Contains(this))
@@ -21,7 +19,7 @@ namespace Graphyte.Build.Resolving
                     message.AppendLine($@"  - required by {item.Name}");
                 }
 
-                throw new ResolverException(message.ToString());
+                throw new ResolvingException(message.ToString());
             }
         }
 
@@ -128,7 +126,7 @@ namespace Graphyte.Build.Resolving
             this.PublicDependencies.Import(dependency);
             this.PrivateDependencies.Import(dependency);
 
-            if (dependency.SourceTarget.Type.IsImportable())
+            if (dependency.SourceTarget.TargetType.IsImportable())
             {
                 this.PrivateDependencies.Import(dependency.PublicDependencies);
                 this.PublicDependencies.Import(dependency.PublicDependencies);
@@ -171,7 +169,7 @@ namespace Graphyte.Build.Resolving
         {
             this.PrivateDependencies.Import(dependency);
 
-            if (dependency.SourceTarget.Type.IsImportable())
+            if (dependency.SourceTarget.TargetType.IsImportable())
             {
                 this.PrivateDependencies.Import(dependency.PublicDependencies);
             }
@@ -209,7 +207,7 @@ namespace Graphyte.Build.Resolving
         {
             this.PublicDependencies.Import(dependency);
 
-            if (dependency.SourceTarget.Type.IsImportable())
+            if (dependency.SourceTarget.TargetType.IsImportable())
             {
                 this.PublicDependencies.Import(dependency.PublicDependencies);
             }
@@ -243,6 +241,5 @@ namespace Graphyte.Build.Resolving
             this.PrivateDefines.Import(dependency.PublicDefines);
         }
 
-        #endregion
     }
 }

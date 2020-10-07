@@ -1,12 +1,11 @@
 ﻿using Microsoft.Win32;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Graphyte.Build.Platforms.Windows
 {
-    public sealed class WindowsSdkProvider
+    public class WindowsSdkProvider
     {
         private static readonly string[] CPlusPlusSdkOptions = new[]
         {
@@ -16,7 +15,7 @@ namespace Graphyte.Build.Platforms.Windows
             "OptionId.UWPCPP",
         };
 
-        public readonly WindowsTargetPlatformVersion[] Versions;
+        public readonly string[] Versions;
         public readonly string Location;
         public readonly bool IsSupported;
 
@@ -32,7 +31,7 @@ namespace Graphyte.Build.Platforms.Windows
                 var kitsroot10name = roots.GetValueNames().Where(x => x.StartsWith(@"KitsRoot10")).First();
 
                 var sdkNames = roots.GetSubKeyNames().Where(x => x.StartsWith("10."));
-                var sdksFound = new List<WindowsTargetPlatformVersion>();
+                var sdksFound = new List<string>();
 
                 foreach (var sdkName in sdkNames)
                 {
@@ -44,7 +43,7 @@ namespace Graphyte.Build.Platforms.Windows
 
                     if (all)
                     {
-                        sdksFound.Add(WindowsTargetPlatformVersion.Create(sdkName));
+                        sdksFound.Add(sdkName);
                     }
                 }
 
@@ -54,7 +53,7 @@ namespace Graphyte.Build.Platforms.Windows
             else
             {
                 this.Location = string.Empty;
-                this.Versions = new WindowsTargetPlatformVersion[0];
+                this.Versions = new string[0];
             }
         }
     }

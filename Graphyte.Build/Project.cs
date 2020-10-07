@@ -1,5 +1,12 @@
 ﻿namespace Graphyte.Build
 {
+    public enum ProjectLanguage
+    {
+        C,
+        CPlusPlus,
+        CSharp,
+    }
+
     public abstract class Project
     {
         private string m_Name;

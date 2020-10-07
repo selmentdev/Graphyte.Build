@@ -3,14 +3,13 @@
     public abstract class BasePlatform
     {
         public abstract bool IsHostSupported { get; }
+        public abstract bool IsSupported(TargetTuple targetTuple);
 
-        public abstract bool IsSupported(TargetTuple tuple);
-
-        public virtual void PreConfigureTarget(Target target, IContext context)
+        public virtual void PreConfigureTarget(Target traget)
         {
         }
 
-        public virtual void PostConfigureTarget(Target target, IContext context)
+        public virtual void PostConfigureTarget(Target target)
         {
         }
 

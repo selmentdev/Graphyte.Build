@@ -1,9 +1,18 @@
-﻿#if false
+using Graphyte.Build.Resolving;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace Graphyte.Build.Tests
 {
     [TestClass]
     public class TestDependencyPropertyResolving
     {
+        public enum DependencyType
+        {
+            Public,
+            Private,
+            Interface,
+        }
+
         public class ConfigurableProject : Project
         {
             private readonly TargetType m_TargetType;
@@ -13,9 +22,9 @@ namespace Graphyte.Build.Tests
                 this.m_TargetType = type;
             }
 
-            public override void Configure(Target target, IContext context)
+            public override void Configure(Target target)
             {
-                target.Type = this.m_TargetType;
+                target.TargetType = this.m_TargetType;
 
                 target.PublicIncludePaths.Add($@"include-path/{this.Name}/public");
                 target.PrivateIncludePaths.Add($@"include-path/{this.Name}/private");
@@ -54,9 +63,9 @@ namespace Graphyte.Build.Tests
                 this.m_DependencyType = dependency;
             }
 
-            public override void Configure(Target target, IContext context)
+            public override void Configure(Target target)
             {
-                base.Configure(target, context);
+                base.Configure(target);
 
                 if (this.m_DependencyType == DependencyType.Public)
                 {
@@ -84,9 +93,9 @@ namespace Graphyte.Build.Tests
                 this.m_DependencyType = dependency;
             }
 
-            public override void Configure(Target target, IContext context)
+            public override void Configure(Target target)
             {
-                base.Configure(target, context);
+                base.Configure(target);
 
                 if (this.m_DependencyType == DependencyType.Public)
                 {
@@ -111,10 +120,6 @@ namespace Graphyte.Build.Tests
                 TargetType leafType,
                 DependencyType leafDependency)
             {
-                //this.AddTargetTuple(PlatformType.Windows, ArchitectureType.X64);
-                this.AddBuildType(BuildType.Developer);
-                this.AddConfigurationType(ConfigurationType.Debug);
-
                 this.AddProject(new RootProject(TargetType.Application, immediateDependency));
                 this.AddProject(new ImmediateProject(immediateType, leafDependency));
                 this.AddProject(new LeafProject(leafType));
@@ -130,20 +135,18 @@ namespace Graphyte.Build.Tests
                 TargetType.SharedLibrary,
                 DependencyType.Public);
 
-            var context = new Context(
-                PlatformType.Windows,
-                ArchitectureType.X64,
-                ToolsetType.Default,
-                BuildType.Developer,
-                ConfigurationType.Debug);
+            var targetTuple = new TargetTuple(
+                            Platform.Windows,
+                            Architecture.X64,
+                            Compiler.MSVC,
+                            Configuration.Debug);
 
-            var resolved = new ResolvedSolution(solution, context);
+            var resolved = new ResolvedSolution(solution, targetTuple);
 
             resolved.Resolve();
 
-            Dump.DumpResolvedSolution.SaveToFile("d:/output.json", resolved);
+            //Dump.DumpResolvedSolution.SaveToFile("d:/output.json", resolved);
         }
 
     }
 }
-#endif

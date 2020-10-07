@@ -1,4 +1,6 @@
-#if false
+using Graphyte.Build.Resolving;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace Graphyte.Build.Tests
 {
     [TestClass]
@@ -20,9 +22,9 @@ namespace Graphyte.Build.Tests
 
         public class A : Project
         {
-            public override void Configure(Target target, IContext context)
+            public override void Configure(Target target)
             {
-                target.Type = TargetType.Application;
+                target.TargetType = TargetType.Application;
 
                 target.AddPublicDependency<AA>();
                 target.AddPrivateDependency<AB>();
@@ -36,9 +38,9 @@ namespace Graphyte.Build.Tests
 
         public class AA : Project
         {
-            public override void Configure(Target target, IContext context)
+            public override void Configure(Target target)
             {
-                target.Type = TargetType.SharedLibrary;
+                target.TargetType = TargetType.SharedLibrary;
 
                 target.AddPrivateDependency<AAA>();
                 target.AddInterfaceDependency<AAB>();
@@ -52,9 +54,9 @@ namespace Graphyte.Build.Tests
 
         public class AB : Project
         {
-            public override void Configure(Target target, IContext context)
+            public override void Configure(Target target)
             {
-                target.Type = TargetType.StaticLibrary;
+                target.TargetType = TargetType.StaticLibrary;
 
                 target.AddPublicDependency<ABA>();
                 target.AddPrivateDependency<ABB>();
@@ -68,9 +70,9 @@ namespace Graphyte.Build.Tests
 
         public class AC : Project
         {
-            public override void Configure(Target target, IContext context)
+            public override void Configure(Target target)
             {
-                target.Type = TargetType.HeaderLibrary;
+                target.TargetType = TargetType.HeaderLibrary;
 
                 target.AddInterfaceDependency<ACA>();
                 target.AddPublicDependency<ACB>();
@@ -84,9 +86,9 @@ namespace Graphyte.Build.Tests
 
         public class AAA : Project
         {
-            public override void Configure(Target target, IContext context)
+            public override void Configure(Target target)
             {
-                target.Type = TargetType.SharedLibrary;
+                target.TargetType = TargetType.SharedLibrary;
 
                 target.PublicIncludePaths.Add($@"include/{this.Name}/public");
                 target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
@@ -96,9 +98,9 @@ namespace Graphyte.Build.Tests
 
         public class AAB : Project
         {
-            public override void Configure(Target target, IContext context)
+            public override void Configure(Target target)
             {
-                target.Type = TargetType.StaticLibrary;
+                target.TargetType = TargetType.StaticLibrary;
 
                 target.PublicIncludePaths.Add($@"include/{this.Name}/public");
                 target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
@@ -108,9 +110,9 @@ namespace Graphyte.Build.Tests
 
         public class AAC : Project
         {
-            public override void Configure(Target target, IContext context)
+            public override void Configure(Target target)
             {
-                target.Type = TargetType.HeaderLibrary;
+                target.TargetType = TargetType.HeaderLibrary;
 
                 target.PublicIncludePaths.Add($@"include/{this.Name}/public");
                 target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
@@ -120,9 +122,9 @@ namespace Graphyte.Build.Tests
 
         public class ABA : Project
         {
-            public override void Configure(Target target, IContext context)
+            public override void Configure(Target target)
             {
-                target.Type = TargetType.SharedLibrary;
+                target.TargetType = TargetType.SharedLibrary;
 
                 target.PublicIncludePaths.Add($@"include/{this.Name}/public");
                 target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
@@ -132,9 +134,9 @@ namespace Graphyte.Build.Tests
 
         public class ABB : Project
         {
-            public override void Configure(Target target, IContext context)
+            public override void Configure(Target target)
             {
-                target.Type = TargetType.StaticLibrary;
+                target.TargetType = TargetType.StaticLibrary;
 
                 target.PublicIncludePaths.Add($@"include/{this.Name}/public");
                 target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
@@ -144,9 +146,9 @@ namespace Graphyte.Build.Tests
 
         public class ABC : Project
         {
-            public override void Configure(Target target, IContext context)
+            public override void Configure(Target target)
             {
-                target.Type = TargetType.HeaderLibrary;
+                target.TargetType = TargetType.HeaderLibrary;
 
                 target.PublicIncludePaths.Add($@"include/{this.Name}/public");
                 target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
@@ -156,9 +158,9 @@ namespace Graphyte.Build.Tests
 
         public class ACA : Project
         {
-            public override void Configure(Target target, IContext context)
+            public override void Configure(Target target)
             {
-                target.Type = TargetType.SharedLibrary;
+                target.TargetType = TargetType.SharedLibrary;
 
                 target.PublicIncludePaths.Add($@"include/{this.Name}/public");
                 target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
@@ -168,9 +170,9 @@ namespace Graphyte.Build.Tests
 
         public class ACB : Project
         {
-            public override void Configure(Target target, IContext context)
+            public override void Configure(Target target)
             {
-                target.Type = TargetType.StaticLibrary;
+                target.TargetType = TargetType.StaticLibrary;
 
                 target.PublicIncludePaths.Add($@"include/{this.Name}/public");
                 target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
@@ -180,9 +182,9 @@ namespace Graphyte.Build.Tests
 
         public class ACC : Project
         {
-            public override void Configure(Target target, IContext context)
+            public override void Configure(Target target)
             {
-                target.Type = TargetType.HeaderLibrary;
+                target.TargetType = TargetType.HeaderLibrary;
 
                 target.PublicIncludePaths.Add($@"include/{this.Name}/public");
                 target.PrivateIncludePaths.Add($@"include/{this.Name}/private");
@@ -195,18 +197,6 @@ namespace Graphyte.Build.Tests
         {
             public SampleSolution()
             {
-                //this.AddTargetTuple(PlatformType.Windows, ArchitectureType.X64);
-                //this.AddTargetTuple(PlatformType.UWP, ArchitectureType.X64);
-
-                this.AddBuildType(BuildType.Developer);
-                this.AddBuildType(BuildType.Testing);
-                this.AddBuildType(BuildType.Retail);
-
-                this.AddConfigurationType(ConfigurationType.Checked);
-                this.AddConfigurationType(ConfigurationType.Profile);
-                this.AddConfigurationType(ConfigurationType.Debug);
-                this.AddConfigurationType(ConfigurationType.Release);
-
                 this.AddProject(new A());
                 this.AddProject(new AA());
                 this.AddProject(new AB());
@@ -224,34 +214,18 @@ namespace Graphyte.Build.Tests
         }
 
         [TestMethod]
-        public void ContextConfigurationNotSupportedBySolution()
-        {
-            var solution = new SampleSolution();
-            var context = new Context(
-                platform: PlatformType.Windows,
-                architecture: ArchitectureType.PowerPC64,
-                toolset: ToolsetType.Default,
-                build: BuildType.Developer,
-                configuration: ConfigurationType.Debug);
-
-            Assert.ThrowsException<ResolverException>(() => new ResolvedSolution(solution, context));
-        }
-
-        [TestMethod]
         public void SolutionResolving()
         {
             var solution = new SampleSolution();
-            var context = new Context(
-                PlatformType.Windows,
-                ArchitectureType.X64,
-                ToolsetType.Default,
-                BuildType.Developer,
-                ConfigurationType.Debug);
+            var targetTuple = new TargetTuple(
+                Platform.Windows,
+                Architecture.X64,
+                Compiler.MSVC,
+                Configuration.Debug);
 
-            var resolved = new ResolvedSolution(solution, context);
+            var resolved = new ResolvedSolution(solution, targetTuple);
 
             resolved.Resolve();
         }
     }
 }
-#endif

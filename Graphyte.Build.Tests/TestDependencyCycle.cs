@@ -1,4 +1,6 @@
-﻿#if false
+using Graphyte.Build.Resolving;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace Graphyte.Build.Tests
 {
     [TestClass]
@@ -8,12 +10,6 @@ namespace Graphyte.Build.Tests
         {
             public SampleSolution()
             {
-                //this.AddTargetTuple(PlatformType.Windows, ArchitectureType.X64);
-
-                this.AddBuildType(BuildType.Developer);
-
-                this.AddConfigurationType(ConfigurationType.Debug);
-
                 this.AddProject(new A());
                 this.AddProject(new B());
                 this.AddProject(new C());
@@ -25,63 +21,63 @@ namespace Graphyte.Build.Tests
 
             public class A : Project
             {
-                public override void Configure(Target target, IContext context)
+                public override void Configure(Target target)
                 {
-                    target.Type = TargetType.SharedLibrary;
+                    target.TargetType = TargetType.SharedLibrary;
                     target.AddPublicDependency<B>();
                 }
             }
 
             public class B : Project
             {
-                public override void Configure(Target target, IContext context)
+                public override void Configure(Target target)
                 {
-                    target.Type = TargetType.SharedLibrary;
+                    target.TargetType = TargetType.SharedLibrary;
                     target.AddPublicDependency<C>();
                 }
             }
 
             public class C : Project
             {
-                public override void Configure(Target target, IContext context)
+                public override void Configure(Target target)
                 {
-                    target.Type = TargetType.SharedLibrary;
+                    target.TargetType = TargetType.SharedLibrary;
                     target.AddPublicDependency<D>();
                 }
             }
 
             public class D : Project
             {
-                public override void Configure(Target target, IContext context)
+                public override void Configure(Target target)
                 {
-                    target.Type = TargetType.SharedLibrary;
+                    target.TargetType = TargetType.SharedLibrary;
                     target.AddPublicDependency<E>();
                 }
             }
 
             public class E : Project
             {
-                public override void Configure(Target target, IContext context)
+                public override void Configure(Target target)
                 {
-                    target.Type = TargetType.SharedLibrary;
+                    target.TargetType = TargetType.SharedLibrary;
                     target.AddPublicDependency<F>();
                 }
             }
 
             public class F : Project
             {
-                public override void Configure(Target target, IContext context)
+                public override void Configure(Target target)
                 {
-                    target.Type = TargetType.SharedLibrary;
+                    target.TargetType = TargetType.SharedLibrary;
                     target.AddPublicDependency<G>();
                 }
             }
 
             public class G : Project
             {
-                public override void Configure(Target target, IContext context)
+                public override void Configure(Target target)
                 {
-                    target.Type = TargetType.SharedLibrary;
+                    target.TargetType = TargetType.SharedLibrary;
                     target.AddPublicDependency<A>();
                 }
             }
@@ -91,17 +87,15 @@ namespace Graphyte.Build.Tests
         public void Cycle()
         {
             var solution = new SampleSolution();
-            var context = new Context(
-                PlatformType.Windows,
-                ArchitectureType.X64,
-                ToolsetType.Default,
-                BuildType.Developer,
-                ConfigurationType.Debug);
+            var targetTuple = new TargetTuple(
+                Platform.Windows,
+                Architecture.X64,
+                Compiler.MSVC,
+                Configuration.Debug);
 
-            var resolved = new ResolvedSolution(solution, context);
+            var resolved = new ResolvedSolution(solution, targetTuple);
 
-            Assert.ThrowsException<ResolverException>(() => resolved.Resolve());
+            Assert.ThrowsException<ResolvingException>(() => resolved.Resolve());
         }
     }
 }
-#endif
