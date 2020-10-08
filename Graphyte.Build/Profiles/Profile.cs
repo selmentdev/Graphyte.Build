@@ -36,7 +36,7 @@ namespace Graphyte.Build.Profiles
 
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(x => x.GetTypes())
-                .Where(x => x.IsSubclassOf(sectionType) && x.IsClass && !x.IsAbstract);
+                .Where(x => x.IsSubclassOf(sectionType) && x.IsClass && !x.IsAbstract && x.IsSealed);
 
             foreach (var type in types)
             {

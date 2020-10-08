@@ -23,6 +23,11 @@ namespace Graphyte.Build
                 throw new ArgumentNullException(nameof(project));
             }
 
+            if (!project.GetType().IsSealed)
+            {
+                throw new Exception($@"Type of project {project.GetType().Name} must be sealed.");
+            }
+
             this.m_Projects.Add(project);
         }
 

@@ -72,6 +72,14 @@ namespace Graphyte.Build
                 Trace.Unindent();
                 Trace.WriteLine("Done.");
 
+                Trace.WriteLine("Git Information");
+                Trace.Indent();
+                Trace.WriteLine($@"Commit-Long:  ""{Git.GetCommitId()}""");
+                Trace.WriteLine($@"Commit-Short: ""{Git.GetCommitIdShort()}""");
+                Trace.WriteLine($@"Branch:       ""{Git.GetBranchName()}""");
+                Trace.Unindent();
+                Trace.WriteLine("Done.");
+
 
                 //
                 // Report results.
