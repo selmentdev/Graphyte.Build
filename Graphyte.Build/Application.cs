@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime;
+using System.Runtime.InteropServices;
 
 namespace Graphyte.Build
 {
@@ -18,6 +19,7 @@ namespace Graphyte.Build
 
                 Trace.Listeners.Add(new ConsoleTraceListener());
                 Trace.WriteLine($@"Graphyte Build version {Application.Current}");
+                Trace.WriteLine($@"{RuntimeInformation.OSDescription} ({RuntimeInformation.FrameworkDescription})");
 
 #if DEBUG
                 for (var i = 0; i < args.Length; ++i)

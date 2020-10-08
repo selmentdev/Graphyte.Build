@@ -15,6 +15,9 @@ namespace Graphyte.Build
         /// </summary>
         public TargetTuple TargetTuple { get; }
 
+        /// <summary>
+        /// Type of configured target.
+        /// </summary>
         public TargetType TargetType { get; set; } = TargetType.Default;
 
         public ComponentType ComponentType { get; set; } = ComponentType.GameApplication;
@@ -22,6 +25,10 @@ namespace Graphyte.Build
         public Guid ProjectGuid { get; set; }
 
         private string m_Name = null;
+
+        /// <summary>
+        /// Name of target.
+        /// </summary>
         public string Name
         {
             get => this.m_Name ?? this.Project.Name;
