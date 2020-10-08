@@ -23,11 +23,6 @@ namespace Graphyte.Build
                 throw new ArgumentNullException(nameof(project));
             }
 
-            if (!project.GetType().IsSealed)
-            {
-                throw new Exception($@"Type of project {project.GetType().Name} must be sealed.");
-            }
-
             this.m_Projects.Add(project);
         }
 
@@ -50,7 +45,7 @@ namespace Graphyte.Build
             var solutionType = typeof(Solution);
             return AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(x => x.GetTypes())
-                .Where(x => x.IsSubclassOf(solutionType) && x.IsClass && !x.IsAbstract && x.IsVisible && x.IsSealed)
+                .Where(x => x.IsSubclassOf(solutionType) && x.IsClass && !x.IsAbstract && x.IsVisible)
                 .Select(x => (Solution)Activator.CreateInstance(x))
                 .ToArray();
         }
