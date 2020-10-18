@@ -1,9 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Graphyte.Build.Resolving
 {
+    /// <summary>
+    /// Represents resolved solution.
+    /// </summary>
+    /// <remarks>
+    /// Resolved solution has proper configuration, toolchain and generator provided.
+    /// </remarks>
     public sealed class ResolvedSolution
     {
         public Solution Solution { get; }

@@ -7,12 +7,34 @@ using System.Text.Json;
 
 namespace Graphyte.Build.Toolchains.VisualStudio
 {
+    /// <summary>
+    /// Represents Visual Studio installaction information.
+    /// </summary>
     public readonly struct VisualStudioLocation
     {
+        /// <summary>
+        /// Gets installaction location.
+        /// </summary>
         public readonly string Location;
+
+        /// <summary>
+        /// Gets name of VS installation.
+        /// </summary>
         public readonly string Name;
+
+        /// <summary>
+        /// Gets version of VS installation.
+        /// </summary>
         public readonly string Version;
+
+        /// <summary>
+        /// Gets target toolkit of VS installation.
+        /// </summary>
         public readonly string Toolkit;
+
+        /// <summary>
+        /// Gets toolset version of VS installation.
+        /// </summary>
         public readonly string Toolset;
 
         public VisualStudioLocation(
@@ -32,6 +54,9 @@ namespace Graphyte.Build.Toolchains.VisualStudio
 
     public sealed class VisualStudioToolchainProvider
     {
+        /// <summary>
+        /// Gets collection of Visual Studio locations.
+        /// </summary>
         public VisualStudioLocation[] Instances { get; }
 
         public VisualStudioToolchainProvider()

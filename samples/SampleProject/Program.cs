@@ -1,5 +1,4 @@
 ﻿using Graphyte.Build;
-using System.Diagnostics;
 
 namespace SampleProject
 {

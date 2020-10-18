@@ -33,14 +33,6 @@ namespace Graphyte.Build.Platforms.Android
             }
         }
 
-        private static readonly AbiMapping[] g_AbiMappings = new[]
-        {
-            new AbiMapping(Architecture.ARM, "arm", "arm", 32, "lib"),
-            new AbiMapping(Architecture.ARM64, "aarch64", "arm64", 64, "lib"),
-            new AbiMapping(Architecture.X86, "i686", "x86", 32, "lib"),
-            new AbiMapping(Architecture.X64, "x86_64", "x86_64", 64, "lib64"),
-        };
-
         public string SdkPath { get; private set; }
         public string NdkPath { get; private set; } = @"E:\Downloads\android-ndk-r21d-windows-x86_64\android-ndk-r21d";
 

@@ -1,5 +1,8 @@
-﻿namespace Graphyte.Build
+namespace Graphyte.Build
 {
+    /// <summary>
+    /// Specifies source code language of project.
+    /// </summary>
     public enum ProjectLanguage
     {
         C,
@@ -10,6 +13,10 @@
     public abstract class Project
     {
         private string m_Name;
+
+        /// <summary>
+        /// Gets project name.
+        /// </summary>
         public string Name
         {
             get
@@ -26,6 +33,10 @@
 
         protected string ProjectFileName { get; set; }
 
+        /// <summary>
+        /// Configures specified target.
+        /// </summary>
+        /// <param name="target">Provides target to configure.</param>
         public abstract void Configure(Target target);
     }
 }

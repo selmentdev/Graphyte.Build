@@ -44,7 +44,7 @@ namespace Graphyte.Build
 
 
                 var bytes = System.IO.File.ReadAllBytes(args[0]);
-                var profile = Graphyte.Build.Profiles.Profile.Parse(bytes);
+                var profile = Graphyte.Build.Profile.Parse(bytes);
 
                 Trace.WriteLine($@"Platform: {profile.GetSection<Graphyte.Build.Platforms.BasePlatformSettings>().GetType().Name}");
                 Trace.WriteLine($@"Toolchain: {profile.GetSection<Graphyte.Build.Toolchains.BaseToolchainSettings>().GetType().Name}");

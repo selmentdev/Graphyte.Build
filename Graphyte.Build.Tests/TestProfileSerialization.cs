@@ -1,4 +1,3 @@
-﻿using Graphyte.Build.Profiles;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using System.Text.Json.Serialization;
