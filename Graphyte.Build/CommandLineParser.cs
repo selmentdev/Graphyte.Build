@@ -103,19 +103,21 @@ namespace Graphyte.Build
                 {
                     (var field, var value) = x;
 
-                    if (field.FieldType.IsEnum)
+                    var type = Nullable.GetUnderlyingType(field.FieldType) ?? field.FieldType;
+
+                    if (type.IsEnum)
                     {
-                        return Enum.Parse(field.FieldType, value);
+                        return Enum.Parse(type, value);
                     }
-                    else if (field.FieldType == typeof(int))
+                    else if (type == typeof(int))
                     {
                         return int.Parse(value, CultureInfo.InvariantCulture);
                     }
-                    else if (field.FieldType == typeof(float))
+                    else if (type == typeof(float))
                     {
                         return float.Parse(value, CultureInfo.InvariantCulture);
                     }
-                    else if (field.FieldType == typeof(bool))
+                    else if (type == typeof(bool))
                     {
                         return value switch
                         {
@@ -123,7 +125,7 @@ namespace Graphyte.Build
                             _ => bool.Parse(value)
                         };
                     }
-                    else if (field.FieldType == typeof(string))
+                    else if (type == typeof(string))
                     {
                         if (value.StartsWith('"') && value.EndsWith('"') && value.Length > 1)
                         {
@@ -134,13 +136,13 @@ namespace Graphyte.Build
                             return value;
                         }
                     }
-                    else if (field.FieldType == typeof(FileInfo))
+                    else if (type == typeof(FileInfo))
                     {
                         return new FileInfo(value);
                     }
                     else
                     {
-                        throw new CommandLineParsingException($@"Type ""{field.FieldType}"" is not supported");
+                        throw new CommandLineParsingException($@"Type ""{type}"" is not supported");
                     }
                 });
 

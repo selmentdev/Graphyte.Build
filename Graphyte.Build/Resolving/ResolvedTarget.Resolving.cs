@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +7,11 @@ namespace Graphyte.Build.Resolving
 {
     public sealed partial class ResolvedTarget
     {
+        /// <summary>
+        /// Validates dependency cycle.
+        /// </summary>
+        /// <exception cref="ResolvingException">Dependency cycle detected.</exception>
+        /// <param name="trace">A trace.</param>
         private void ValidateDependencyCycle(Stack<ResolvedTarget> trace)
         {
             if (trace.Contains(this))
@@ -25,6 +30,9 @@ namespace Graphyte.Build.Resolving
 
         private bool m_IsResolved = false;
 
+        /// <summary>
+        /// Imports properties from source target.
+        /// </summary>
         private void ImportProperties()
         {
             //
@@ -67,6 +75,10 @@ namespace Graphyte.Build.Resolving
             this.PublicDefines.Import(this.SourceTarget.InterfaceDefines);
         }
 
+        /// <summary>
+        /// Resolves properties and dependencies of current solution.
+        /// </summary>
+        /// <param name="trace">A trace of resolved targets.</param>
         public void Resolve(Stack<ResolvedTarget> trace)
         {
             this.ValidateDependencyCycle(trace);
@@ -121,6 +133,10 @@ namespace Graphyte.Build.Resolving
             trace.Pop();
         }
 
+        /// <summary>
+        /// Resolves public dependency of current target..
+        /// </summary>
+        /// <param name="dependency">A public dependency.</param>
         private void ResolvePublicDependency(ResolvedTarget dependency)
         {
             this.PublicDependencies.Import(dependency);
@@ -165,6 +181,10 @@ namespace Graphyte.Build.Resolving
             this.PublicDefines.Import(dependency.PublicDefines);
         }
 
+        /// <summary>
+        /// Resolves private dependency of current target
+        /// </summary>
+        /// <param name="dependency">A private dependency.</param>
         private void ResolvePrivateDependency(ResolvedTarget dependency)
         {
             this.PrivateDependencies.Import(dependency);
@@ -203,6 +223,10 @@ namespace Graphyte.Build.Resolving
             this.PrivateDefines.Import(dependency.PublicDefines);
         }
 
+        /// <summary>
+        /// Resolves interface dependency of current target.
+        /// </summary>
+        /// <param name="dependency">An interface dependency.</param>
         private void ResolveInterfaceDependency(ResolvedTarget dependency)
         {
             this.PublicDependencies.Import(dependency);
@@ -240,6 +264,5 @@ namespace Graphyte.Build.Resolving
 
             this.PrivateDefines.Import(dependency.PublicDefines);
         }
-
     }
 }

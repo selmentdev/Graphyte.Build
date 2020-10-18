@@ -37,6 +37,14 @@ namespace Graphyte.Build.Toolchains.VisualStudio
         /// </summary>
         public readonly string Toolset;
 
+        /// <summary>
+        /// Creates new instance of VisualStudioLocation.
+        /// </summary>
+        /// <param name="location">An location instance.</param>
+        /// <param name="name">A name of instance.</param>
+        /// <param name="version">A version of instance.</param>
+        /// <param name="toolkit">A toolkit of instance.</param>
+        /// <param name="toolset">A toolset of instance.</param>
         public VisualStudioLocation(
             string location,
             string name,
@@ -59,11 +67,17 @@ namespace Graphyte.Build.Toolchains.VisualStudio
         /// </summary>
         public VisualStudioLocation[] Instances { get; }
 
+        /// <summary>
+        /// Creates new instance of VisualStudioToolchainProvider.
+        /// </summary>
         public VisualStudioToolchainProvider()
         {
             this.Instances = VisualStudioToolchainProvider.Discover();
         }
 
+        /// <summary>
+        /// Represents toolkit mapping.
+        /// </summary>
         private readonly struct VersionToolkitMapping
         {
             public readonly string Version;
@@ -76,12 +90,19 @@ namespace Graphyte.Build.Toolchains.VisualStudio
             }
         }
 
+        /// <summary>
+        /// All known toolkit mappings.
+        /// </summary>
         private static readonly VersionToolkitMapping[] g_VersionToolkitMappings = new[]
         {
             new VersionToolkitMapping("2017", "v141"),
             new VersionToolkitMapping("2019", "v142"),
         };
 
+        /// <summary>
+        /// Discovers all available Visual Studio locations.
+        /// </summary>
+        /// <returns></returns>
         private static VisualStudioLocation[] Discover()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -116,6 +137,11 @@ namespace Graphyte.Build.Toolchains.VisualStudio
             return new VisualStudioLocation[0];
         }
 
+        /// <summary>
+        /// Parses Visual Studio instance information from JSON element.
+        /// </summary>
+        /// <param name="instance">An JSON representation of Visual Studio instance.</param>
+        /// <returns>The parsed information.</returns>
         private static VisualStudioLocation ParseVisualStudioLocation(JsonElement instance)
         {
             var properties = instance.EnumerateObject()
@@ -138,6 +164,12 @@ namespace Graphyte.Build.Toolchains.VisualStudio
                 toolset: toolset);
         }
 
+        /// <summary>
+        /// Gets tools version for given Visual Studio installation and toolkit version.
+        /// </summary>
+        /// <param name="path">A path to Visual Studio installation.</param>
+        /// <param name="toolkit">A toolkit version.</param>
+        /// <returns>The version of Visual Studio toolset.</returns>
         private static string GetToolsVersion(string path, string toolkit)
         {
             var prefixPath = Path.Combine(path, "VC", "Auxiliary", "Build");

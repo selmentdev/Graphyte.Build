@@ -12,18 +12,37 @@ namespace Graphyte.Build.Resolving
     /// </remarks>
     public sealed class ResolvedSolution
     {
+        /// <summary>
+        /// Gets solution.
+        /// </summary>
         public Solution Solution { get; }
+
+        /// <summary>
+        /// Gets target tuple.
+        /// </summary>
         public TargetTuple TargetTuple { get; }
 
         private readonly List<ResolvedTarget> m_Targets = new List<ResolvedTarget>();
+
+        /// <summary>
+        /// Gets list of resolved targets.
+        /// </summary>
         public IReadOnlyList<ResolvedTarget> Targets => this.m_Targets;
 
+        /// <summary>
+        /// Creates new instance of ResolvedSolution for given solution and target tuple.
+        /// </summary>
+        /// <param name="solution">A solution to resolve.</param>
+        /// <param name="targetTuple">A target tuple.</param>
         public ResolvedSolution(Solution solution, TargetTuple targetTuple)
         {
             this.Solution = solution ?? throw new ArgumentNullException(nameof(solution));
             this.TargetTuple = targetTuple;
         }
 
+        /// <summary>
+        /// Resolves solution and all targets.
+        /// </summary>
         public void Resolve()
         {
             foreach (var project in this.Solution.Projects)
@@ -51,6 +70,11 @@ namespace Graphyte.Build.Resolving
             }
         }
 
+        /// <summary>
+        /// Finds resolved target by project name.
+        /// </summary>
+        /// <param name="name">A project name.</param>
+        /// <returns>The resolved target.</returns>
         public ResolvedTarget FindTargetByProjectName(string name)
         {
             var found = this.m_Targets.FirstOrDefault(x => x.Name == name);
