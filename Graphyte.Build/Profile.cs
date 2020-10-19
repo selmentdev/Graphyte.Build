@@ -146,7 +146,7 @@ namespace Graphyte.Build
             var type = typeof(T);
             if (type.IsAbstract)
             {
-                throw new InvalidOperationException($@"Cannot get section of abstract type""{type.FullName}""");
+                throw new InvalidOperationException($@"Cannot get section of abstract type ""{type.FullName}""");
             }
 
             return this.Sections.OfType<T>().FirstOrDefault();

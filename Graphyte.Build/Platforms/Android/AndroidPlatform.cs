@@ -10,7 +10,7 @@ namespace Graphyte.Build.Platforms.Linux
             => RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
             || RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
 
-        public override bool IsSupported(TargetTuple targetTuple)
+        public override bool IsTargetTupleSupported(TargetTuple targetTuple)
         {
             if (!this.IsHostSupported)
             {

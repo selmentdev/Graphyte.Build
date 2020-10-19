@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 
 namespace Graphyte.Build.Platforms.Windows
@@ -9,7 +9,7 @@ namespace Graphyte.Build.Platforms.Windows
         public override bool IsHostSupported
             => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-        public override bool IsSupported(TargetTuple targetTuple)
+        public override bool IsTargetTupleSupported(TargetTuple targetTuple)
         {
             if (!this.IsHostSupported)
             {

@@ -16,6 +16,7 @@ namespace Graphyte.Build
             public Platform? Platform;
             public Configuration? Configuration;
             public Architecture? Architecture;
+            public string Generator;
         }
 
         public static int Main(string[] args)
@@ -33,10 +34,11 @@ namespace Graphyte.Build
 
                 var options = CommandLineParser.Parse<CommandLineParams>(args);
 
-                Debug.WriteLine($@"OPTIONS: profile = {options.Profile}");
-                Debug.WriteLine($@"OPTIONS: platform = {options.Platform}");
+                Debug.WriteLine($@"OPTIONS: profile       = {options.Profile}");
+                Debug.WriteLine($@"OPTIONS: platform      = {options.Platform}");
                 Debug.WriteLine($@"OPTIONS: configuration = {options.Configuration}");
-                Debug.WriteLine($@"OPTIONS: architecture = {options.Architecture}");
+                Debug.WriteLine($@"OPTIONS: architecture  = {options.Architecture}");
+                Debug.WriteLine($@"OPTIONS: generator     = {options.Generator}");
 
 #if DEBUG
                 foreach (var arg in args)
@@ -89,12 +91,32 @@ namespace Graphyte.Build
                 GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
 
 
-                var bytes = System.IO.File.ReadAllBytes(args[0]);
+                var bytes = System.IO.File.ReadAllBytes(options.Profile.FullName);
                 var profile = Graphyte.Build.Profile.Parse(bytes);
 
-                Trace.WriteLine($@"Platform: {profile.GetSection<Graphyte.Build.Platforms.BasePlatformSettings>().GetType().Name}");
-                Trace.WriteLine($@"Toolchain: {profile.GetSection<Graphyte.Build.Toolchains.BaseToolchainSettings>().GetType().Name}");
-                Trace.WriteLine($@"Generator: {profile.GetSection<Graphyte.Build.Generators.BaseGeneratorSettings>().GetType().Name}");
+
+                var platforms = profile.GetSections<Platforms.BasePlatformSettings>();
+
+                foreach (var platform in platforms)
+                {
+                    Trace.WriteLine($@"Platform:  {platform.GetType().Name}");
+                }
+
+
+                var toolchains = profile.GetSections<Toolchains.BaseToolchainSettings>();
+
+                foreach (var toolchain in toolchains)
+                {
+                    Trace.WriteLine($@"Toolchain: {toolchain.GetType().Name}");
+                }
+
+
+                var generators = profile.GetSections<Generators.BaseGeneratorSettings>();
+
+                foreach (var generator in generators)
+                {
+                    Trace.WriteLine($@"Generator: {generator.GetType().Name}");
+                }
 
                 var solutions = new SolutionProvider();
 
@@ -107,11 +129,11 @@ namespace Graphyte.Build
                 Trace.Unindent();
                 Trace.WriteLine("Done.");
 
-                var platforms = new Platforms.PlatformProvider();
+                var platformsProvider = new Platforms.PlatformProvider();
 
                 Trace.WriteLine("Discovering platforms...");
                 Trace.Indent();
-                foreach (var platform in platforms.GetPlatforms())
+                foreach (var platform in platformsProvider.GetPlatforms())
                 {
                     Trace.WriteLine($@"{platform.Name} (is supported: {platform.IsHostSupported})");
                 }
@@ -138,7 +160,9 @@ namespace Graphyte.Build
             }
             catch (Exception e)
             {
-                Console.WriteLine($@"Failed with exception: {e.Message}");
+                Trace.WriteLine($@"Failed with exception: {e.Message}");
+                Trace.WriteLine("Stacktrace:");
+                Trace.WriteLine(e.StackTrace);
                 return -1;
             }
         }

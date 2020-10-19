@@ -40,7 +40,7 @@ namespace Graphyte.Build.Platforms
         /// <returns>The array of platforms supporting given target tuple.</returns>
         public BasePlatform[] GetPlatforms(TargetTuple targetTuple)
         {
-            return this.m_Platforms.Where(x => x.IsSupported(targetTuple)).ToArray();
+            return this.m_Platforms.Where(x => x.IsTargetTupleSupported(targetTuple)).ToArray();
         }
 
         /// <summary>
