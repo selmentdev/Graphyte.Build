@@ -1,4 +1,6 @@
+using Graphyte.Build.Platforms;
 using Graphyte.Build.Resolving;
+using Graphyte.Build.Toolchains;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Graphyte.Build.Tests
@@ -218,9 +220,9 @@ namespace Graphyte.Build.Tests
         {
             var solution = new SampleSolution();
             var targetTuple = new TargetTuple(
-                Platform.Windows,
+                PlatformType.Windows,
                 ArchitectureType.X64,
-                Compiler.MSVC,
+                ToolchainType.MSVC,
                 ConfigurationType.Debug);
 
             var resolved = new ResolvedSolution(solution, targetTuple);

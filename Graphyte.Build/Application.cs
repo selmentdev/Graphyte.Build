@@ -1,5 +1,6 @@
 using Graphyte.Build.Generators;
 using Graphyte.Build.Platforms;
+using Graphyte.Build.Resolving;
 using Graphyte.Build.Toolchains;
 using System;
 using System.Diagnostics;
@@ -181,6 +182,39 @@ namespace Graphyte.Build
                 Trace.WriteLine(configuration);
             }
             Trace.Unindent();
+
+            Trace.WriteLine("Targets");
+
+
+            ////////////////////////////////////////////////////////////////
+            var solutions = this.m_SolutionsProvider.Create();
+
+            foreach (var solution in solutions)
+            {
+                foreach (var architecture in currentArchitectures)
+                {
+                    foreach (var configuration in currentConfigurations)
+                    {
+                        var tuple = new TargetTuple(typePlatform, architecture, typeToolchain, configuration);
+                        var resolved = new ResolvedSolution(solution, tuple);
+
+                        resolved.Configure(
+                            currentToolchain,
+                            currentGenerator,
+                            currentPlatform);
+
+                        resolved.Resolve();
+
+                        Trace.WriteLine($@"{currentPlatform.Type}-{currentToolchain.Type}-{architecture}-{configuration}/");
+                        Trace.Indent();
+                        foreach (var target in resolved.Targets)
+                        {
+                            Trace.WriteLine(target.Name);
+                        }
+                        Trace.Unindent();
+                    }
+                }
+            }
         }
 
         private int Run()
@@ -201,7 +235,7 @@ namespace Graphyte.Build
                 var app = new Application(args);
                 return app.Run();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Trace.WriteLine($@"Failed with exception: {e.Message}");
 

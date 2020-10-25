@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Graphyte.Build.Generators.Fastbuild
 {
-    public sealed class FastbuildGenerator : BaseGenerator
+    public sealed class FastbuildGenerator
+        : BaseGenerator
     {
         public override bool IsHostSupported
         {
@@ -45,6 +43,16 @@ namespace Graphyte.Build.Generators.Fastbuild
 
                 return false;
             }
+        }
+
+        public override GeneratorType Type => GeneratorType.FastBuild;
+
+        public override void PreConfigureTarget(Target target)
+        {
+        }
+
+        public override void PostConfigureTarget(Target target)
+        {
         }
 
         private FastbuildGeneratorSettings m_Settings;

@@ -16,6 +16,8 @@ namespace Graphyte.Build.Platforms.Windows
         };
         public override ArchitectureType[] Architectures => UniversalWindowsPlatform.g_SupportedArchitectures;
 
+        public override PlatformType Type => PlatformType.UniversalWindows;
+
         public override bool IsPlatformKind(PlatformKind platformKind)
         {
             switch (platformKind)
@@ -36,6 +38,14 @@ namespace Graphyte.Build.Platforms.Windows
         public override void Initialize(Profile profile)
         {
             this.m_Settings = profile.GetSection<UniversalWindowsPlatformSettings>();
+        }
+
+        public override void PreConfigureTarget(Target target)
+        {
+        }
+
+        public override void PostConfigureTarget(Target target)
+        {
         }
 
         public override string AdjustTargetName(string name, TargetType targetType)

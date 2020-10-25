@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Graphyte.Build.Toolchains.VisualStudio
 {
@@ -11,11 +8,21 @@ namespace Graphyte.Build.Toolchains.VisualStudio
         public override bool IsHostSupported
             => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
+        public override ToolchainType Type => ToolchainType.MSVC;
+
         private MSVCToolchainSettings m_Settings;
 
         public override void Initialize(Profile profile)
         {
             this.m_Settings = profile.GetSection<MSVCToolchainSettings>();
+        }
+
+        public override void PreConfigureTarget(Target target)
+        {
+        }
+
+        public override void PostConfigureTarget(Target target)
+        {
         }
     }
 }

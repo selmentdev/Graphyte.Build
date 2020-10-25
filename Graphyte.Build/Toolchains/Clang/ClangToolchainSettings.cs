@@ -1,6 +1,3 @@
-
-using System;
-
 namespace Graphyte.Build.Toolchains.Clang
 {
     public sealed class ClangToolchainSettings

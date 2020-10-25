@@ -1,4 +1,7 @@
+using Graphyte.Build.Platforms;
 using Graphyte.Build.Resolving;
+using Graphyte.Build.Tests.Mocks;
+using Graphyte.Build.Toolchains;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Graphyte.Build.Tests
@@ -46,14 +49,19 @@ namespace Graphyte.Build.Tests
         {
             var solution = new SampleSolution();
             var targetTuple = new TargetTuple(
-                Platform.Windows,
+                PlatformType.Windows,
                 ArchitectureType.X64,
-                Compiler.MSVC,
+                ToolchainType.MSVC,
                 ConfigurationType.Debug);
 
             var resolved = new ResolvedSolution(solution, targetTuple);
 
-            Assert.ThrowsException<ResolvingException>(() => resolved.Resolve());
+            Assert.ThrowsException<ResolvingException>(() =>
+            {
+
+                resolved.Configure(new MockToolchain(), new MockGenerator(), new MockPlatform());
+                resolved.Resolve();
+            });
         }
     }
 }

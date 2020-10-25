@@ -1,5 +1,3 @@
-using System;
-
 namespace Graphyte.Build.Platforms
 {
     /// <summary>
@@ -11,6 +9,8 @@ namespace Graphyte.Build.Platforms
 
         public abstract ArchitectureType[] Architectures { get; }
 
+        public abstract PlatformType Type { get; }
+
         public abstract bool IsPlatformKind(PlatformKind platformKind);
 
         public abstract void Initialize(Profile profile);
@@ -19,17 +19,13 @@ namespace Graphyte.Build.Platforms
         /// Pre-configures target.
         /// </summary>
         /// <param name="traget">A target to pre-configure.</param>
-        public virtual void PreConfigureTarget(Target traget)
-        {
-        }
+        public abstract void PreConfigureTarget(Target traget);
 
         /// <summary>
         /// Post-configures target.
         /// </summary>
         /// <param name="target">A target to post-configure.</param>
-        public virtual void PostConfigureTarget(Target target)
-        {
-        }
+        public abstract void PostConfigureTarget(Target target);
 
         /// <summary>
         /// Adjusts target name.

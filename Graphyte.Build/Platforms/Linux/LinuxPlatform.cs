@@ -17,6 +17,8 @@ namespace Graphyte.Build.Platforms.Linux
 
         public override ArchitectureType[] Architectures => LinuxPlatform.g_SupportedArchitectures;
 
+        public override PlatformType Type => PlatformType.Linux;
+
         public override bool IsPlatformKind(PlatformKind platformKind)
         {
             switch (platformKind)
@@ -37,6 +39,14 @@ namespace Graphyte.Build.Platforms.Linux
         public override void Initialize(Profile profile)
         {
             this.m_Settings = profile.GetSection<LinuxPlatformSettings>();
+        }
+
+        public override void PreConfigureTarget(Target target)
+        {
+        }
+
+        public override void PostConfigureTarget(Target target)
+        {
         }
 
         public override string AdjustTargetName(string name, TargetType targetType)

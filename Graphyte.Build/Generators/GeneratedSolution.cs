@@ -1,9 +1,7 @@
 using Graphyte.Build.Platforms;
 using Graphyte.Build.Resolving;
 using Graphyte.Build.Toolchains;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Graphyte.Build.Generators
 {

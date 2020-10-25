@@ -1,3 +1,6 @@
+using Graphyte.Build.Generators;
+using Graphyte.Build.Platforms;
+using Graphyte.Build.Toolchains;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +41,40 @@ namespace Graphyte.Build.Resolving
         {
             this.Solution = solution ?? throw new ArgumentNullException(nameof(solution));
             this.TargetTuple = targetTuple;
+
+
+            //
+            // Create targets
+            //
+
+            foreach (var project in this.Solution.Projects)
+            {
+                var target = new Target(project, this.TargetTuple);
+                var resolved = new ResolvedTarget(this, target);
+                this.m_Targets.Add(resolved);
+            }
+        }
+
+        public void Configure(BaseToolchain toolchain, BaseGenerator generator, BasePlatform platform)
+        {
+            var solution = this.Solution;
+
+            foreach (var current in this.m_Targets)
+            {
+                var target = current.SourceTarget;
+
+                toolchain.PreConfigureTarget(target);
+                generator.PreConfigureTarget(target);
+                platform.PreConfigureTarget(target);
+                solution.PreConfigure(target);
+
+                target.Project.Configure(target);
+
+                solution.PostConfigure(target);
+                platform.PostConfigureTarget(target);
+                generator.PostConfigureTarget(target);
+                toolchain.PostConfigureTarget(target);
+            }
         }
 
         /// <summary>
@@ -45,18 +82,6 @@ namespace Graphyte.Build.Resolving
         /// </summary>
         public void Resolve()
         {
-            foreach (var project in this.Solution.Projects)
-            {
-                var target = new Target(project, this.TargetTuple);
-
-                this.Solution.PreConfigure(target);
-                project.Configure(target);
-                this.Solution.PostConfigure(target);
-
-                var resolved = new ResolvedTarget(this, target);
-                this.m_Targets.Add(resolved);
-            }
-
             var trace = new Stack<ResolvedTarget>();
 
             foreach (var target in this.m_Targets)
