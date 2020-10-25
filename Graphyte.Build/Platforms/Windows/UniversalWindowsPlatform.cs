@@ -9,32 +9,33 @@ namespace Graphyte.Build.Platforms.Windows
         public override bool IsHostSupported
             => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-        public override bool IsTargetTupleSupported(TargetTuple targetTuple)
+        private static readonly ArchitectureType[] g_SupportedArchitectures = new[]
         {
-            if (!this.IsHostSupported)
-            {
-                return false;
-            }
+            ArchitectureType.X64,
+            ArchitectureType.ARM64,
+        };
+        public override ArchitectureType[] Architectures => UniversalWindowsPlatform.g_SupportedArchitectures;
 
-            if (targetTuple.Platform != Platform.Windows)
+        public override bool IsPlatformKind(PlatformKind platformKind)
+        {
+            switch (platformKind)
             {
-                return false;
-            }
-
-            switch (targetTuple.Compiler)
-            {
-                case Compiler.MSVC:
+                case PlatformKind.Desktop:
+                case PlatformKind.Mobile:
                     return true;
-                case Compiler.ClangCL:
-                case Compiler.Clang:
-                case Compiler.Intel:
-                case Compiler.GCC:
+                case PlatformKind.Console:
+                case PlatformKind.Server:
                     return false;
-                case Compiler.Default:
-                    break;
             }
 
-            throw new ArgumentOutOfRangeException(nameof(targetTuple));
+            throw new ArgumentOutOfRangeException(nameof(platformKind));
+        }
+
+        private UniversalWindowsPlatformSettings m_Settings;
+
+        public override void Initialize(Profile profile)
+        {
+            this.m_Settings = profile.GetSection<UniversalWindowsPlatformSettings>();
         }
 
         public override string AdjustTargetName(string name, TargetType targetType)

@@ -58,31 +58,3 @@ namespace Graphyte.Build
         }
     }
 }
-
-namespace Graphyte.Build
-{
-    public sealed class SolutionProvider
-    {
-        private static Solution[] Discover()
-        {
-            var solutionType = typeof(Solution);
-            return AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(x => x.GetTypes())
-                .Where(x => x.IsSubclassOf(solutionType) && x.IsClass && !x.IsAbstract && x.IsVisible)
-                .Select(x => (Solution)Activator.CreateInstance(x))
-                .ToArray();
-        }
-
-        private readonly Solution[] m_Solutions;
-
-        public SolutionProvider()
-        {
-            this.m_Solutions = SolutionProvider.Discover();
-        }
-
-        public Solution[] GetSolutions()
-        {
-            return this.m_Solutions;
-        }
-    }
-}

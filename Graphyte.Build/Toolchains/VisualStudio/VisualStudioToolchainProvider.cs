@@ -60,19 +60,19 @@ namespace Graphyte.Build.Toolchains.VisualStudio
         }
     }
 
-    public sealed class VisualStudioToolchainProvider
+    public static class VisualStudioToolchainProvider
     {
         /// <summary>
         /// Gets collection of Visual Studio locations.
         /// </summary>
-        public VisualStudioLocation[] Instances { get; }
+        public static VisualStudioLocation[] Instances { get; }
 
         /// <summary>
         /// Creates new instance of VisualStudioToolchainProvider.
         /// </summary>
-        public VisualStudioToolchainProvider()
+        static VisualStudioToolchainProvider()
         {
-            this.Instances = VisualStudioToolchainProvider.Discover();
+            VisualStudioToolchainProvider.Instances = VisualStudioToolchainProvider.Discover();
         }
 
         /// <summary>

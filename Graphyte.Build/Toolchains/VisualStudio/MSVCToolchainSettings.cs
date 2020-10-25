@@ -3,7 +3,7 @@ namespace Graphyte.Build.Toolchains.VisualStudio
     /// <summary>
     /// Represents Visual Studio Toolchain settings.
     /// </summary>
-    public sealed class VisualStudioToolchainSettings
+    public sealed class MSVCToolchainSettings
         : BaseToolchainSettings
     {
         /// <summary>

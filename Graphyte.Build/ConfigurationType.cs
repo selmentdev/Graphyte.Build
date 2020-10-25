@@ -1,6 +1,6 @@
-﻿namespace Graphyte.Build
+namespace Graphyte.Build
 {
-    public enum Configuration
+    public enum ConfigurationType
     {
         /// <summary>
         /// Game and engine code are not optimized.

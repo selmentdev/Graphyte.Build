@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Graphyte.Build
@@ -20,7 +20,10 @@ namespace Graphyte.Build
         /// </summary>
         public TargetType TargetType { get; set; } = TargetType.Default;
 
-        public ComponentType ComponentType { get; set; } = ComponentType.GameApplication;
+        /// <summary>
+        /// Module type of target.
+        /// </summary>
+        public ModuleType ModuleType { get; set; } = ModuleType.Runtime;
 
         public Guid ProjectGuid { get; set; }
 

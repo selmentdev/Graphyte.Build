@@ -219,9 +219,9 @@ namespace Graphyte.Build.Tests
             var solution = new SampleSolution();
             var targetTuple = new TargetTuple(
                 Platform.Windows,
-                Architecture.X64,
+                ArchitectureType.X64,
                 Compiler.MSVC,
-                Configuration.Debug);
+                ConfigurationType.Debug);
 
             var resolved = new ResolvedSolution(solution, targetTuple);
 

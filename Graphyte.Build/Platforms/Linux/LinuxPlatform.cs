@@ -9,24 +9,34 @@ namespace Graphyte.Build.Platforms.Linux
         public override bool IsHostSupported
             => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
 
-        public override bool IsTargetTupleSupported(TargetTuple targetTuple)
+        private static readonly ArchitectureType[] g_SupportedArchitectures = new[]
         {
-            if (!this.IsHostSupported)
+            ArchitectureType.ARM64,
+            ArchitectureType.X64,
+        };
+
+        public override ArchitectureType[] Architectures => LinuxPlatform.g_SupportedArchitectures;
+
+        public override bool IsPlatformKind(PlatformKind platformKind)
+        {
+            switch (platformKind)
             {
-                return false;
+                case PlatformKind.Desktop:
+                case PlatformKind.Server:
+                    return true;
+                case PlatformKind.Mobile:
+                case PlatformKind.Console:
+                    return false;
             }
 
-            if (targetTuple.Platform != Platform.Linux)
-            {
-                return false;
-            }
+            throw new ArgumentOutOfRangeException(nameof(platformKind));
+        }
 
-            if (targetTuple.Compiler != Compiler.Clang)
-            {
-                return false;
-            }
+        private LinuxPlatformSettings m_Settings;
 
-            return true;
+        public override void Initialize(Profile profile)
+        {
+            this.m_Settings = profile.GetSection<LinuxPlatformSettings>();
         }
 
         public override string AdjustTargetName(string name, TargetType targetType)

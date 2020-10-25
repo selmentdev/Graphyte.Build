@@ -1,3 +1,4 @@
+using Graphyte.Build.Platforms.Android;
 using System;
 using System.Runtime.InteropServices;
 
@@ -10,24 +11,36 @@ namespace Graphyte.Build.Platforms.Linux
             => RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
             || RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
 
-        public override bool IsTargetTupleSupported(TargetTuple targetTuple)
+        private static readonly ArchitectureType[] g_SupportedArchitectures = new[]
         {
-            if (!this.IsHostSupported)
+            ArchitectureType.ARM,
+            ArchitectureType.ARM64,
+            ArchitectureType.X64,
+            ArchitectureType.X86,
+        };
+
+        public override ArchitectureType[] Architectures => AndroidPlatform.g_SupportedArchitectures;
+
+        public override bool IsPlatformKind(PlatformKind platformKind)
+        {
+            switch (platformKind)
             {
-                return false;
+                case PlatformKind.Mobile:
+                    return true;
+                case PlatformKind.Desktop:
+                case PlatformKind.Console:
+                case PlatformKind.Server:
+                    return false;
             }
 
-            if (targetTuple.Platform != Platform.Android)
-            {
-                return false;
-            }
+            throw new ArgumentOutOfRangeException(nameof(platformKind));
+        }
 
-            if (targetTuple.Compiler != Compiler.Clang)
-            {
-                return false;
-            }
+        private AndroidPlatformSettings m_Settings;
 
-            return true;
+        public override void Initialize(Profile profile)
+        {
+            this.m_Settings = profile.GetSection<AndroidPlatformSettings>();
         }
 
         public override string AdjustTargetName(string name, TargetType targetType)

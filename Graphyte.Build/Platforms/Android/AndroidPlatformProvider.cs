@@ -12,14 +12,14 @@ namespace Graphyte.Build.Platforms.Android
     {
         private readonly struct AbiMapping
         {
-            public readonly Architecture Architecture;
+            public readonly ArchitectureType Architecture;
             public readonly string Toolchain;
             public readonly string Platform;
             public readonly int Bitness;
             public readonly string LibDirectory;
 
             public AbiMapping(
-                Architecture architecture,
+                ArchitectureType architecture,
                 string toolchain,
                 string platform,
                 int bitness,

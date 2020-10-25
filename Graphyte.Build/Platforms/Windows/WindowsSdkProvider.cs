@@ -1,11 +1,11 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Graphyte.Build.Platforms.Windows
 {
-    public class WindowsSdkProvider
+    public static class WindowsSdkProvider
     {
         private static readonly string[] CPlusPlusSdkOptions = new[]
         {
@@ -15,15 +15,15 @@ namespace Graphyte.Build.Platforms.Windows
             "OptionId.UWPCPP",
         };
 
-        public readonly string[] Versions;
-        public readonly string Location;
-        public readonly bool IsSupported;
+        public static readonly string[] Versions;
+        public static readonly string Location;
+        public static readonly bool IsSupported;
 
-        public WindowsSdkProvider()
+        static WindowsSdkProvider()
         {
-            this.IsSupported = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+            WindowsSdkProvider.IsSupported = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-            if (this.IsSupported)
+            if (WindowsSdkProvider.IsSupported)
             {
                 var root = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
                 var roots = root.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Windows Kits\Installed Roots");
@@ -47,13 +47,13 @@ namespace Graphyte.Build.Platforms.Windows
                     }
                 }
 
-                this.Location = (string)roots.GetValue(kitsroot10name);
-                this.Versions = sdksFound.ToArray();
+                WindowsSdkProvider.Location = (string)roots.GetValue(kitsroot10name);
+                WindowsSdkProvider.Versions = sdksFound.ToArray();
             }
             else
             {
-                this.Location = string.Empty;
-                this.Versions = new string[0];
+                WindowsSdkProvider.Location = string.Empty;
+                WindowsSdkProvider.Versions = new string[0];
             }
         }
     }

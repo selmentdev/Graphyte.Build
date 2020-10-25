@@ -1,169 +1,220 @@
+using Graphyte.Build.Generators;
+using Graphyte.Build.Platforms;
+using Graphyte.Build.Toolchains;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime;
 using System.Runtime.InteropServices;
 
 namespace Graphyte.Build
 {
-    public static class Application
+    public class Application
     {
         private static readonly Version Current = new Version(1, 0, 0, 0);
 
-        public sealed class CommandLineParams
+        public sealed class Options
         {
             public FileInfo Profile;
-            public Platform? Platform;
-            public Configuration? Configuration;
-            public Architecture? Architecture;
+            public string Platform;
+            public string Toolchain;
             public string Generator;
+
+            [Conditional("TRACE")]
+            [Conditional("DEBUG")]
+            public void Dump()
+            {
+                Trace.WriteLine($@"Options:");
+                Trace.Indent();
+
+                Trace.WriteLine($@"Profile file: {this.Profile}");
+                Trace.WriteLine($@"Platform:     {this.Platform}");
+                Trace.WriteLine($@"Toolchain:    {this.Toolchain}");
+                Trace.WriteLine($@"Generator:    {this.Generator}");
+
+                Trace.Unindent();
+            }
+        }
+
+        private readonly Options m_Options;
+        private readonly Profile m_Profile;
+        private readonly PlatformsProvider m_PlatformsProvider = new PlatformsProvider();
+        private readonly ToolchainsProvider m_ToolchainsProvider = new ToolchainsProvider();
+        private readonly GeneratorsProvider m_GeneratorsProvider = new GeneratorsProvider();
+        private readonly SolutionsProvider m_SolutionsProvider = new SolutionsProvider();
+
+        [Conditional("TRACE")]
+        [Conditional("DEBUG")]
+        private void DumpProviders()
+        {
+            Trace.WriteLine("Platforms:");
+            Trace.Indent();
+
+            foreach (var platform in this.m_PlatformsProvider.Platforms)
+            {
+                Trace.WriteLine(platform);
+            }
+
+            Trace.Unindent();
+
+            Trace.WriteLine("Toolchains:");
+            Trace.Indent();
+
+            foreach (var toolchain in this.m_ToolchainsProvider.Toolchains)
+            {
+                Trace.WriteLine(toolchain);
+            }
+
+            Trace.Unindent();
+
+            Trace.WriteLine("Generators:");
+            Trace.Indent();
+
+            foreach (var generator in this.m_GeneratorsProvider.Generators)
+            {
+                Trace.WriteLine(generator);
+            }
+
+            Trace.Unindent();
+
+            Trace.WriteLine("Solutions:");
+            Trace.Indent();
+
+            foreach (var solution in this.m_SolutionsProvider.Solutions)
+            {
+                Trace.WriteLine(solution);
+            }
+
+            Trace.Unindent();
+
+        }
+
+        private static void Validate(BasePlatform platform, BaseToolchain toolchain, BaseGenerator generator)
+        {
+            if (!platform.IsHostSupported)
+            {
+                throw new Exception($@"{platform} is not supported on host machine ({RuntimeInformation.OSDescription})");
+            }
+
+            if (!toolchain.IsHostSupported)
+            {
+                throw new Exception($@"{toolchain} is not supported on host machine ({RuntimeInformation.OSDescription})");
+            }
+
+            if (!generator.IsHostSupported)
+            {
+                throw new Exception($@"{generator} is not supported on host machine ({RuntimeInformation.OSDescription})");
+            }
+        }
+
+        private Application(string[] args)
+        {
+            //
+            // Setup GC
+            //
+
+            GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.Default;
+            GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
+
+
+            //
+            // Setup console tracing.
+            //
+
+            Trace.Listeners.Add(new ConsoleTraceListener());
+            Trace.WriteLine($@"Graphyte Build version {Application.Current}");
+            Trace.WriteLine($@"{RuntimeInformation.OSDescription} ({RuntimeInformation.FrameworkDescription})");
+
+            this.DumpProviders();
+
+            //
+            // Parse options.
+            //
+
+            this.m_Options = CommandLineParser.Parse<Options>(args);
+            this.m_Options.Dump();
+
+            var typePlatform = PlatformType.Create(this.m_Options.Platform);
+            var typeToolchain = ToolchainType.Create(this.m_Options.Toolchain);
+            var typeGenerator = GeneratorType.Create(this.m_Options.Generator);
+
+            //
+            // Parse profile.
+            //
+
+            var bytes = File.ReadAllBytes(this.m_Options.Profile.FullName);
+            this.m_Profile = Profile.Parse(bytes);
+
+            //
+            // Resolve specific platform and toolchain.
+            //
+
+            var currentPlatform = this.m_PlatformsProvider.Create(typePlatform);
+            var currentToolchain = this.m_ToolchainsProvider.Create(typeToolchain);
+            var currentGenerator = this.m_GeneratorsProvider.Create(typeGenerator);
+
+            Application.Validate(currentPlatform, currentToolchain, currentGenerator);
+
+            var currentArchitectures = currentPlatform.Architectures;
+
+
+            Trace.WriteLine($@"Resolved platform:  {currentPlatform} ({currentPlatform.IsHostSupported})");
+            Trace.WriteLine($@"Resolved toolchain: {currentToolchain} ({currentToolchain.IsHostSupported})");
+            Trace.WriteLine($@"Resolved generator: {currentGenerator} ({currentGenerator.IsHostSupported})");
+
+            Trace.WriteLine($@"Supported architectures");
+            Trace.Indent();
+
+            foreach (var architecture in currentArchitectures)
+            {
+                Trace.WriteLine(architecture);
+            }
+            Trace.Unindent();
+
+
+            var currentConfigurations = Enum.GetValues(typeof(ConfigurationType)).Cast<ConfigurationType>();
+            Trace.WriteLine("Supported configurations");
+            Trace.Indent();
+            foreach (var configuration in currentConfigurations)
+            {
+                Trace.WriteLine(configuration);
+            }
+            Trace.Unindent();
+        }
+
+        private int Run()
+        {
+            return 0;
         }
 
         public static int Main(string[] args)
         {
+            //
+            // Start timing.
+            //
+
+            var watch = Stopwatch.StartNew();
+
             try
             {
-                //
-                // Initialize tracing.
-                //
-
-                Trace.Listeners.Add(new ConsoleTraceListener());
-                Trace.WriteLine($@"Graphyte Build version {Application.Current}");
-                Trace.WriteLine($@"{RuntimeInformation.OSDescription} ({RuntimeInformation.FrameworkDescription})");
-
-
-                var options = CommandLineParser.Parse<CommandLineParams>(args);
-
-                Debug.WriteLine($@"OPTIONS: profile       = {options.Profile}");
-                Debug.WriteLine($@"OPTIONS: platform      = {options.Platform}");
-                Debug.WriteLine($@"OPTIONS: configuration = {options.Configuration}");
-                Debug.WriteLine($@"OPTIONS: architecture  = {options.Architecture}");
-                Debug.WriteLine($@"OPTIONS: generator     = {options.Generator}");
-
-#if DEBUG
-                foreach (var arg in args)
-                {
-                    Debug.WriteLine($@"COMMANDLINE: ""{arg}""");
-                }
-#endif
-
-                if (options.Profile != null)
-                {
-                    if (!options.Profile.Exists)
-                    {
-                        Trace.WriteLine($@"Profile file ""{options.Profile.FullName}"" does not exist");
-                        return -1;
-                    }
-                }
-                else if (options.Profile == null)
-                {
-                    Trace.WriteLine(@"Profile file not specified");
-                    return -1;
-                }
-                else if (!options.Platform.HasValue)
-                {
-                    Trace.WriteLine(@"Platform not specified");
-                    return -1;
-                }
-                else if (!options.Configuration.HasValue)
-                {
-                    Trace.WriteLine(@"Configuration not specified");
-                    return -1;
-                }
-                else if (!options.Architecture.HasValue)
-                {
-                    Trace.WriteLine(@"Architecture not specified");
-                    return -1;
-                }
-
-                //
-                // Start timing.
-                //
-
-                var watch = Stopwatch.StartNew();
-
-
-                //
-                // Setup GC
-                //
-
-                GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.Default;
-                GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
-
-
-                var bytes = System.IO.File.ReadAllBytes(options.Profile.FullName);
-                var profile = Graphyte.Build.Profile.Parse(bytes);
-
-
-                var platforms = profile.GetSections<Platforms.BasePlatformSettings>();
-
-                foreach (var platform in platforms)
-                {
-                    Trace.WriteLine($@"Platform:  {platform.GetType().Name}");
-                }
-
-
-                var toolchains = profile.GetSections<Toolchains.BaseToolchainSettings>();
-
-                foreach (var toolchain in toolchains)
-                {
-                    Trace.WriteLine($@"Toolchain: {toolchain.GetType().Name}");
-                }
-
-
-                var generators = profile.GetSections<Generators.BaseGeneratorSettings>();
-
-                foreach (var generator in generators)
-                {
-                    Trace.WriteLine($@"Generator: {generator.GetType().Name}");
-                }
-
-                var solutions = new SolutionProvider();
-
-                Trace.WriteLine("Discovering solutions");
-                Trace.Indent();
-                foreach (var solution in solutions.GetSolutions())
-                {
-                    Trace.WriteLine($@"{solution.Name}");
-                }
-                Trace.Unindent();
-                Trace.WriteLine("Done.");
-
-                var platformsProvider = new Platforms.PlatformProvider();
-
-                Trace.WriteLine("Discovering platforms...");
-                Trace.Indent();
-                foreach (var platform in platformsProvider.GetPlatforms())
-                {
-                    Trace.WriteLine($@"{platform.Name} (is supported: {platform.IsHostSupported})");
-                }
-                Trace.Unindent();
-                Trace.WriteLine("Done.");
-
-                Trace.WriteLine("Git Information");
-                Trace.Indent();
-                Trace.WriteLine($@"Commit-Long:  ""{Git.GetCommitId()}""");
-                Trace.WriteLine($@"Commit-Short: ""{Git.GetCommitIdShort()}""");
-                Trace.WriteLine($@"Branch:       ""{Git.GetBranchName()}""");
-                Trace.Unindent();
-                Trace.WriteLine("Done.");
-
-
-                //
-                // Report results.
-                //
-
-                watch.Stop();
-
-                Trace.WriteLine($@"excution time: {watch.Elapsed.TotalSeconds:0.0.00}");
-                return 0;
+                var app = new Application(args);
+                return app.Run();
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 Trace.WriteLine($@"Failed with exception: {e.Message}");
+
+#if TRACE
                 Trace.WriteLine("Stacktrace:");
                 Trace.WriteLine(e.StackTrace);
+#endif
                 return -1;
+            }
+            finally
+            {
+                watch.Stop();
+                Trace.WriteLine($@"Excution time: {watch.Elapsed.TotalSeconds:0.0.00}");
             }
         }
     }

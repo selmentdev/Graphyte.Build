@@ -1,14 +1,19 @@
+using System;
+
 namespace Graphyte.Build.Platforms
 {
     /// <summary>
     /// Represents abstract platform definition.
     /// </summary>
     public abstract class BasePlatform
-        : ISupportQuery
     {
         public abstract bool IsHostSupported { get; }
 
-        public abstract bool IsTargetTupleSupported(TargetTuple targetTuple);
+        public abstract ArchitectureType[] Architectures { get; }
+
+        public abstract bool IsPlatformKind(PlatformKind platformKind);
+
+        public abstract void Initialize(Profile profile);
 
         /// <summary>
         /// Pre-configures target.
@@ -33,10 +38,5 @@ namespace Graphyte.Build.Platforms
         /// <param name="targetType">A target type.</param>
         /// <returns>The adjusted target name.</returns>
         public abstract string AdjustTargetName(string name, TargetType targetType);
-
-        /// <summary>
-        /// Returns name of platform.
-        /// </summary>
-        public string Name => this.GetType().Name;
     }
 }

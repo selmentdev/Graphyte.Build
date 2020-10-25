@@ -1,9 +1,12 @@
 
+using System;
+
 namespace Graphyte.Build.Toolchains.Clang
 {
     public sealed class ClangToolchainSettings
         : BaseToolchainSettings
     {
+        public string Version { get; set; }
         public bool AddressSanitizer { get; set; }
         public bool ThreadSanitizer { get; set; }
         public bool MemorySanitizer { get; set; }
