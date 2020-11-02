@@ -159,10 +159,38 @@ namespace Graphyte.Build
 
             var currentArchitectures = currentPlatform.Architectures;
 
+            currentPlatform.Initialize(this.m_Profile);
+            currentToolchain.Initialize(this.m_Profile);
+            currentGenerator.Initialize(this.m_Profile);
+
 
             Trace.WriteLine($@"Resolved platform:  {currentPlatform} ({currentPlatform.IsHostSupported})");
             Trace.WriteLine($@"Resolved toolchain: {currentToolchain} ({currentToolchain.IsHostSupported})");
             Trace.WriteLine($@"Resolved generator: {currentGenerator} ({currentGenerator.IsHostSupported})");
+
+            //Trace.WriteLine($@"Toolchain paths: {currentToolchain}");
+            //Trace.Indent();
+            //foreach (var path in currentToolchain.IncludePaths)
+            //{
+            //    Trace.WriteLine(@$"inc: ""{path}""");
+            //}
+            //foreach (var path in currentToolchain.LibraryPaths)
+            //{
+            //    Trace.WriteLine(@$"inc: ""{path}""");
+            //}
+            //Trace.Unindent();
+
+            Trace.WriteLine($@"Platform paths: {currentPlatform}");
+            Trace.Indent();
+            foreach (var path in currentPlatform.GetIncludePaths(currentArchitectures.First()))
+            {
+                Trace.WriteLine(@$"inc: ""{path}""");
+            }
+            foreach (var path in currentPlatform.GetLibraryPaths(currentArchitectures.First()))
+            {
+                Trace.WriteLine(@$"lib: ""{path}""");
+            }
+            Trace.Unindent();
 
             Trace.WriteLine($@"Supported architectures");
             Trace.Indent();
@@ -210,6 +238,12 @@ namespace Graphyte.Build
                         foreach (var target in resolved.Targets)
                         {
                             Trace.WriteLine(target.Name);
+                            Trace.Indent();
+                            foreach (var dependency in target.PrivateDependencies)
+                            {
+                                Trace.WriteLine($@"- {dependency.Name}");
+                            }
+                            Trace.Unindent();
                         }
                         Trace.Unindent();
                     }

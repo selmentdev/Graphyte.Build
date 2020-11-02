@@ -45,6 +45,16 @@ namespace Graphyte.Build.Platforms.Linux
             this.m_Settings = profile.GetSection<AndroidPlatformSettings>();
         }
 
+        public override string[] GetIncludePaths(ArchitectureType architectureType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string[] GetLibraryPaths(ArchitectureType architectureType)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void PreConfigureTarget(Target target)
         {
         }

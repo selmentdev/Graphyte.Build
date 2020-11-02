@@ -40,6 +40,16 @@ namespace Graphyte.Build.Platforms.Windows
             this.m_Settings = profile.GetSection<UniversalWindowsPlatformSettings>();
         }
 
+        public override string[] GetIncludePaths(ArchitectureType architectureType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string[] GetLibraryPaths(ArchitectureType architectureType)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void PreConfigureTarget(Target target)
         {
         }

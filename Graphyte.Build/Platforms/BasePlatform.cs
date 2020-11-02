@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Graphyte.Build.Platforms
 {
     /// <summary>
@@ -34,5 +36,8 @@ namespace Graphyte.Build.Platforms
         /// <param name="targetType">A target type.</param>
         /// <returns>The adjusted target name.</returns>
         public abstract string AdjustTargetName(string name, TargetType targetType);
+
+        public abstract string[] GetIncludePaths(ArchitectureType architectureType);
+        public abstract string[] GetLibraryPaths(ArchitectureType architectureType);
     }
 }
