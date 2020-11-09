@@ -3,6 +3,7 @@ using Graphyte.Build.Resolving;
 using Graphyte.Build.Tests.Mocks;
 using Graphyte.Build.Toolchains;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 
 namespace Graphyte.Build.Tests
 {
@@ -47,18 +48,37 @@ namespace Graphyte.Build.Tests
         [TestMethod]
         public void MissingDependency()
         {
-            var solution = new SampleSolution();
+            var platformProvider = new PlatformsProvider();
+
+            var platformFactory = platformProvider.Platforms.FirstOrDefault(
+                x => x.PlatformType == MockPlatformFactory.MockPlatform
+                    && x.ToolchainType == MockPlatformFactory.MockToolchain
+                    && x.ArchitectureType == ArchitectureType.X64);
+
+            var profile = Profile.Parse("{}");
+
+            var platform = platformFactory.CreatePlatform(profile);
+
+            var toolchain = platformFactory.CreateToolchain(profile);
+
             var targetTuple = new TargetTuple(
-                PlatformType.Windows,
-                ArchitectureType.X64,
-                ToolchainType.MSVC,
-                ConfigurationType.Debug);
+                platformFactory.PlatformType,
+                platformFactory.ArchitectureType,
+                platformFactory.ToolchainType,
+                ConfigurationType.Debug,
+                ConfigurationFlavour.None);
+
+            var solution = new SampleSolution();
 
             var resolved = new ResolvedSolution(solution, targetTuple);
 
             Assert.ThrowsException<ResolvingException>(() =>
             {
-                resolved.Configure(new MockToolchain(), new MockGenerator(), new MockPlatform());
+                resolved.Configure(
+                    toolchain,
+                    new MockGenerator(),
+                    platform);
+
                 resolved.Resolve();
             });
         }

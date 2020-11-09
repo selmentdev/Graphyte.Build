@@ -5,13 +5,16 @@ namespace Graphyte.Build.Tests.Mocks
     public class MockToolchain
         : BaseToolchain
     {
-        public override bool IsHostSupported => true;
-
-        public override ToolchainType Type => ToolchainType.Create("Mock");
-
-        public override void Initialize(Profile profile)
+        public MockToolchain(
+            Profile profile,
+            ArchitectureType architectureType)
+            : base(
+                  profile,
+                  architectureType)
         {
         }
+
+        public override ToolchainType ToolchainType => ToolchainType.Create("Mock");
 
         public override void PostConfigureTarget(Target target)
         {

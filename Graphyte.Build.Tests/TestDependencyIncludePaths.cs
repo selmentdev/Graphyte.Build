@@ -141,7 +141,8 @@ namespace Graphyte.Build.Tests
                             PlatformType.Windows,
                             ArchitectureType.X64,
                             ToolchainType.MSVC,
-                            ConfigurationType.Debug);
+                            ConfigurationType.Debug,
+                            ConfigurationFlavour.None);
 
             var resolved = new ResolvedSolution(solution, targetTuple);
 

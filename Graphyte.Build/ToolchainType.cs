@@ -1,21 +1,20 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Graphyte.Build.Platforms
+namespace Graphyte.Build
 {
-    public readonly struct PlatformType
-        : IEquatable<PlatformType>
+    public readonly struct ToolchainType
+        : IEquatable<ToolchainType>
     {
-        public static PlatformType Windows = new PlatformType("Windows");
-        public static PlatformType UniversalWindows = new PlatformType("UniversalWindows");
-        public static PlatformType Linux = new PlatformType("Linux");
-        public static PlatformType Android = new PlatformType("Android");
-        public static PlatformType MacOS = new PlatformType("MacOS");
-        public static PlatformType IOS = new PlatformType("IOS");
+        public static ToolchainType MSVC = new ToolchainType("MSVC");
+        public static ToolchainType Clang = new ToolchainType("Clang");
+        public static ToolchainType ClangCL = new ToolchainType("ClangCL");
+        public static ToolchainType GCC = new ToolchainType("GCC");
+        public static ToolchainType ICC = new ToolchainType("ICC");
 
         private readonly string m_Value;
 
-        private PlatformType(string value)
+        private ToolchainType(string value)
         {
             if (value == null)
             {
@@ -30,9 +29,9 @@ namespace Graphyte.Build.Platforms
             this.m_Value = value;
         }
 
-        public static PlatformType Create(string value)
+        public static ToolchainType Create(string value)
         {
-            return new PlatformType(value);
+            return new ToolchainType(value);
         }
 
         public override string ToString()
@@ -40,7 +39,7 @@ namespace Graphyte.Build.Platforms
             return this.m_Value ?? string.Empty;
         }
 
-        public bool Equals([AllowNull] PlatformType other)
+        public bool Equals([AllowNull] ToolchainType other)
         {
             return this.Equals(other.m_Value);
         }
@@ -52,7 +51,7 @@ namespace Graphyte.Build.Platforms
 
         public override bool Equals(object obj)
         {
-            return obj is PlatformType other && this.Equals(other);
+            return obj is ToolchainType other && this.Equals(other);
         }
 
         public override int GetHashCode()
@@ -60,12 +59,12 @@ namespace Graphyte.Build.Platforms
             return this.m_Value.GetHashCode();
         }
 
-        public static bool operator ==(PlatformType left, PlatformType right)
+        public static bool operator ==(ToolchainType left, ToolchainType right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(PlatformType left, PlatformType right)
+        public static bool operator !=(ToolchainType left, ToolchainType right)
         {
             return !(left == right);
         }

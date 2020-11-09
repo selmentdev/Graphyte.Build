@@ -36,8 +36,9 @@ namespace Graphyte.Build.Resolving
         /// Creates new instance of ResolvedSolution for given solution and target tuple.
         /// </summary>
         /// <param name="solution">A solution to resolve.</param>
-        /// <param name="targetTuple">A target tuple.</param>
-        public ResolvedSolution(Solution solution, TargetTuple targetTuple)
+        public ResolvedSolution(
+            Solution solution,
+            TargetTuple targetTuple)
         {
             this.Solution = solution ?? throw new ArgumentNullException(nameof(solution));
             this.TargetTuple = targetTuple;

@@ -3,21 +3,31 @@ using System.Runtime.InteropServices;
 
 namespace Graphyte.Build.Platforms.Linux
 {
-    public sealed class LinuxPlatform
+    public sealed class LinuxPlatformSettings
+        : BasePlatformSettings
+    {
+    }
+
+    sealed class LinuxPlatform
         : BasePlatform
     {
-        public override bool IsHostSupported
-            => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
-
-        private static readonly ArchitectureType[] g_SupportedArchitectures = new[]
+        public LinuxPlatform(
+            Profile profile,
+            ArchitectureType architectureType)
+            : base(
+                  profile,
+                  architectureType)
         {
-            ArchitectureType.ARM64,
-            ArchitectureType.X64,
-        };
+            this.m_Settings = profile.GetSection<LinuxPlatformSettings>();
 
-        public override ArchitectureType[] Architectures => LinuxPlatform.g_SupportedArchitectures;
+            // Default include paths
+            this.IncludePaths = new string[] { };
 
-        public override PlatformType Type => PlatformType.Linux;
+            // Default library paths
+            this.LibraryPaths = new string[] { };
+        }
+
+        public override PlatformType PlatformType => PlatformType.Linux;
 
         public override bool IsPlatformKind(PlatformKind platformKind)
         {
@@ -32,23 +42,6 @@ namespace Graphyte.Build.Platforms.Linux
             }
 
             throw new ArgumentOutOfRangeException(nameof(platformKind));
-        }
-
-        private LinuxPlatformSettings m_Settings;
-
-        public override void Initialize(Profile profile)
-        {
-            this.m_Settings = profile.GetSection<LinuxPlatformSettings>();
-        }
-
-        public override string[] GetIncludePaths(ArchitectureType architectureType)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override string[] GetLibraryPaths(ArchitectureType architectureType)
-        {
-            throw new NotImplementedException();
         }
 
         public override void PreConfigureTarget(Target target)
@@ -77,5 +70,7 @@ namespace Graphyte.Build.Platforms.Linux
 
             throw new ArgumentOutOfRangeException(nameof(targetType));
         }
+
+        private readonly LinuxPlatformSettings m_Settings;
     }
 }

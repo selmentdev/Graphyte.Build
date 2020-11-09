@@ -3,20 +3,29 @@ using System.Runtime.InteropServices;
 
 namespace Graphyte.Build.Platforms.Windows
 {
-    public sealed class UniversalWindowsPlatform
-        : BasePlatform
+    public sealed class UniversalWindowsPlatformSettings
+        : BasePlatformSettings
     {
-        public override bool IsHostSupported
-            => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+        public string WindowsSdkVersion { get; set; }
+    }
 
-        private static readonly ArchitectureType[] g_SupportedArchitectures = new[]
+    sealed class UniversalWindowsPlatform
+        : BaseWindowsPlatform
+    {
+        public UniversalWindowsPlatform(
+            Profile profile,
+            ArchitectureType architectureType)
+            : base(
+                  profile,
+                  architectureType)
         {
-            ArchitectureType.X64,
-            ArchitectureType.ARM64,
-        };
-        public override ArchitectureType[] Architectures => UniversalWindowsPlatform.g_SupportedArchitectures;
+            this.m_Settings = profile.GetSection<UniversalWindowsPlatformSettings>();
+            var version = this.m_Settings.WindowsSdkVersion;
 
-        public override PlatformType Type => PlatformType.UniversalWindows;
+            this.InitializeBasePaths(version);
+        }
+
+        public override PlatformType PlatformType => PlatformType.UniversalWindows;
 
         public override bool IsPlatformKind(PlatformKind platformKind)
         {
@@ -31,23 +40,6 @@ namespace Graphyte.Build.Platforms.Windows
             }
 
             throw new ArgumentOutOfRangeException(nameof(platformKind));
-        }
-
-        private UniversalWindowsPlatformSettings m_Settings;
-
-        public override void Initialize(Profile profile)
-        {
-            this.m_Settings = profile.GetSection<UniversalWindowsPlatformSettings>();
-        }
-
-        public override string[] GetIncludePaths(ArchitectureType architectureType)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override string[] GetLibraryPaths(ArchitectureType architectureType)
-        {
-            throw new NotImplementedException();
         }
 
         public override void PreConfigureTarget(Target target)
@@ -76,5 +68,7 @@ namespace Graphyte.Build.Platforms.Windows
 
             throw new ArgumentOutOfRangeException(nameof(targetType));
         }
+
+        private readonly UniversalWindowsPlatformSettings m_Settings;
     }
 }

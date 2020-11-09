@@ -1,3 +1,5 @@
+using Graphyte.Build.Platforms;
+using Graphyte.Build.Toolchains;
 using System;
 using System.Collections.Generic;
 
@@ -13,7 +15,22 @@ namespace Graphyte.Build
         /// <summary>
         /// Target tuple for current target.
         /// </summary>
-        public TargetTuple TargetTuple { get; }
+        private readonly TargetTuple m_TargetTuple;
+
+        public PlatformType PlatformType
+            => this.m_TargetTuple.PlatformType;
+
+        public ArchitectureType ArchitectureType
+            => this.m_TargetTuple.ArchitectureType;
+
+        public ToolchainType ToolchainType
+            => this.m_TargetTuple.ToolchainType;
+
+        public ConfigurationType ConfigurationType
+            => this.m_TargetTuple.ConfigurationType;
+
+        public ConfigurationFlavour ConfigurationFlavour
+            => this.m_TargetTuple.ConfigurationFlavour;
 
         /// <summary>
         /// Type of configured target.
@@ -61,7 +78,7 @@ namespace Graphyte.Build
         public Target(Project project, TargetTuple targetTuple)
         {
             this.Project = project;
-            this.TargetTuple = targetTuple;
+            this.m_TargetTuple = targetTuple;
             this.ProjectGuid = Tools.MakeGuid(this.Name);
         }
 

@@ -39,11 +39,17 @@ namespace Graphyte.Build
         }
 
         private readonly Options m_Options;
+
         private readonly Profile m_Profile;
-        private readonly PlatformsProvider m_PlatformsProvider = new PlatformsProvider();
-        private readonly ToolchainsProvider m_ToolchainsProvider = new ToolchainsProvider();
-        private readonly GeneratorsProvider m_GeneratorsProvider = new GeneratorsProvider();
-        private readonly SolutionsProvider m_SolutionsProvider = new SolutionsProvider();
+
+        private readonly PlatformsProvider m_PlatformsProvider
+            = new PlatformsProvider();
+
+        private readonly GeneratorsProvider m_GeneratorsProvider
+            = new GeneratorsProvider();
+
+        private readonly SolutionsProvider m_SolutionsProvider
+            = new SolutionsProvider();
 
         [Conditional("TRACE")]
         [Conditional("DEBUG")]
@@ -54,17 +60,7 @@ namespace Graphyte.Build
 
             foreach (var platform in this.m_PlatformsProvider.Platforms)
             {
-                Trace.WriteLine(platform);
-            }
-
-            Trace.Unindent();
-
-            Trace.WriteLine("Toolchains:");
-            Trace.Indent();
-
-            foreach (var toolchain in this.m_ToolchainsProvider.Toolchains)
-            {
-                Trace.WriteLine(toolchain);
+                Trace.WriteLine($@"{platform.PlatformType}-{platform.ArchitectureType}-{platform.ToolchainType}");
             }
 
             Trace.Unindent();
@@ -89,24 +85,6 @@ namespace Graphyte.Build
 
             Trace.Unindent();
 
-        }
-
-        private static void Validate(BasePlatform platform, BaseToolchain toolchain, BaseGenerator generator)
-        {
-            if (!platform.IsHostSupported)
-            {
-                throw new Exception($@"{platform} is not supported on host machine ({RuntimeInformation.OSDescription})");
-            }
-
-            if (!toolchain.IsHostSupported)
-            {
-                throw new Exception($@"{toolchain} is not supported on host machine ({RuntimeInformation.OSDescription})");
-            }
-
-            if (!generator.IsHostSupported)
-            {
-                throw new Exception($@"{generator} is not supported on host machine ({RuntimeInformation.OSDescription})");
-            }
         }
 
         private Application(string[] args)
@@ -151,90 +129,47 @@ namespace Graphyte.Build
             // Resolve specific platform and toolchain.
             //
 
-            var currentPlatform = this.m_PlatformsProvider.Create(typePlatform);
-            var currentToolchain = this.m_ToolchainsProvider.Create(typeToolchain);
             var currentGenerator = this.m_GeneratorsProvider.Create(typeGenerator);
 
-            Application.Validate(currentPlatform, currentToolchain, currentGenerator);
-
-            var currentArchitectures = currentPlatform.Architectures;
-
-            currentPlatform.Initialize(this.m_Profile);
-            currentToolchain.Initialize(this.m_Profile);
-            currentGenerator.Initialize(this.m_Profile);
-
-
-            Trace.WriteLine($@"Resolved platform:  {currentPlatform} ({currentPlatform.IsHostSupported})");
-            Trace.WriteLine($@"Resolved toolchain: {currentToolchain} ({currentToolchain.IsHostSupported})");
-            Trace.WriteLine($@"Resolved generator: {currentGenerator} ({currentGenerator.IsHostSupported})");
-
-            //Trace.WriteLine($@"Toolchain paths: {currentToolchain}");
-            //Trace.Indent();
-            //foreach (var path in currentToolchain.IncludePaths)
-            //{
-            //    Trace.WriteLine(@$"inc: ""{path}""");
-            //}
-            //foreach (var path in currentToolchain.LibraryPaths)
-            //{
-            //    Trace.WriteLine(@$"inc: ""{path}""");
-            //}
-            //Trace.Unindent();
-
-            Trace.WriteLine($@"Platform paths: {currentPlatform}");
-            Trace.Indent();
-            foreach (var path in currentPlatform.GetIncludePaths(currentArchitectures.First()))
-            {
-                Trace.WriteLine(@$"inc: ""{path}""");
-            }
-            foreach (var path in currentPlatform.GetLibraryPaths(currentArchitectures.First()))
-            {
-                Trace.WriteLine(@$"lib: ""{path}""");
-            }
-            Trace.Unindent();
-
-            Trace.WriteLine($@"Supported architectures");
-            Trace.Indent();
-
-            foreach (var architecture in currentArchitectures)
-            {
-                Trace.WriteLine(architecture);
-            }
-            Trace.Unindent();
-
-
             var currentConfigurations = Enum.GetValues(typeof(ConfigurationType)).Cast<ConfigurationType>();
-            Trace.WriteLine("Supported configurations");
-            Trace.Indent();
-            foreach (var configuration in currentConfigurations)
-            {
-                Trace.WriteLine(configuration);
-            }
-            Trace.Unindent();
 
-            Trace.WriteLine("Targets");
+            var platformFactories = this.m_PlatformsProvider.Platforms.Where(x =>
+                x.PlatformType == typePlatform &&
+                x.ToolchainType == typeToolchain);
 
-
-            ////////////////////////////////////////////////////////////////
             var solutions = this.m_SolutionsProvider.Create();
 
-            foreach (var solution in solutions)
+            foreach (var factory in platformFactories)
             {
-                foreach (var architecture in currentArchitectures)
+                Trace.WriteLine($@"Factory: {factory}");
+
+                var platform = factory.CreatePlatform(this.m_Profile);
+
+                var toolchain = factory.CreateToolchain(this.m_Profile);
+
+                foreach (var solution in solutions)
                 {
                     foreach (var configuration in currentConfigurations)
                     {
-                        var tuple = new TargetTuple(typePlatform, architecture, typeToolchain, configuration);
+                        var tuple = new TargetTuple(
+                            factory.PlatformType,
+                            factory.ArchitectureType,
+                            factory.ToolchainType,
+                            configuration,
+                            ConfigurationFlavour.None);
+
                         var resolved = new ResolvedSolution(solution, tuple);
 
                         resolved.Configure(
-                            currentToolchain,
+                            toolchain,
                             currentGenerator,
-                            currentPlatform);
+                            platform);
 
                         resolved.Resolve();
 
-                        Trace.WriteLine($@"{currentPlatform.Type}-{currentToolchain.Type}-{architecture}-{configuration}/");
+                        Trace.WriteLine($@"{factory.PlatformType}-{factory.ToolchainType}-{factory.ArchitectureType}-{configuration}/");
                         Trace.Indent();
+
                         foreach (var target in resolved.Targets)
                         {
                             Trace.WriteLine(target.Name);

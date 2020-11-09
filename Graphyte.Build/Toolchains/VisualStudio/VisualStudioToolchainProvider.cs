@@ -28,12 +28,12 @@ namespace Graphyte.Build.Toolchains.VisualStudio
         public readonly string Version;
 
         /// <summary>
-        /// Gets target toolkit of VS installation.
+        /// Gets target toolkit of VS installation. For example, `v142`.
         /// </summary>
         public readonly string Toolkit;
 
         /// <summary>
-        /// Gets toolset version of VS installation.
+        /// Gets toolset version of VS installation. For example, `14.1.5.1`.
         /// </summary>
         public readonly string Toolset;
 

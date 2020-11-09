@@ -1,27 +1,37 @@
-using Graphyte.Build.Platforms.Android;
 using System;
-using System.Runtime.InteropServices;
 
-namespace Graphyte.Build.Platforms.Linux
+namespace Graphyte.Build.Platforms.Android
 {
-    public sealed class AndroidPlatform
+    public sealed class AndroidPlatformSettings
+        : BasePlatformSettings
+    {
+        /// <summary>
+        /// Provides path to Android SDK.
+        /// </summary>
+        public string SdkPath { get; set; }
+
+        /// <summary>
+        /// Provides path to Anrdoid NDK.
+        /// </summary>
+        public string NdkPath { get; set; }
+
+        public int TargetApiLevel { get; set; }
+    }
+
+    sealed class AndroidPlatform
         : BasePlatform
     {
-        public override bool IsHostSupported
-            => RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-            || RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
-
-        private static readonly ArchitectureType[] g_SupportedArchitectures = new[]
+        public AndroidPlatform(
+            Profile profile,
+            ArchitectureType architectureType)
+            : base(
+                  profile,
+                  architectureType)
         {
-            ArchitectureType.ARM,
-            ArchitectureType.ARM64,
-            ArchitectureType.X64,
-            ArchitectureType.X86,
-        };
+            this.m_Settings = profile.GetSection<AndroidPlatformSettings>();
+        }
 
-        public override ArchitectureType[] Architectures => AndroidPlatform.g_SupportedArchitectures;
-
-        public override PlatformType Type => PlatformType.Android;
+        public override PlatformType PlatformType => PlatformType.Android;
 
         public override bool IsPlatformKind(PlatformKind platformKind)
         {
@@ -36,23 +46,6 @@ namespace Graphyte.Build.Platforms.Linux
             }
 
             throw new ArgumentOutOfRangeException(nameof(platformKind));
-        }
-
-        private AndroidPlatformSettings m_Settings;
-
-        public override void Initialize(Profile profile)
-        {
-            this.m_Settings = profile.GetSection<AndroidPlatformSettings>();
-        }
-
-        public override string[] GetIncludePaths(ArchitectureType architectureType)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override string[] GetLibraryPaths(ArchitectureType architectureType)
-        {
-            throw new NotImplementedException();
         }
 
         public override void PreConfigureTarget(Target target)
@@ -80,5 +73,7 @@ namespace Graphyte.Build.Platforms.Linux
 
             throw new ArgumentOutOfRangeException(nameof(targetType));
         }
+
+        private readonly AndroidPlatformSettings m_Settings;
     }
 }
