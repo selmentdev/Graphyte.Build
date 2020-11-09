@@ -28,7 +28,7 @@ namespace Graphyte.Build.Platforms.Android
     }
 
     sealed class AndroidPlatformProvider
-        : IPlatformProvider
+        : IPlatformsProvider
     {
         public IEnumerable<BasePlatformFactory> Provide()
         {

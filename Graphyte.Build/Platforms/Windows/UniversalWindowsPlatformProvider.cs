@@ -30,7 +30,7 @@ namespace Graphyte.Build.Platforms.Windows
     }
 
     sealed class UniversalWindowsPlatformProvider
-        : IPlatformProvider
+        : IPlatformsProvider
     {
         public IEnumerable<BasePlatformFactory> Provide()
         {

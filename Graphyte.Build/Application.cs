@@ -129,7 +129,8 @@ namespace Graphyte.Build
             // Resolve specific platform and toolchain.
             //
 
-            var currentGenerator = this.m_GeneratorsProvider.Create(typeGenerator);
+            var generatorFactories = this.m_GeneratorsProvider.Generators.Where(x => x.GeneratorType == typeGenerator);
+            var currentGenerator = generatorFactories.First().Create(this.m_Profile);
 
             var currentConfigurations = Enum.GetValues(typeof(ConfigurationType)).Cast<ConfigurationType>();
 
@@ -142,10 +143,22 @@ namespace Graphyte.Build
             foreach (var factory in platformFactories)
             {
                 Trace.WriteLine($@"Factory: {factory}");
+                Trace.Indent();
 
                 var platform = factory.CreatePlatform(this.m_Profile);
 
                 var toolchain = factory.CreateToolchain(this.m_Profile);
+
+                Trace.WriteLine($@"Compiler:  ""{toolchain.CompilerExecutable}""");
+
+                foreach (var file in toolchain.CompilerExtraFiles)
+                {
+                    Trace.WriteLine($@"- ""{file}""");
+                }
+
+                Trace.WriteLine($@"Linker:    ""{toolchain.LinkerExecutable}""");
+                Trace.WriteLine($@"Librarian: ""{toolchain.LibrarianExecutable}""");
+
 
                 foreach (var solution in solutions)
                 {
@@ -160,29 +173,28 @@ namespace Graphyte.Build
 
                         var resolved = new ResolvedSolution(solution, tuple);
 
-                        resolved.Configure(
-                            toolchain,
-                            currentGenerator,
-                            platform);
+                        resolved.Configure();
 
                         resolved.Resolve();
 
-                        Trace.WriteLine($@"{factory.PlatformType}-{factory.ToolchainType}-{factory.ArchitectureType}-{configuration}/");
-                        Trace.Indent();
-
-                        foreach (var target in resolved.Targets)
-                        {
-                            Trace.WriteLine(target.Name);
-                            Trace.Indent();
-                            foreach (var dependency in target.PrivateDependencies)
-                            {
-                                Trace.WriteLine($@"- {dependency.Name}");
-                            }
-                            Trace.Unindent();
-                        }
-                        Trace.Unindent();
+                        //Trace.WriteLine($@"{factory.PlatformType}-{factory.ToolchainType}-{factory.ArchitectureType}-{configuration}/");
+                        //Trace.Indent();
+                        //
+                        //foreach (var target in resolved.Targets)
+                        //{
+                        //    Trace.WriteLine(target.Name);
+                        //    Trace.Indent();
+                        //    foreach (var dependency in target.PrivateDependencies)
+                        //    {
+                        //        Trace.WriteLine($@"- {dependency.Name}");
+                        //    }
+                        //    Trace.Unindent();
+                        //}
+                        //Trace.Unindent();
                     }
                 }
+
+                Trace.Unindent();
             }
         }
 

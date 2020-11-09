@@ -18,7 +18,7 @@ namespace Graphyte.Build.Toolchains.Clang
         public string PgoPrefix { get; set; }
     }
 
-    sealed class ClangToolchain
+    public sealed class ClangToolchain
         : BaseToolchain
     {
         public ClangToolchain(
@@ -45,14 +45,6 @@ namespace Graphyte.Build.Toolchains.Clang
         private readonly PlatformType m_PlatformType;
 
         public override ToolchainType ToolchainType => ToolchainType.Clang;
-
-        public override void PreConfigureTarget(Target target)
-        {
-        }
-
-        public override void PostConfigureTarget(Target target)
-        {
-        }
 
         private readonly ClangToolchainSettings m_Settings;
     }

@@ -20,9 +20,6 @@ namespace Graphyte.Build
         public ArchitectureType ArchitectureType { get; }
         public abstract ToolchainType ToolchainType { get; }
 
-        public abstract void PreConfigureTarget(Target target);
-        public abstract void PostConfigureTarget(Target target);
-
         public string[] IncludePaths { get; protected set; }
 
         public string[] LibraryPaths { get; protected set; }

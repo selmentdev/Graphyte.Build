@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Graphyte.Build.Generators
+namespace Graphyte.Build
 {
     public readonly struct GeneratorType
         : IEquatable<GeneratorType>

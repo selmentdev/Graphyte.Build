@@ -15,13 +15,5 @@ namespace Graphyte.Build.Tests.Mocks
         }
 
         public override ToolchainType ToolchainType => ToolchainType.Create("Mock");
-
-        public override void PostConfigureTarget(Target target)
-        {
-        }
-
-        public override void PreConfigureTarget(Target target)
-        {
-        }
     }
 }

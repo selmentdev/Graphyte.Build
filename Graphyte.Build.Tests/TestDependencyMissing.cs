@@ -74,11 +74,7 @@ namespace Graphyte.Build.Tests
 
             Assert.ThrowsException<ResolvingException>(() =>
             {
-                resolved.Configure(
-                    toolchain,
-                    new MockGenerator(),
-                    platform);
-
+                resolved.Configure();
                 resolved.Resolve();
             });
         }

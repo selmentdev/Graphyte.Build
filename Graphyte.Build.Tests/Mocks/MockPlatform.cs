@@ -23,14 +23,6 @@ namespace Graphyte.Build.Tests.Mocks
             return true;
         }
 
-        public override void PreConfigureTarget(Target target)
-        {
-        }
-
-        public override void PostConfigureTarget(Target target)
-        {
-        }
-
         public override string AdjustTargetName(string name, TargetType targetType)
         {
             return name;
@@ -60,7 +52,7 @@ namespace Graphyte.Build.Tests.Mocks
     }
 
     sealed class MockPlatformProvider
-        : IPlatformProvider
+        : IPlatformsProvider
     {
         public IEnumerable<BasePlatformFactory> Provide()
         {

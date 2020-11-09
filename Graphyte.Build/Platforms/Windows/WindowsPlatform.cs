@@ -45,14 +45,6 @@ namespace Graphyte.Build.Platforms.Windows
             throw new ArgumentOutOfRangeException(nameof(platformKind));
         }
 
-        public override void PreConfigureTarget(Target target)
-        {
-        }
-
-        public override void PostConfigureTarget(Target target)
-        {
-        }
-
         public override string AdjustTargetName(string name, TargetType targetType)
         {
             switch (targetType)

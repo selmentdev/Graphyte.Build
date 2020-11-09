@@ -56,7 +56,7 @@ namespace Graphyte.Build.Resolving
             }
         }
 
-        public void Configure(BaseToolchain toolchain, BaseGenerator generator, BasePlatform platform)
+        public void Configure()
         {
             var solution = this.Solution;
 
@@ -64,17 +64,11 @@ namespace Graphyte.Build.Resolving
             {
                 var target = current.SourceTarget;
 
-                toolchain.PreConfigureTarget(target);
-                generator.PreConfigureTarget(target);
-                platform.PreConfigureTarget(target);
                 solution.PreConfigure(target);
 
                 target.Project.Configure(target);
 
                 solution.PostConfigure(target);
-                platform.PostConfigureTarget(target);
-                generator.PostConfigureTarget(target);
-                toolchain.PostConfigureTarget(target);
             }
         }
 

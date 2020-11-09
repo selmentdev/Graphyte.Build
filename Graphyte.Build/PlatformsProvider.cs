@@ -30,7 +30,7 @@ namespace Graphyte.Build
         }
     }
 
-    public interface IPlatformProvider
+    public interface IPlatformsProvider
     {
         IEnumerable<BasePlatformFactory> Provide();
     }
@@ -49,7 +49,7 @@ namespace Graphyte.Build
                 .SelectMany(x => x.GetTypes())
                 .Where(this.ValidType)
                 .Select(x => Activator.CreateInstance(x))
-                .Cast<IPlatformProvider>();
+                .Cast<IPlatformsProvider>();
 
             this.Platforms = providers
                 .SelectMany(x => x.Provide())
@@ -58,11 +58,10 @@ namespace Graphyte.Build
 
         private bool ValidType(Type type)
         {
-            return typeof(IPlatformProvider).IsAssignableFrom(type)
-                && type.IsClass
+            return type.IsClass
                 && !type.IsAbstract
                 && type.IsSealed
-                ;
+                && typeof(IPlatformsProvider).IsAssignableFrom(type);
         }
     }
 }

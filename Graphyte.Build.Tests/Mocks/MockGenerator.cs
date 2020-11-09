@@ -1,24 +1,43 @@
 using Graphyte.Build.Generators;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Graphyte.Build.Tests.Mocks
 {
-    public sealed class MockGenerator
+    sealed class MockGenerator
         : BaseGenerator
     {
-        public override bool IsHostSupported => true;
-
-        public override GeneratorType Type => GeneratorType.Create("Mock");
-
-        public override void Initialize(Profile profile)
+        public MockGenerator(Profile profile)
+            : base(profile)
         {
         }
 
-        public override void PostConfigureTarget(Target target)
+        public override GeneratorType GeneratorType => MockGeneratorFactory.Mock;
+    }
+
+    sealed class MockGeneratorFactory
+        : BaseGeneratorFactory
+    {
+        public static GeneratorType Mock = GeneratorType.Create("Mock");
+
+        public MockGeneratorFactory()
+            : base(MockGeneratorFactory.Mock, new Version(1, 0))
         {
         }
 
-        public override void PreConfigureTarget(Target target)
+        public override BaseGenerator Create(Profile profile)
         {
+            return new MockGenerator(profile);
+        }
+    }
+
+    sealed class MockGeneratorsProvider
+        : IGeneratorsProvider
+    {
+        public IEnumerable<BaseGeneratorFactory> Provide()
+        {
+            yield return new MockGeneratorFactory();
         }
     }
 }

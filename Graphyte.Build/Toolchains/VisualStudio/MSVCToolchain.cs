@@ -25,7 +25,7 @@ namespace Graphyte.Build.Toolchains.VisualStudio
         public bool StaticAnalyzer { get; set; } = false;
     }
 
-    sealed class MsvcToolchain
+    public sealed class MsvcToolchain
         : BaseToolchain
     {
         private static string MapArchitectureType(ArchitectureType architectureType)
@@ -104,13 +104,5 @@ namespace Graphyte.Build.Toolchains.VisualStudio
         private readonly MsvcToolchainSettings m_Settings;
 
         public override ToolchainType ToolchainType => ToolchainType.MSVC;
-
-        public override void PostConfigureTarget(Target target)
-        {
-        }
-
-        public override void PreConfigureTarget(Target target)
-        {
-        }
     }
 }

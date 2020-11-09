@@ -28,7 +28,7 @@ namespace Graphyte.Build.Platforms.Linux
     }
 
     sealed class LinuxPlatformProvider
-        : IPlatformProvider
+        : IPlatformsProvider
     {
         public IEnumerable<BasePlatformFactory> Provide()
         {

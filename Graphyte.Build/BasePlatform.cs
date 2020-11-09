@@ -27,10 +27,6 @@ namespace Graphyte.Build
 
         public abstract bool IsPlatformKind(PlatformKind platformKind);
 
-        public abstract void PreConfigureTarget(Target target);
-
-        public abstract void PostConfigureTarget(Target target);
-
         public abstract string AdjustTargetName(string name, TargetType targetType);
 
         public string[] IncludePaths { get; protected set; }
