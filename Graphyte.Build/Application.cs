@@ -129,8 +129,7 @@ namespace Graphyte.Build
             // Resolve specific platform and toolchain.
             //
 
-            var generatorFactories = this.m_GeneratorsProvider.Generators.Where(x => x.GeneratorType == typeGenerator);
-            var currentGenerator = generatorFactories.First().Create(this.m_Profile);
+            var currentGenerator = this.m_GeneratorsProvider.Generators.First(x => x.GeneratorType == typeGenerator).Create(this.m_Profile);
 
             var currentConfigurations = Enum.GetValues(typeof(ConfigurationType)).Cast<ConfigurationType>();
 
@@ -142,59 +141,88 @@ namespace Graphyte.Build
 
             foreach (var factory in platformFactories)
             {
-                Trace.WriteLine($@"Factory: {factory}");
-                Trace.Indent();
-
                 var platform = factory.CreatePlatform(this.m_Profile);
 
                 var toolchain = factory.CreateToolchain(this.m_Profile);
 
-                Trace.WriteLine($@"Compiler:  ""{toolchain.CompilerExecutable}""");
+                var filename = $@"{typeGenerator}_{factory.PlatformType}_{factory.ToolchainType}_{factory.ArchitectureType}.gen";
 
-                foreach (var file in toolchain.CompilerExtraFiles)
+                using (var generatedFile = File.Create($@"tmp_generated/{filename}"))
+                using (var writer = new StreamWriter(generatedFile))
                 {
-                    Trace.WriteLine($@"- ""{file}""");
-                }
-
-                Trace.WriteLine($@"Linker:    ""{toolchain.LinkerExecutable}""");
-                Trace.WriteLine($@"Librarian: ""{toolchain.LibrarianExecutable}""");
-
-
-                foreach (var solution in solutions)
-                {
-                    foreach (var configuration in currentConfigurations)
+                    foreach (var solution in solutions)
                     {
-                        var tuple = new TargetTuple(
-                            factory.PlatformType,
-                            factory.ArchitectureType,
-                            factory.ToolchainType,
-                            configuration,
-                            ConfigurationFlavour.None);
+                        foreach (var configuration in currentConfigurations)
+                        {
+                            var tuple = new TargetTuple(
+                                factory.PlatformType,
+                                factory.ArchitectureType,
+                                factory.ToolchainType,
+                                configuration,
+                                ConfigurationFlavour.None);
 
-                        var resolved = new ResolvedSolution(solution, tuple);
+                            var resolved = new ResolvedSolution(solution, tuple);
 
-                        resolved.Configure();
+                            resolved.Configure();
 
-                        resolved.Resolve();
+                            resolved.Resolve();
 
-                        //Trace.WriteLine($@"{factory.PlatformType}-{factory.ToolchainType}-{factory.ArchitectureType}-{configuration}/");
-                        //Trace.Indent();
-                        //
-                        //foreach (var target in resolved.Targets)
-                        //{
-                        //    Trace.WriteLine(target.Name);
-                        //    Trace.Indent();
-                        //    foreach (var dependency in target.PrivateDependencies)
-                        //    {
-                        //        Trace.WriteLine($@"- {dependency.Name}");
-                        //    }
-                        //    Trace.Unindent();
-                        //}
-                        //Trace.Unindent();
+                            writer.WriteLine($@"// {factory.PlatformType} - {factory.ToolchainType} - {factory.ArchitectureType} - {configuration}");
+
+                            foreach (var target in resolved.Targets)
+                            {
+                                writer.WriteLine($@"Library('Library-{solution.Name}-{target.Name}-{factory.PlatformType}-{factory.ToolchainType}-{factory.ArchitectureType}-{configuration}')");
+                                writer.WriteLine("{");
+                                writer.WriteLine("    .Libraries =");
+                                writer.WriteLine("    {");
+
+                                foreach (var dependency in target.PrivateDependencies)
+                                {
+                                    writer.WriteLine($@"        '{dependency.Name}',");
+                                }
+
+                                foreach (var library in target.PrivateLibraries)
+                                {
+                                    writer.WriteLine($@"        '{library}',");
+                                }
+
+                                writer.WriteLine("    }");
+                                writer.WriteLine();
+
+                                writer.WriteLine("    .CompilerOptions = ''");
+
+                                foreach (var path in platform.IncludePaths)
+                                {
+                                    writer.WriteLine($@"        + ' /I""{path}""'");
+                                }
+
+                                foreach (var path in toolchain.IncludePaths)
+                                {
+                                    writer.WriteLine($@"        + ' /I""{path}""'");
+                                }
+
+                                foreach (var path in target.PrivateIncludePaths)
+                                {
+                                    writer.WriteLine($@"        + ' /I""{path}""'");
+                                }
+
+                                writer.WriteLine("    }");
+
+                                writer.WriteLine("}");
+                            }
+
+                            writer.WriteLine($@".Solution_{solution.Name}_{factory.PlatformType}_{factory.ToolchainType}_{factory.ArchitectureType}_{configuration}");
+                            writer.WriteLine("{");
+
+                            foreach (var target in resolved.Targets)
+                            {
+                                writer.WriteLine($@"    'Library-{solution.Name}-{target.Name}-{factory.PlatformType}-{factory.ToolchainType}-{factory.ArchitectureType}-{configuration}',");
+                            }
+
+                            writer.WriteLine("}");
+                        }
                     }
                 }
-
-                Trace.Unindent();
             }
         }
 
