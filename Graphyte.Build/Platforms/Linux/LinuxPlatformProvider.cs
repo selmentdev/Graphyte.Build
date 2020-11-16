@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Graphyte.Build.Toolchains.Clang;
 
 namespace Graphyte.Build.Platforms.Linux
 {
@@ -23,7 +24,15 @@ namespace Graphyte.Build.Platforms.Linux
 
         public override BaseToolchain CreateToolchain(Profile profile)
         {
-            throw new NotImplementedException();
+            if (this.ToolchainType == ToolchainType.Clang)
+            {
+                return new ClangToolchain(
+                    profile,
+                    this.ArchitectureType,
+                    PlatformType.Linux);
+            }
+
+            throw new NotSupportedException();
         }
     }
 

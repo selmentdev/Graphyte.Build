@@ -40,6 +40,10 @@ namespace Graphyte.Build.Toolchains.Clang
             this.LinkerExecutable = $@"{location}/bin/lld";
 
             this.LibrarianExecutable = $@"{location}/bin/llvm-ar";
+
+            this.IncludePaths = new string[] {};
+            
+            this.LibraryPaths = new string[] {};
         }
 
         private readonly PlatformType m_PlatformType;
