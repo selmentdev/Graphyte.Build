@@ -17,6 +17,7 @@ namespace Graphyte.Build
         }
 
         public GeneratorType GeneratorType { get; }
+
         public Version Version { get; }
 
         public abstract BaseGenerator Create(Profile profile);

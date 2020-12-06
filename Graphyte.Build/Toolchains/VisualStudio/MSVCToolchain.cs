@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Graphyte.Build.Toolchains.VisualStudio
 {
@@ -32,19 +34,40 @@ namespace Graphyte.Build.Toolchains.VisualStudio
         {
             switch (architectureType)
             {
-                case ArchitectureType.ARM:
-                    return "arm";
                 case ArchitectureType.ARM64:
                     return "arm64";
                 case ArchitectureType.X64:
                     return "x64";
-                case ArchitectureType.X86:
-                    return "x86";
-                case ArchitectureType.PPC64:
-                    break;
             }
 
             throw new ArgumentOutOfRangeException(nameof(architectureType));
+        }
+
+        private static readonly string HostPathPrefix;
+
+        static MsvcToolchain()
+        {
+            switch (RuntimeInformation.OSArchitecture)
+            {
+                case Architecture.Arm:
+                    HostPathPrefix = "arm";
+                    break;
+
+                case Architecture.Arm64:
+                    HostPathPrefix = "arm64";
+                    break;
+
+                case Architecture.X86:
+                    HostPathPrefix = "Hostx86";
+                    break;
+
+                case Architecture.X64:
+                    HostPathPrefix = "Hostx64";
+                    break;
+
+                default:
+                    throw new NotSupportedException();
+            }
         }
 
         public MsvcToolchain(
@@ -62,42 +85,43 @@ namespace Graphyte.Build.Toolchains.VisualStudio
 
             var architectureMnemonic = MapArchitectureType(this.ArchitectureType);
 
-            var root = $@"{vsInstance.Location}/VC/Tools/MSVC/{vsInstance.Toolset}";
+            var root = Path.Combine(vsInstance.Location, "VC", "Tools", "MSVC", vsInstance.Toolset);
 
-            var rootBin = $@"{root}/bin/HostX64/{architectureMnemonic}";
+            this.RootPath = Path.Combine(root, "bin", HostPathPrefix, architectureMnemonic);
 
-            this.CompilerExecutable = $@"{rootBin}/cl.exe";
+            this.CompilerExecutable = Path.Combine(this.RootPath, "cl.exe");
 
             this.CompilerExtraFiles = new[]
             {
-                $@"{rootBin}/1033/clui.dll",
-                $@"{rootBin}/1033/mspft140ui.dll",
-                $@"{rootBin}/atlprov.dll",
-                $@"{rootBin}/c1.dll",
-                $@"{rootBin}/c1xx.dll",
-                $@"{rootBin}/c2.dll",
-                $@"{rootBin}/msobj140.dll",
-                $@"{rootBin}/mspdb140.dll",
-                $@"{rootBin}/mspdbcore.dll",
-                $@"{rootBin}/mspdbsrv.exe",
-                $@"{rootBin}/mspft140.dll",
-                $@"{rootBin}/msvcp140.dll",
-                $@"{rootBin}/tbbmalloc.dll",
-                $@"{rootBin}/vcruntime140.dll",
+                Path.Combine(this.RootPath, "1033", "clui.dll"),
+                Path.Combine(this.RootPath, "1033", "mspft140ui.dll"),
+                Path.Combine(this.RootPath, "atlprov.dll"),
+                Path.Combine(this.RootPath, "c1.dll"),
+                Path.Combine(this.RootPath, "c1xx.dll"),
+                Path.Combine(this.RootPath, "c2.dll"),
+                Path.Combine(this.RootPath, "msobj140.dll"),
+                Path.Combine(this.RootPath, "mspdb140.dll"),
+                Path.Combine(this.RootPath, "mspdbcore.dll"),
+                Path.Combine(this.RootPath, "mspdbsrv.exe"),
+                Path.Combine(this.RootPath, "mspft140.dll"),
+                Path.Combine(this.RootPath, "msvcp140.dll"),
+                Path.Combine(this.RootPath, "tbbmalloc.dll"),
+                Path.Combine(this.RootPath, "vcruntime140.dll"),
             };
 
-            this.LinkerExecutable = $@"{rootBin}/link.exe";
-            this.LibrarianExecutable = $@"{rootBin}/lib.exe";
+            this.LinkerExecutable = Path.Combine(this.RootPath, "link.exe");
+            this.LibrarianExecutable = Path.Combine(this.RootPath, "lib.exe");
 
             this.IncludePaths = new[]
             {
-                $@"{vsInstance.Location}/VC/Tools/MSVC/{vsInstance.Version}/include",
-                $@"{vsInstance.Location}/VC/Tools/MSVC/{vsInstance.Version}/atlmfc/include",
-                $@"{vsInstance.Location}/VC/Auxiliary/VS/include",
+                Path.Combine(vsInstance.Location, "VC", "Tools", "MSVC", vsInstance.Version, "include"),
+                Path.Combine(vsInstance.Location, "VC", "Tools", "MSVC", vsInstance.Version, "atlmfc", "include"),
+                Path.Combine(vsInstance.Location, "VC", "Auxiliary", "VS", "include"),
             };
+
             this.LibraryPaths = new[]
             {
-                $@"{vsInstance.Location}/VC/Tools/MSVC/{vsInstance.Version}/lib/{architectureMnemonic}"
+                Path.Combine(vsInstance.Location, "VC", "Tools", "MSVC", vsInstance.Version, "lib", architectureMnemonic),
             };
         }
 

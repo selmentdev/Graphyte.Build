@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Graphyte.Build.Platforms.Windows
@@ -21,19 +23,36 @@ namespace Graphyte.Build.Platforms.Windows
         {
             switch (architectureType)
             {
-                case ArchitectureType.ARM:
-                    return "arm";
                 case ArchitectureType.ARM64:
                     return "arm64";
                 case ArchitectureType.X64:
                     return "x64";
-                case ArchitectureType.X86:
-                    return "x86";
-                case ArchitectureType.PPC64:
-                    break;
             }
 
             throw new ArgumentOutOfRangeException(nameof(architectureType));
+        }
+
+        private static string GetBinPrefix()
+        {
+            switch (RuntimeInformation.OSArchitecture)
+            {
+                case Architecture.Arm:
+                    return "arm";
+
+                case Architecture.Arm64:
+                    return "arm64";
+
+                case Architecture.X64:
+                    return "x64";
+
+                case Architecture.X86:
+                    return "x86";
+
+                default:
+                    break;
+            }
+
+            throw new NotImplementedException();
         }
 
         protected void InitializeBasePaths(string version)
@@ -56,22 +75,24 @@ namespace Graphyte.Build.Platforms.Windows
 
                 this.IncludePaths = new[]
                 {
-                    $@"{location}\Include\{version}\shared",
-                    $@"{location}\Include\{version}\ucrt",
-                    $@"{location}\Include\{version}\um",
-                    $@"{location}\Include\{version}\winrt",
-                    $@"{location}\Include\{version}\cppwinrt",
+                    Path.Combine(location, "Include", version, "shared"),
+                    Path.Combine(location, "Include", version, "ucrt"),
+                    Path.Combine(location, "Include", version, "um"),
+                    Path.Combine(location, "Include", version, "winrt"),
+                    Path.Combine(location, "Include", version, "cppwinrt"),
                 };
 
                 var suffix = MapArchitectureType(this.ArchitectureType);
 
                 this.LibraryPaths = new[]
                 {
-                    $@"{location}\Lib\{version}\um\{suffix}",
-                    $@"{location}\Lib\{version}\ucrt\{suffix}",
+                    Path.Combine(location, "Lib", version, "um", suffix),
+                    Path.Combine(location, "Lib", version, "ucrt", suffix),
                 };
 
-                this.ResourceCompilerExecutable = $@"{location}/bin/{version}/x64/rc.exe";
+                var binPrefix = GetBinPrefix();
+
+                this.ResourceCompilerExecutable = Path.Combine(location, "bin", version, binPrefix, "rc.exe");
             }
         }
 

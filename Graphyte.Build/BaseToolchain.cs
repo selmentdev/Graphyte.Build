@@ -18,11 +18,14 @@ namespace Graphyte.Build
         protected Profile m_Profile;
 
         public ArchitectureType ArchitectureType { get; }
+
         public abstract ToolchainType ToolchainType { get; }
 
         public string[] IncludePaths { get; protected set; }
 
         public string[] LibraryPaths { get; protected set; }
+
+        public string RootPath { get; protected set; }
 
         public string CompilerExecutable { get; protected set; }
 

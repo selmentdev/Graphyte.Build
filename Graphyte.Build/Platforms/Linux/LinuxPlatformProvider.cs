@@ -43,8 +43,6 @@ namespace Graphyte.Build.Platforms.Linux
         {
             yield return new LinuxPlatformFactory(ArchitectureType.ARM64, ToolchainType.Clang);
             yield return new LinuxPlatformFactory(ArchitectureType.X64, ToolchainType.Clang);
-            yield return new LinuxPlatformFactory(ArchitectureType.ARM, ToolchainType.Clang);
-            yield return new LinuxPlatformFactory(ArchitectureType.X86, ToolchainType.Clang);
         }
     }
 }

@@ -35,8 +35,6 @@ namespace Graphyte.Build.Platforms.Windows
         public IEnumerable<BasePlatformFactory> Provide()
         {
             yield return new UniversalWindowsPlatformFactory(ArchitectureType.X64, ToolchainType.MSVC);
-            yield return new UniversalWindowsPlatformFactory(ArchitectureType.X86, ToolchainType.MSVC);
-            yield return new UniversalWindowsPlatformFactory(ArchitectureType.ARM, ToolchainType.MSVC);
             yield return new UniversalWindowsPlatformFactory(ArchitectureType.ARM64, ToolchainType.MSVC);
         }
     }

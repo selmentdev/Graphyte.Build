@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SampleProject": {
+      "commandName": "Project",
+      "commandLineArgs": "-Profile:\".\\generator.jsonc\" -Platform=Windows -Configuration=Release -Architecture=X64"
+    }
+  }
+}

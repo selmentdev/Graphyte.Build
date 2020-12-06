@@ -103,5 +103,10 @@ namespace Graphyte.Build.Resolving
                 throw new ResolvingException(
                     $@"Cannot resolve target ""{name}"" for solution ""{this.Solution.Name}""");
         }
+
+        public override string ToString()
+        {
+            return $@"{this.Solution}-{this.TargetTuple}";
+        }
     }
 }

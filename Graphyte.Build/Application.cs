@@ -1,8 +1,8 @@
+using Graphyte.Build.Evaluation;
 using Graphyte.Build.Generators;
-using Graphyte.Build.Platforms;
 using Graphyte.Build.Resolving;
-using Graphyte.Build.Toolchains;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -21,6 +21,7 @@ namespace Graphyte.Build
             public string Platform;
             public string Toolchain;
             public string Generator;
+            public string OutputPath;
 
             [Conditional("TRACE")]
             [Conditional("DEBUG")]
@@ -33,6 +34,7 @@ namespace Graphyte.Build
                 Trace.WriteLine($@"Platform:     {this.Platform}");
                 Trace.WriteLine($@"Toolchain:    {this.Toolchain}");
                 Trace.WriteLine($@"Generator:    {this.Generator}");
+                Trace.WriteLine($@"OutputPath:   {this.OutputPath}");
 
                 Trace.Unindent();
             }
@@ -50,6 +52,51 @@ namespace Graphyte.Build
 
         private readonly SolutionsProvider m_SolutionsProvider
             = new SolutionsProvider();
+
+        private readonly PlatformType m_PlatformType;
+        private readonly ToolchainType m_ToolchainType;
+        private readonly GeneratorType m_GeneratorType;
+        private readonly ConfigurationType[] m_ConfigurationTypes;
+        private readonly BasePlatformFactory[] m_PlatformFactories;
+        private readonly ArchitectureType[] m_Architectures;
+        private readonly BaseGenerator m_Generator;
+        private readonly Solution[] m_Solutions;
+
+        private readonly struct ConfigurationMapping
+        {
+            public readonly ConfigurationType Type;
+            public readonly ConfigurationFlavour Flavour;
+
+            public ConfigurationMapping(
+                ConfigurationType type,
+                ConfigurationFlavour flavour)
+            {
+                this.Type = type;
+                this.Flavour = flavour;
+            }
+        }
+
+        private static readonly ConfigurationMapping[] m_Configurations = new[]
+        {
+            new ConfigurationMapping(ConfigurationType.Debug, ConfigurationFlavour.None),
+            new ConfigurationMapping(ConfigurationType.Debug, ConfigurationFlavour.Client),
+            new ConfigurationMapping(ConfigurationType.Debug, ConfigurationFlavour.Editor),
+            new ConfigurationMapping(ConfigurationType.Debug, ConfigurationFlavour.Server),
+            new ConfigurationMapping(ConfigurationType.DebugGame, ConfigurationFlavour.None),
+            new ConfigurationMapping(ConfigurationType.DebugGame, ConfigurationFlavour.Client),
+            new ConfigurationMapping(ConfigurationType.DebugGame, ConfigurationFlavour.Editor),
+            new ConfigurationMapping(ConfigurationType.DebugGame, ConfigurationFlavour.Server),
+            new ConfigurationMapping(ConfigurationType.Development, ConfigurationFlavour.None),
+            new ConfigurationMapping(ConfigurationType.Development, ConfigurationFlavour.Client),
+            new ConfigurationMapping(ConfigurationType.Development, ConfigurationFlavour.Editor),
+            new ConfigurationMapping(ConfigurationType.Development, ConfigurationFlavour.Server),
+            new ConfigurationMapping(ConfigurationType.Release, ConfigurationFlavour.None),
+            new ConfigurationMapping(ConfigurationType.Release, ConfigurationFlavour.Client),
+            new ConfigurationMapping(ConfigurationType.Release, ConfigurationFlavour.Server),
+            new ConfigurationMapping(ConfigurationType.Testing, ConfigurationFlavour.None),
+            new ConfigurationMapping(ConfigurationType.Testing, ConfigurationFlavour.Client),
+            new ConfigurationMapping(ConfigurationType.Testing, ConfigurationFlavour.Server),
+        };
 
         [Conditional("TRACE")]
         [Conditional("DEBUG")]
@@ -85,6 +132,40 @@ namespace Graphyte.Build
 
             Trace.Unindent();
 
+            Trace.WriteLine("Architectures:");
+            Trace.Indent();
+
+            foreach (var architecture in this.m_Architectures)
+            {
+                Trace.WriteLine(architecture);
+            }
+
+            Trace.Unindent();
+
+            Trace.WriteLine("Configurations:");
+            Trace.Indent();
+
+            foreach (var configuration in m_Configurations)
+            {
+                Trace.WriteLine($@"{configuration.Type} {configuration.Flavour}");
+            }
+
+            Trace.Unindent();
+        }
+
+        private static void EmitLogo()
+        {
+            var previous = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Trace.WriteLine(@"   ______                 __          __         ____        _ __    __");
+            Trace.WriteLine(@"  / ____/________ _____  / /_  __  __/ /____    / __ )__  __(_) /___/ /");
+            Trace.WriteLine(@" / / __/ ___/ __ `/ __ \/ __ \/ / / / __/ _ \  / __  / / / / / / __  /");
+            Trace.WriteLine(@"/ /_/ / /  / /_/ / /_/ / / / / /_/ / /_/  __/ / /_/ / /_/ / / / /_/ /");
+            Trace.WriteLine(@"\____/_/   \__,_/ .___/_/ /_/\__, /\__/\___(_)_____/\__,_/_/_/\__,_/");
+            Trace.WriteLine(@"               /_/          /____/");
+            Trace.WriteLine(string.Empty);
+
+            Console.ForegroundColor = previous;
         }
 
         private Application(string[] args)
@@ -102,10 +183,11 @@ namespace Graphyte.Build
             //
 
             Trace.Listeners.Add(new ConsoleTraceListener());
+            Application.EmitLogo();
+
             Trace.WriteLine($@"Graphyte Build version {Application.Current}");
             Trace.WriteLine($@"{RuntimeInformation.OSDescription} ({RuntimeInformation.FrameworkDescription})");
-
-            this.DumpProviders();
+            Trace.WriteLine($@"Working directory: {Environment.CurrentDirectory}");
 
             //
             // Parse options.
@@ -114,9 +196,19 @@ namespace Graphyte.Build
             this.m_Options = CommandLineParser.Parse<Options>(args);
             this.m_Options.Dump();
 
-            var typePlatform = PlatformType.Create(this.m_Options.Platform);
-            var typeToolchain = ToolchainType.Create(this.m_Options.Toolchain);
-            var typeGenerator = GeneratorType.Create(this.m_Options.Generator);
+
+            //
+            // Map to enums.
+            //
+
+            this.m_PlatformType = PlatformType.Create(this.m_Options.Platform);
+            this.m_ToolchainType = ToolchainType.Create(this.m_Options.Toolchain);
+            this.m_GeneratorType = GeneratorType.Create(this.m_Options.Generator);
+
+            this.m_ConfigurationTypes = Enum.GetValues(typeof(ConfigurationType))
+                .Cast<ConfigurationType>()
+                .ToArray();
+
 
             //
             // Parse profile.
@@ -125,109 +217,94 @@ namespace Graphyte.Build
             var bytes = File.ReadAllBytes(this.m_Options.Profile.FullName);
             this.m_Profile = Profile.Parse(bytes);
 
+
             //
             // Resolve specific platform and toolchain.
             //
 
-            var currentGenerator = this.m_GeneratorsProvider.Generators.First(x => x.GeneratorType == typeGenerator).Create(this.m_Profile);
+            this.m_Generator = this.m_GeneratorsProvider.Generators
+                .First(x => x.GeneratorType == this.m_GeneratorType)
+                .Create(this.m_Profile);
 
-            var currentConfigurations = Enum.GetValues(typeof(ConfigurationType)).Cast<ConfigurationType>();
 
-            var platformFactories = this.m_PlatformsProvider.Platforms.Where(x =>
-                x.PlatformType == typePlatform &&
-                x.ToolchainType == typeToolchain);
+            //
+            // Factories have unique architecture types.
+            //
 
-            var solutions = this.m_SolutionsProvider.Create();
+            this.m_PlatformFactories = this.m_PlatformsProvider.Platforms.Where(
+                x => (x.PlatformType == this.m_PlatformType && x.ToolchainType == this.m_ToolchainType))
+                .ToArray();
 
-            foreach (var factory in platformFactories)
+            this.m_Architectures = this.m_PlatformFactories.Select(x => x.ArchitectureType).ToArray();
+
+            Trace.Assert(this.m_Architectures.Distinct().Count() == this.m_Architectures.Length);
+
+            this.m_Solutions = this.m_SolutionsProvider.Create();
+        }
+
+        private readonly struct FactoryContext
+        {
+            public readonly BasePlatform Platform;
+            public readonly BaseToolchain Toolchain;
+            public readonly BasePlatformFactory Factory;
+
+            public FactoryContext(
+                BasePlatformFactory factory,
+                Profile profile)
             {
-                var platform = factory.CreatePlatform(this.m_Profile);
-
-                var toolchain = factory.CreateToolchain(this.m_Profile);
-
-                var filename = $@"{typeGenerator}_{factory.PlatformType}_{factory.ToolchainType}_{factory.ArchitectureType}.gen";
-
-                using (var generatedFile = File.Create($@"tmp_generated/{filename}"))
-                using (var writer = new StreamWriter(generatedFile))
-                {
-                    foreach (var solution in solutions)
-                    {
-                        foreach (var configuration in currentConfigurations)
-                        {
-                            var tuple = new TargetTuple(
-                                factory.PlatformType,
-                                factory.ArchitectureType,
-                                factory.ToolchainType,
-                                configuration,
-                                ConfigurationFlavour.None);
-
-                            var resolved = new ResolvedSolution(solution, tuple);
-
-                            resolved.Configure();
-
-                            resolved.Resolve();
-
-                            writer.WriteLine($@"// {factory.PlatformType} - {factory.ToolchainType} - {factory.ArchitectureType} - {configuration}");
-
-                            foreach (var target in resolved.Targets)
-                            {
-                                writer.WriteLine($@"Library('Library-{solution.Name}-{target.Name}-{factory.PlatformType}-{factory.ToolchainType}-{factory.ArchitectureType}-{configuration}')");
-                                writer.WriteLine("{");
-                                writer.WriteLine("    .Libraries =");
-                                writer.WriteLine("    {");
-
-                                foreach (var dependency in target.PrivateDependencies)
-                                {
-                                    writer.WriteLine($@"        '{dependency.Name}',");
-                                }
-
-                                foreach (var library in target.PrivateLibraries)
-                                {
-                                    writer.WriteLine($@"        '{library}',");
-                                }
-
-                                writer.WriteLine("    }");
-                                writer.WriteLine();
-
-                                writer.WriteLine("    .CompilerOptions = ''");
-
-                                foreach (var path in platform.IncludePaths)
-                                {
-                                    writer.WriteLine($@"        + ' /I""{path}""'");
-                                }
-
-                                foreach (var path in toolchain.IncludePaths)
-                                {
-                                    writer.WriteLine($@"        + ' /I""{path}""'");
-                                }
-
-                                foreach (var path in target.PrivateIncludePaths)
-                                {
-                                    writer.WriteLine($@"        + ' /I""{path}""'");
-                                }
-
-                                writer.WriteLine("    }");
-
-                                writer.WriteLine("}");
-                            }
-
-                            writer.WriteLine($@".Solution_{solution.Name}_{factory.PlatformType}_{factory.ToolchainType}_{factory.ArchitectureType}_{configuration}");
-                            writer.WriteLine("{");
-
-                            foreach (var target in resolved.Targets)
-                            {
-                                writer.WriteLine($@"    'Library-{solution.Name}-{target.Name}-{factory.PlatformType}-{factory.ToolchainType}-{factory.ArchitectureType}-{configuration}',");
-                            }
-
-                            writer.WriteLine("}");
-                        }
-                    }
-                }
+                this.Factory = factory;
+                this.Platform = factory.CreatePlatform(profile);
+                this.Toolchain = factory.CreateToolchain(profile);
             }
         }
 
         private int Run()
         {
+            Debug.Assert(this.m_ConfigurationTypes != null);
+            Debug.Assert(this.m_PlatformFactories != null);
+            Debug.Assert(this.m_Architectures != null);
+            Debug.Assert(this.m_Solutions != null);
+
+            this.DumpProviders();
+
+            var platformToolchains = this.m_PlatformFactories
+                .Select(x => new FactoryContext(x, this.m_Profile));
+
+            foreach (var solution in this.m_Solutions)
+            {
+                var evaluated = platformToolchains.Select(context =>
+                {
+                    var resolvedSolutions = m_Configurations.Select(configuration =>
+                    {
+                        var targetTuple = new TargetTuple(
+                            context.Factory.PlatformType,
+                            context.Factory.ArchitectureType,
+                            context.Factory.ToolchainType,
+                            configuration.Type,
+                            configuration.Flavour);
+
+                        var result = new ResolvedSolution(solution, targetTuple);
+                        result.Configure();
+                        result.Resolve();
+                        return result;
+                    }).ToArray();
+
+                    return new EvaluatedSolution(
+                        context.Platform,
+                        context.Toolchain,
+                        solution,
+                        this.m_Profile,
+                        resolvedSolutions);
+                }).ToArray();
+
+                this.m_Generator.Generate(
+                    this.m_Options.OutputPath,
+                    this.m_PlatformType,
+                    this.m_ToolchainType,
+                    solution,
+                    evaluated);
+            }
+
             return 0;
         }
 

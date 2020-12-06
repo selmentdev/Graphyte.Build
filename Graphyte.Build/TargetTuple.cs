@@ -24,5 +24,17 @@ namespace Graphyte.Build
             this.ConfigurationType = configurationType;
             this.ConfigurationFlavour = configurationFlavour;
         }
+
+        public override string ToString()
+        {
+            if (this.ConfigurationFlavour != ConfigurationFlavour.None)
+            {
+                return $@"{this.PlatformType}-{this.ToolchainType}-{this.ArchitectureType}-{this.ConfigurationType}-{this.ConfigurationFlavour}";
+            }
+            else
+            {
+                return $@"{this.PlatformType}-{this.ToolchainType}-{this.ArchitectureType}-{this.ConfigurationType}";
+            }
+        }
     }
 }

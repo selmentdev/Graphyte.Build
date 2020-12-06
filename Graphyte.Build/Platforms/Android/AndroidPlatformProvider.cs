@@ -32,7 +32,6 @@ namespace Graphyte.Build.Platforms.Android
     {
         public IEnumerable<BasePlatformFactory> Provide()
         {
-            yield return new AndroidPlatformFactory(ArchitectureType.ARM, ToolchainType.Clang);
             yield return new AndroidPlatformFactory(ArchitectureType.ARM64, ToolchainType.Clang);
         }
     }

@@ -55,5 +55,10 @@ namespace Graphyte.Build
         public virtual void PostConfigure(Target target)
         {
         }
+
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }
