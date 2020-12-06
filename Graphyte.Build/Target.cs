@@ -99,5 +99,9 @@ namespace Graphyte.Build
         {
             this.InterfaceDependencies.Add(typeof(T).Name);
         }
+
+        #region Experimental
+        public bool UseUnityFiles { get; set; }
+        #endregion
     }
 }

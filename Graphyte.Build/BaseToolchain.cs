@@ -34,5 +34,10 @@ namespace Graphyte.Build
         public string LinkerExecutable { get; protected set; }
 
         public string LibrarianExecutable { get; protected set; }
+
+        public abstract string FormatDefine(string value);
+        public abstract string FormatLink(string value);
+        public abstract string FormatIncludePath(string value);
+        public abstract string FormatLibraryPath(string value);
     }
 }

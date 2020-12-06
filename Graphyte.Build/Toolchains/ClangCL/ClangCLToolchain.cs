@@ -32,8 +32,28 @@ namespace Graphyte.Build.Toolchains.ClangCL
             this.LibrarianExecutable = $@"{location}/bin/llvm-ar";
         }
 
+        private readonly ClangCLToolchainSettings m_Settings;
+
         public override ToolchainType ToolchainType => ToolchainType.ClangCL;
 
-        private readonly ClangCLToolchainSettings m_Settings;
+        public override string FormatDefine(string value)
+        {
+            return $@"/D{value}";
+        }
+
+        public override string FormatLink(string value)
+        {
+            return value;
+        }
+
+        public override string FormatIncludePath(string value)
+        {
+            return $@"/I""{value}""";
+        }
+
+        public override string FormatLibraryPath(string value)
+        {
+            return $@"/LIBPATH:""{value}""";
+        }
     }
 }

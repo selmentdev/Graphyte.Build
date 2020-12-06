@@ -51,5 +51,25 @@ namespace Graphyte.Build.Toolchains.Clang
         public override ToolchainType ToolchainType => ToolchainType.Clang;
 
         private readonly ClangToolchainSettings m_Settings;
+
+        public override string FormatDefine(string value)
+        {
+            return $@"-D{value}";
+        }
+
+        public override string FormatLink(string value)
+        {
+            return $@"-l{value}";
+        }
+
+        public override string FormatIncludePath(string value)
+        {
+            return $@"-I""{value}""";
+        }
+
+        public override string FormatLibraryPath(string value)
+        {
+            return $@"-L""{value}""";
+        }
     }
 }

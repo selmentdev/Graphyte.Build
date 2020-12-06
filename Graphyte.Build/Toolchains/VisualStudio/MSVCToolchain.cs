@@ -128,5 +128,25 @@ namespace Graphyte.Build.Toolchains.VisualStudio
         private readonly MsvcToolchainSettings m_Settings;
 
         public override ToolchainType ToolchainType => ToolchainType.MSVC;
+
+        public override string FormatDefine(string value)
+        {
+            return $@"/D{value}";
+        }
+
+        public override string FormatLink(string value)
+        {
+            return value;
+        }
+
+        public override string FormatIncludePath(string value)
+        {
+            return $@"/I""{value}""";
+        }
+
+        public override string FormatLibraryPath(string value)
+        {
+            return $@"/LIBPATH:""{value}""";
+        }
     }
 }
