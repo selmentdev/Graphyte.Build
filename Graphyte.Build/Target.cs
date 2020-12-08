@@ -1,5 +1,3 @@
-using Graphyte.Build.Platforms;
-using Graphyte.Build.Toolchains;
 using System;
 using System.Collections.Generic;
 
@@ -55,9 +53,9 @@ namespace Graphyte.Build
             set => this.m_Name = value;
         }
 
-        public List<string> PublicDependencies { get; } = new List<string>();
-        public List<string> PrivateDependencies { get; } = new List<string>();
-        public List<string> InterfaceDependencies { get; } = new List<string>();
+        public List<Type> PublicDependencies { get; } = new List<Type>();
+        public List<Type> PrivateDependencies { get; } = new List<Type>();
+        public List<Type> InterfaceDependencies { get; } = new List<Type>();
 
         public List<string> PublicIncludePaths { get; } = new List<string>();
         public List<string> PrivateIncludePaths { get; } = new List<string>();
@@ -85,19 +83,19 @@ namespace Graphyte.Build
         public void AddPublicDependency<T>()
             where T : Project
         {
-            this.PublicDependencies.Add(typeof(T).Name);
+            this.PublicDependencies.Add(typeof(T));
         }
 
         public void AddPrivateDependency<T>()
             where T : Project
         {
-            this.PrivateDependencies.Add(typeof(T).Name);
+            this.PrivateDependencies.Add(typeof(T));
         }
 
         public void AddInterfaceDependency<T>()
             where T : Project
         {
-            this.InterfaceDependencies.Add(typeof(T).Name);
+            this.InterfaceDependencies.Add(typeof(T));
         }
 
         #region Experimental

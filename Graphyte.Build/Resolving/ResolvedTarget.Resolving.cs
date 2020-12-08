@@ -96,9 +96,9 @@ namespace Graphyte.Build.Resolving
                 // Find dependencies from target.
                 //
 
-                var publicDependencies = this.SourceTarget.PublicDependencies.Select(this.Solution.FindTargetByProjectName).ToArray();
-                var privateDependencies = this.SourceTarget.PrivateDependencies.Select(this.Solution.FindTargetByProjectName).ToArray();
-                var interfaceDependencies = this.SourceTarget.InterfaceDependencies.Select(this.Solution.FindTargetByProjectName).ToArray();
+                var publicDependencies = this.SourceTarget.PublicDependencies.Select(this.Solution.FindTargetByType).ToArray();
+                var privateDependencies = this.SourceTarget.PrivateDependencies.Select(this.Solution.FindTargetByType).ToArray();
+                var interfaceDependencies = this.SourceTarget.InterfaceDependencies.Select(this.Solution.FindTargetByType).ToArray();
 
                 //
                 // Resolve dependencies recursively.

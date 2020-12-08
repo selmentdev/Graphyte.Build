@@ -1,6 +1,4 @@
-using Graphyte.Build.Platforms;
 using Graphyte.Build.Resolving;
-using Graphyte.Build.Toolchains;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Graphyte.Build.Tests

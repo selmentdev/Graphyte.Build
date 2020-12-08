@@ -1,5 +1,3 @@
-using Graphyte.Build.Toolchains;
-
 namespace Graphyte.Build.Tests.Mocks
 {
     public class MockToolchain
@@ -15,5 +13,25 @@ namespace Graphyte.Build.Tests.Mocks
         }
 
         public override ToolchainType ToolchainType => ToolchainType.Create("Mock");
+
+        public override string FormatDefine(string value)
+        {
+            return value;
+        }
+
+        public override string FormatIncludePath(string value)
+        {
+            return value;
+        }
+
+        public override string FormatLibraryPath(string value)
+        {
+            return value;
+        }
+
+        public override string FormatLink(string value)
+        {
+            return value;
+        }
     }
 }

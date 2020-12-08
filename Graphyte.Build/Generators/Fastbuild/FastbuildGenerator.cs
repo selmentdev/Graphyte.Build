@@ -3,7 +3,6 @@ using Graphyte.Build.Platforms.Windows;
 using Graphyte.Build.Resolving;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 
 namespace Graphyte.Build.Generators.Fastbuild
 {
@@ -160,6 +159,7 @@ namespace Graphyte.Build.Generators.Fastbuild
 
             var targetFileName = platform.AdjustTargetName(target.Name, target.SourceTarget.TargetType);
 
+            output.WriteLine($@"; Location: {target.SourceTarget.Project.ProjectRootPath}");
             output.WriteLine($@"Library('{toolchain.ToolchainType}-{toolchain.ArchitectureType}-{platform.PlatformType}-{target.Name}-{configurationPart}') {{");
             output.WriteLine($@"    Using(.{variablePrefix}_CommonPlatformToolchain)");
             output.WriteLine($@"    .CompilerOptions = ''");

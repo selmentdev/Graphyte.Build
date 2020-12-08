@@ -1,6 +1,6 @@
+using Graphyte.Build.Evaluation;
 using Graphyte.Build.Generators;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Graphyte.Build.Tests.Mocks
@@ -14,6 +14,10 @@ namespace Graphyte.Build.Tests.Mocks
         }
 
         public override GeneratorType GeneratorType => MockGeneratorFactory.Mock;
+
+        public override void Generate(string outputPath, PlatformType platformType, ToolchainType toolchainType, Solution solution, EvaluatedSolution[] evaluatedSolutions)
+        {
+        }
     }
 
     sealed class MockGeneratorFactory

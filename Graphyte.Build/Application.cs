@@ -2,7 +2,6 @@ using Graphyte.Build.Evaluation;
 using Graphyte.Build.Generators;
 using Graphyte.Build.Resolving;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -232,7 +231,7 @@ namespace Graphyte.Build
             //
 
             this.m_PlatformFactories = this.m_PlatformsProvider.Platforms.Where(
-                x => (x.PlatformType == this.m_PlatformType && x.ToolchainType == this.m_ToolchainType))
+                x => x.PlatformType == this.m_PlatformType && x.ToolchainType == this.m_ToolchainType)
                 .ToArray();
 
             this.m_Architectures = this.m_PlatformFactories.Select(x => x.ArchitectureType).ToArray();
@@ -323,18 +322,28 @@ namespace Graphyte.Build
             }
             catch (Exception e)
             {
-                Trace.WriteLine($@"Failed with exception: {e.Message}");
-
-#if TRACE
-                Trace.WriteLine("Stacktrace:");
-                Trace.WriteLine(e.StackTrace);
-#endif
+                ReportException(e);
                 return -1;
             }
             finally
             {
                 watch.Stop();
                 Trace.WriteLine($@"Excution time: {watch.Elapsed.TotalSeconds:0.0.00}");
+            }
+        }
+
+        private static void ReportException(Exception e)
+        {
+            while (e != null)
+            {
+                Trace.WriteLine($@"Failed with exception: {e.Message}");
+
+#if TRACE
+                Trace.WriteLine("Stacktrace:");
+                Trace.WriteLine(e.StackTrace);
+#endif
+
+                e = e.InnerException;
             }
         }
     }

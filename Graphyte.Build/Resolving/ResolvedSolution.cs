@@ -1,6 +1,3 @@
-using Graphyte.Build.Generators;
-using Graphyte.Build.Platforms;
-using Graphyte.Build.Toolchains;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,20 +85,23 @@ namespace Graphyte.Build.Resolving
             {
                 throw new ResolvingException($@"Internal resolving error");
             }
+
+            // TODO: Describe algorithm how to get list of projects required to be built for given
+            //       configuration.
+            //
+            // Because not all projects are valid for given configuration, list of resolved targets
+            // may be actaually lower thant projects. This should be solved by building all
+            // applications and plugins.
         }
 
-        /// <summary>
-        /// Finds resolved target by project name.
-        /// </summary>
-        /// <param name="name">A project name.</param>
-        /// <returns>The resolved target.</returns>
-        public ResolvedTarget FindTargetByProjectName(string name)
+        public ResolvedTarget FindTargetByType(Type type)
         {
-            var found = this.m_Targets.FirstOrDefault(x => x.Name == name);
+            var found = this.m_Targets
+                .FirstOrDefault(x => x.SourceTarget.Project.GetType() == type);
 
             return found ??
                 throw new ResolvingException(
-                    $@"Cannot resolve target ""{name}"" for solution ""{this.Solution.Name}""");
+                    $@"Cannot resolve target ""{type}"" for solution ""{this.Solution.Name}""");
         }
 
         public override string ToString()
