@@ -73,6 +73,8 @@ namespace Graphyte.Build
         public List<string> PrivateDefines { get; } = new List<string>();
         public List<string> InterfaceDefines { get; } = new List<string>();
 
+        public List<SourceList> Sources { get; } = new List<SourceList>();
+
         public Target(Project project, TargetTuple targetTuple)
         {
             this.Project = project;

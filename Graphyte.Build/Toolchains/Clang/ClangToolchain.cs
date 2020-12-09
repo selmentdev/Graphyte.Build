@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Graphyte.Build.Toolchains.Clang
 {
     public sealed class ClangToolchainSettings
@@ -35,11 +37,11 @@ namespace Graphyte.Build.Toolchains.Clang
 
             var location = this.m_Settings.Location;
 
-            this.CompilerExecutable = $@"{location}/bin/clang";
+            this.CompilerExecutable = $@"{location}/bin/clang.exe";
 
-            this.LinkerExecutable = $@"{location}/bin/lld";
+            this.LinkerExecutable = $@"{location}/bin/lld.exe";
 
-            this.LibrarianExecutable = $@"{location}/bin/llvm-ar";
+            this.LibrarianExecutable = $@"{location}/bin/llvm-ar.exe";
 
             this.IncludePaths = new string[] {};
             
@@ -70,6 +72,62 @@ namespace Graphyte.Build.Toolchains.Clang
         public override string FormatLibraryPath(string value)
         {
             return $@"-L""{value}""";
+        }
+
+        public override string FormatCompilerInputFile(string input)
+        {
+            return $@"-c ""{input}""";
+        }
+
+        public override string FormatCompilerOutputFile(string output)
+        {
+            return $@"-o ""{output}""";
+        }
+
+        public override string FormatLinkerGroupStart => "-Wl,--start-group ";
+        public override string FormatLinkerGroupEnd => " -Wl,--end-group";
+
+        public override string FormatLinkerInputFile(string input)
+        {
+            return $@"""{input}""";
+        }
+
+        public override string FormatLinkerOutputFile(string output)
+        {
+            return $@"-o ""{output}""";
+        }
+
+        public override string FormatLibrarianInputFile(string input)
+        {
+            return $@"""{input}""";
+        }
+
+        public override string FormatLibrarianOutputFile(string output)
+        {
+            return $@"""{output}""";
+        }
+
+        public override IEnumerable<string> GetCompilerCommandLine(Target target)
+        {
+            yield return "-std=c++20";
+            //yield return "-fconcepts"; -- already in std=c++20
+
+            yield return "-fdiagnostics-color=always";
+
+            if (target.PlatformType != PlatformType.Windows && target.PlatformType != PlatformType.UniversalWindows)
+            {
+                yield return "-fpic";
+                yield return "-stdlib=libc++";
+            }
+
+            yield return "-Wno-#pragma-messages";
+
+            yield return "-mavx";
+            yield return "-msse4.1";
+            yield return "-msse3";
+            yield return "-mssse3";
+            yield return "-msse2";
+            yield return "-m64";
         }
     }
 }

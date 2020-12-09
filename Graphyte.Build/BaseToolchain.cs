@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Graphyte.Build
 {
     public abstract class BaseToolchainSettings
@@ -35,9 +37,23 @@ namespace Graphyte.Build
 
         public string LibrarianExecutable { get; protected set; }
 
+        public virtual string FormatLinkerGroupStart => string.Empty;
+        public virtual string FormatLinkerGroupEnd => string.Empty;
+
         public abstract string FormatDefine(string value);
         public abstract string FormatLink(string value);
         public abstract string FormatIncludePath(string value);
         public abstract string FormatLibraryPath(string value);
+
+        public abstract string FormatCompilerInputFile(string input);
+        public abstract string FormatCompilerOutputFile(string output);
+
+        public abstract string FormatLinkerInputFile(string input);
+        public abstract string FormatLinkerOutputFile(string output);
+
+        public abstract string FormatLibrarianInputFile(string input);
+        public abstract string FormatLibrarianOutputFile(string output);
+
+        public abstract IEnumerable<string> GetCompilerCommandLine(Target target);
     }
 }

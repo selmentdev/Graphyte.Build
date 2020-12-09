@@ -1,4 +1,7 @@
+using Graphyte.Build.Toolchains.Clang;
+using Graphyte.Build.Toolchains.ClangCL;
 using Graphyte.Build.Toolchains.VisualStudio;
+using System;
 using System.Collections.Generic;
 
 namespace Graphyte.Build.Platforms.Windows
@@ -23,7 +26,20 @@ namespace Graphyte.Build.Platforms.Windows
 
         public override BaseToolchain CreateToolchain(Profile profile)
         {
-            return new MsvcToolchain(profile, this.ArchitectureType);
+            if (this.ToolchainType == ToolchainType.MSVC)
+            {
+                return new MsvcToolchain(profile, this.ArchitectureType);
+            }
+            else if (this.ToolchainType == ToolchainType.Clang)
+            {
+                return new ClangToolchain(profile, this.ArchitectureType, this.PlatformType);
+            }
+            else if (this.ToolchainType == ToolchainType.ClangCL)
+            {
+                return new ClangCLToolchain(profile, this.ArchitectureType);
+            }
+
+            throw new NotSupportedException("Toolchain not supported");
         }
     }
 

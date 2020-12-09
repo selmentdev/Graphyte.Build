@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Graphyte.Build.Toolchains.ClangCL
 {
     public sealed class ClangCLToolchainSettings
@@ -50,6 +52,41 @@ namespace Graphyte.Build.Toolchains.ClangCL
         public override string FormatLibraryPath(string value)
         {
             return $@"/LIBPATH:""{value}""";
+        }
+
+        public override string FormatCompilerInputFile(string input)
+        {
+            return $@"/c ""{input}""";
+        }
+
+        public override string FormatCompilerOutputFile(string output)
+        {
+            return $@"/Fo""{output}""";
+        }
+
+        public override string FormatLinkerInputFile(string input)
+        {
+            return $@"""{input}""";
+        }
+
+        public override string FormatLinkerOutputFile(string output)
+        {
+            return $@"/OUT:""{output}""";
+        }
+
+        public override string FormatLibrarianInputFile(string input)
+        {
+            return $@"""{input}""";
+        }
+
+        public override string FormatLibrarianOutputFile(string output)
+        {
+            return $@"/OUT:""{output}""";
+        }
+
+        public override IEnumerable<string> GetCompilerCommandLine(Target target)
+        {
+            yield break;
         }
     }
 }

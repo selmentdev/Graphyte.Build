@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Graphyte.Build.Tests.Mocks
 {
     public class MockToolchain
@@ -32,6 +34,41 @@ namespace Graphyte.Build.Tests.Mocks
         public override string FormatLink(string value)
         {
             return value;
+        }
+
+        public override string FormatCompilerInputFile(string input)
+        {
+            return input;
+        }
+
+        public override string FormatCompilerOutputFile(string output)
+        {
+            return output;
+        }
+
+        public override string FormatLinkerInputFile(string input)
+        {
+            return input;
+        }
+
+        public override string FormatLinkerOutputFile(string output)
+        {
+            return output;
+        }
+
+        public override string FormatLibrarianInputFile(string input)
+        {
+            return input;
+        }
+
+        public override string FormatLibrarianOutputFile(string output)
+        {
+            return output;
+        }
+
+        public override IEnumerable<string> GetCompilerCommandLine(Target target)
+        {
+            yield break;
         }
     }
 }
