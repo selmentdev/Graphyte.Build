@@ -1,8 +1,7 @@
+using Graphyte.Build.Framework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
 using System.Text.Json.Serialization;
 
-#if false
 namespace Graphyte.Build.Tests
 {
     [TestClass]
@@ -16,26 +15,26 @@ namespace Graphyte.Build.Tests
             Value3,
         }
 
+        [ProfileSection]
         public sealed class TestProfileSerialization_Section1
-            : BaseProfileSection
         {
             public string Property1 { get; set; }
             public int Property2 { get; set; }
             public SomeEnum[] Enums { get; set; }
         }
 
+        [ProfileSection]
         public sealed class TestProfileSerialization_Section2
-            : BaseProfileSection
         {
             public SomeEnum Value { get; set; }
-            public int ReadonlyValue => 42;
+            public int ReadonlyValue => this.OptionalValue.GetValueOrDefault(42);
             public string DefaultValue { get; set; } = "SomeDefaultValue";
             public bool SomeValue { get; set; }
             public int? OptionalValue { get; set; }
         }
 
+        [ProfileSection]
         public sealed class TestProfileSerialization_Section3
-            : BaseProfileSection
         {
             public string Test { get; set; }
             public float Something { get; set; }
@@ -64,7 +63,7 @@ namespace Graphyte.Build.Tests
                 },
             }";
 
-            var profile = Profile.Parse(content);
+            var profile = new Profile(content);
 
             Assert.AreEqual(2, profile.Sections.Count);
             var section1 = profile.GetSection<TestProfileSerialization_Section1>();
@@ -77,8 +76,6 @@ namespace Graphyte.Build.Tests
             Assert.AreEqual(SomeEnum.Value2, section1.Enums[1]);
             Assert.AreEqual(SomeEnum.Value1, section1.Enums[2]);
             Assert.AreEqual(SomeEnum.Value3, section1.Enums[3]);
-            Assert.AreEqual(1, section1.Properties.Count);
-            Assert.AreEqual("ValueNotPresent", section1.Properties.First().Key);
 
             var section2 = profile.GetSection<TestProfileSerialization_Section2>();
             Assert.IsNotNull(section2);
@@ -87,7 +84,6 @@ namespace Graphyte.Build.Tests
             Assert.AreEqual(true, section2.SomeValue);
             Assert.IsTrue(section2.OptionalValue.HasValue);
             Assert.AreEqual(43, section2.OptionalValue.Value);
-            Assert.IsNull(section2.Properties);
 
             var section3 = profile.GetSection<TestProfileSerialization_Section3>();
             Assert.IsNull(section3);
@@ -96,9 +92,8 @@ namespace Graphyte.Build.Tests
         [TestMethod]
         public void TestEmptyProfile()
         {
-            var profile = Profile.Parse(@"{}");
+            var profile = new Profile(@"{}");
             Assert.AreEqual(0, profile.Sections.Count);
         }
     }
 }
-#endif

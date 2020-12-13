@@ -1,7 +1,10 @@
+using Graphyte.Build.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.IO;
 
-#if false
+[assembly: Graphyte.Build.Core.TypesProvider]
+
 namespace Graphyte.Build.Tests
 {
     [TestClass]
@@ -34,7 +37,7 @@ namespace Graphyte.Build.Tests
         [TestMethod]
         public void EmptyCommandLine()
         {
-            var options = CommandLineParser.Parse<Options>(new string[] { });
+            var options = CommandLineParser.Parse<Options>(Array.Empty<string>());
 
             Assert.IsNull(options.SingleString);
             Assert.IsFalse(options.SingleBool);
@@ -63,7 +66,7 @@ namespace Graphyte.Build.Tests
         [TestMethod]
         public void ArrayParamsAreNotSupported()
         {
-            Assert.ThrowsException<CommandLineParsingException>(() => CommandLineParser.Parse<CommandLineParamsWithArray>(new[] {
+            Assert.ThrowsException<Exception>(() => CommandLineParser.Parse<CommandLineParamsWithArray>(new[] {
                 @"-MultipleString=""abcd""",
                 @"-MultipleString:""efgh""",
             }));
@@ -72,7 +75,7 @@ namespace Graphyte.Build.Tests
         [TestMethod]
         public void SpecifyingSingleValueFails()
         {
-            Assert.ThrowsException<CommandLineParsingException>(() => CommandLineParser.Parse<Options>(new[]
+            Assert.ThrowsException<Exception>(() => CommandLineParser.Parse<Options>(new[]
             {
                 @"-SingleBool:true",
                 @"-SingleBool:false",
@@ -114,4 +117,3 @@ namespace Graphyte.Build.Tests
         }
     }
 }
-#endif

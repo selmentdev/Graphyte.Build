@@ -1,125 +1,139 @@
-#if false
-using Graphyte.Build.Resolving;
-using Graphyte.Build.Tests.Mocks;
+using Graphyte.Build.Evaluation;
+using Graphyte.Build.Framework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
+using System;
 
 namespace Graphyte.Build.Tests
 {
     [TestClass]
     public class TestDependencyCycle
     {
-        public class SampleSolution : Solution
+        [ModuleRules]
+        public sealed class A : ModuleRules
         {
-            public SampleSolution()
+            public A(TargetRules targetRules) : base(targetRules)
             {
-                this.AddProject(new A());
-                this.AddProject(new B());
-                this.AddProject(new C());
-                this.AddProject(new D());
-                this.AddProject(new E());
-                this.AddProject(new F());
-                this.AddProject(new G());
-            }
+                this.ModuleKind = ModuleKind.Runtime;
+                this.ModuleLanguage = ModuleLanguage.CPlusPlus;
+                this.ModuleType = ModuleType.SharedLibrary;
 
-            public class A : Project
-            {
-                public override void Configure(Target target)
-                {
-                    target.TargetType = TargetType.SharedLibrary;
-                    target.AddPublicDependency<B>();
-                }
+                this.PublicDependencies.Add(typeof(B));
             }
+        }
 
-            public class B : Project
+        [ModuleRules]
+        public sealed class B : ModuleRules
+        {
+            public B(TargetRules targetRules) : base(targetRules)
             {
-                public override void Configure(Target target)
-                {
-                    target.TargetType = TargetType.SharedLibrary;
-                    target.AddPublicDependency<C>();
-                }
+                this.ModuleKind = ModuleKind.Runtime;
+                this.ModuleLanguage = ModuleLanguage.CPlusPlus;
+                this.ModuleType = ModuleType.SharedLibrary;
+
+                this.PublicDependencies.Add(typeof(C));
             }
+        }
 
-            public class C : Project
+        [ModuleRules]
+        public sealed class C : ModuleRules
+        {
+            public C(TargetRules targetRules) : base(targetRules)
             {
-                public override void Configure(Target target)
-                {
-                    target.TargetType = TargetType.SharedLibrary;
-                    target.AddPublicDependency<D>();
-                }
+                this.ModuleKind = ModuleKind.Runtime;
+                this.ModuleLanguage = ModuleLanguage.CPlusPlus;
+                this.ModuleType = ModuleType.SharedLibrary;
+
+                this.PublicDependencies.Add(typeof(D));
             }
+        }
 
-            public class D : Project
+        [ModuleRules]
+        public sealed class D : ModuleRules
+        {
+            public D(TargetRules targetRules) : base(targetRules)
             {
-                public override void Configure(Target target)
-                {
-                    target.TargetType = TargetType.SharedLibrary;
-                    target.AddPublicDependency<E>();
-                }
+                this.ModuleKind = ModuleKind.Runtime;
+                this.ModuleLanguage = ModuleLanguage.CPlusPlus;
+                this.ModuleType = ModuleType.SharedLibrary;
+
+                this.PublicDependencies.Add(typeof(E));
             }
+        }
 
-            public class E : Project
+        [ModuleRules]
+        public sealed class E : ModuleRules
+        {
+            public E(TargetRules targetRules) : base(targetRules)
             {
-                public override void Configure(Target target)
-                {
-                    target.TargetType = TargetType.SharedLibrary;
-                    target.AddPublicDependency<F>();
-                }
+                this.ModuleKind = ModuleKind.Runtime;
+                this.ModuleLanguage = ModuleLanguage.CPlusPlus;
+                this.ModuleType = ModuleType.SharedLibrary;
+
+                this.PublicDependencies.Add(typeof(F));
             }
+        }
 
-            public class F : Project
+        [ModuleRules]
+        public sealed class F : ModuleRules
+        {
+            public F(TargetRules targetRules) : base(targetRules)
             {
-                public override void Configure(Target target)
-                {
-                    target.TargetType = TargetType.SharedLibrary;
-                    target.AddPublicDependency<G>();
-                }
+                this.ModuleKind = ModuleKind.Runtime;
+                this.ModuleLanguage = ModuleLanguage.CPlusPlus;
+                this.ModuleType = ModuleType.SharedLibrary;
+
+                this.PublicDependencies.Add(typeof(G));
             }
+        }
 
-            public class G : Project
+        [ModuleRules]
+        public sealed class G : ModuleRules
+        {
+            public G(TargetRules targetRules) : base(targetRules)
             {
-                public override void Configure(Target target)
-                {
-                    target.TargetType = TargetType.SharedLibrary;
-                    target.AddPublicDependency<A>();
-                }
+                this.ModuleKind = ModuleKind.Runtime;
+                this.ModuleLanguage = ModuleLanguage.CPlusPlus;
+                this.ModuleType = ModuleType.SharedLibrary;
+
+                this.PublicDependencies.Add(typeof(A));
+            }
+        }
+
+        [TargetRules]
+        public sealed class SampleTargetRules : TargetRules
+        {
+            public SampleTargetRules(TargetDescriptor descriptor, TargetContext context) : base(descriptor, context)
+            {
             }
         }
 
         [TestMethod]
         public void Cycle()
         {
-            var platformProvider = new PlatformsProvider();
-
-            var platformFactory = platformProvider.Platforms.FirstOrDefault(
-                x => x.PlatformType == MockPlatformFactory.MockPlatform
-                    && x.ToolchainType == MockPlatformFactory.MockToolchain
-                    && x.ArchitectureType == ArchitectureType.X64);
-
-            var profile = Profile.Parse("{}");
-
-            var platform = platformFactory.CreatePlatform(profile);
-
-            var toolchain = platformFactory.CreateToolchain(profile);
-
-            var targetTuple = new TargetTuple(
-                platformFactory.PlatformType,
-                platformFactory.ArchitectureType,
-                platformFactory.ToolchainType,
-                ConfigurationType.Debug,
-                ConfigurationFlavour.None);
-
-            var solution = new SampleSolution();
-
-            var resolved = new ResolvedSolution(solution, targetTuple);
-
-            Assert.ThrowsException<ResolvingException>(() =>
+            var modules = new[]
             {
-                resolved.Configure();
+                typeof(A),
+                typeof(B),
+                typeof(C),
+                typeof(D),
+                typeof(E),
+                typeof(F),
+                typeof(G),
+            };
 
-                resolved.Resolve();
+            var descriptor = new TargetDescriptor(
+                TargetPlatform.Windows,
+                TargetArchitecture.X64,
+                TargetToolchain.MSVC,
+                TargetConfiguration.Debug);
+
+            var context = new TargetContext(null, null);
+
+            Assert.ThrowsException<Exception>(() =>
+            {
+                var e = new EvaluatedTargetRules(typeof(SampleTargetRules), descriptor, context, modules);
+                _ = e;
             });
         }
     }
 }
-#endif

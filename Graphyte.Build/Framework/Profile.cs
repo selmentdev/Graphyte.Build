@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.Json;
 
 namespace Graphyte.Build.Framework
@@ -44,6 +45,11 @@ namespace Graphyte.Build.Framework
         public Profile(ReadOnlySpan<byte> contents)
         {
             this.Sections = Parse(contents);
+        }
+
+        public Profile(string contents)
+            : this(Encoding.UTF8.GetBytes(contents))
+        {
         }
 
         public IReadOnlyList<object> Sections { get; }
