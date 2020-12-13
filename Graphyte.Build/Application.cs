@@ -154,9 +154,9 @@ namespace Graphyte.Build
                 foreach (var currentConfiguration in selectedConfigurations)
                 {
                     var targetDescriptor = new TargetDescriptor(
-                        currentPlatformFactory.TargetPlatform,
-                        currentPlatformFactory.TargetArchitecture,
-                        currentPlatformFactory.TargetToolchain,
+                        currentPlatformFactory.Platform,
+                        currentPlatformFactory.Architecture,
+                        currentPlatformFactory.Toolchain,
                         currentConfiguration);
 
                     var currentPlatform = currentPlatformFactory.CreatePlatform(this.m_Profile);
@@ -172,9 +172,10 @@ namespace Graphyte.Build
                             targetContext,
                             modulesProvider.Modules);
 
-                        foreach (var module in evaluatedTarget.ModuleRules)
+                        foreach (var module in evaluatedTarget.Modules)
                         {
-                            Debug.WriteLine($@"{module.EvaluatedTargetRules.TargetDescriptor}-{currentTarget.Name}-{module.ModuleRules}");
+                            //Debug.WriteLine($@"{module.Target.TargetDescriptor}-{currentTarget.Name}-{module.ModuleRules}");
+                            module.Dump();
                         }
                     }
                 }
@@ -186,7 +187,7 @@ namespace Graphyte.Build
         private static void ValidatePlatformFactories(PlatformFactory[] platformFactories)
         {
             var duplicate = platformFactories
-                .GroupBy(x => x.TargetArchitecture)
+                .GroupBy(x => x.Architecture)
                 .Where(x => x.Count() > 1)
                 .Select(x => x.Key);
 

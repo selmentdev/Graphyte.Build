@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Graphyte.Build.Generators.FastBuild
 {
-    [GeneratorFactoryProvider]
-    public sealed class FastBuildGeneratorFactoryProvider : GeneratorFactoryProvider
+    static class FastBuildHostSupport
     {
-        private static bool IsSupported
+        public static bool IsSupported
         {
             get
             {
@@ -47,10 +46,15 @@ namespace Graphyte.Build.Generators.FastBuild
                 return false;
             }
         }
+    }
 
+    [GeneratorFactoryProvider]
+    public sealed class FastBuildGeneratorFactoryProvider
+        : GeneratorFactoryProvider
+    {
         public override IEnumerable<GeneratorFactory> Provide()
         {
-            if (IsSupported)
+            if (FastBuildHostSupport.IsSupported)
             {
                 yield return new FastBuildGeneratorFactory();
             }

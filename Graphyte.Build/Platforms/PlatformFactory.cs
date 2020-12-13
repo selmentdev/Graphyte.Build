@@ -5,26 +5,27 @@ namespace Graphyte.Build.Platforms
 {
     public abstract class PlatformFactory
     {
-        public TargetPlatform TargetPlatform { get; }
-        public TargetArchitecture TargetArchitecture { get; }
-        public TargetToolchain TargetToolchain { get; }
+        public TargetPlatform Platform { get; }
+        public TargetArchitecture Architecture { get; }
+        public TargetToolchain Toolchain { get; }
 
         protected PlatformFactory(
-            TargetPlatform targetPlatform,
-            TargetArchitecture targetArchitecture,
-            TargetToolchain targetToolchain)
+            TargetPlatform platform,
+            TargetArchitecture architecture,
+            TargetToolchain toolchain)
         {
-            this.TargetPlatform = targetPlatform;
-            this.TargetArchitecture = targetArchitecture;
-            this.TargetToolchain = targetToolchain;
+            this.Platform = platform;
+            this.Architecture = architecture;
+            this.Toolchain = toolchain;
         }
 
-        public abstract Platform CreatePlatform(Profile profile);
-        public abstract Toolchain CreateToolchain(Profile profile);
+        public abstract PlatformBase CreatePlatform(Profile profile);
+
+        public abstract ToolchainBase CreateToolchain(Profile profile);
 
         public override string ToString()
         {
-            return $@"{this.TargetPlatform}-{this.TargetToolchain}-{this.TargetArchitecture}";
+            return $@"{this.Platform}-{this.Toolchain}-{this.Architecture}";
         }
     }
 }

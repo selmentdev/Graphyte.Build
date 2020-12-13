@@ -4,24 +4,25 @@ using Graphyte.Build.Toolchains.Clang;
 
 namespace Graphyte.Build.Platforms.Android
 {
-    sealed class AndroidPlatformFactory : PlatformFactory
+    sealed class AndroidPlatformFactory
+        : PlatformFactory
     {
-        public AndroidPlatformFactory(TargetArchitecture targetArchitecture, TargetToolchain targetToolchain)
-            :base(TargetPlatform.Android, targetArchitecture, targetToolchain)
-            { }
+        public AndroidPlatformFactory(TargetArchitecture architecture, TargetToolchain toolchain)
+            : base(TargetPlatform.Android, architecture, toolchain)
+        { }
 
-        public override Platform CreatePlatform(Profile profile)
+        public override PlatformBase CreatePlatform(Profile profile)
         {
             var settings = profile.GetSection<AndroidPlatformSettings>();
 
-            return new AndroidPlatform(profile, this.TargetArchitecture, settings);
+            return new AndroidPlatform(profile, this.Architecture, settings);
         }
 
-        public override Toolchain CreateToolchain(Profile profile)
+        public override ToolchainBase CreateToolchain(Profile profile)
         {
             var settings = profile.GetSection<AndroidPlatformSettings>();
 
-            return new ClangToolchain(profile, this.TargetPlatform, this.TargetArchitecture, settings.Clang);
+            return new ClangToolchain(profile, this.Platform, this.Architecture, settings.Clang);
         }
     }
 }

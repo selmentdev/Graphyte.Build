@@ -2,6 +2,7 @@ using Graphyte.Build.Core;
 using Graphyte.Build.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -9,9 +10,9 @@ namespace Graphyte.Build.Evaluation
 {
     public sealed partial class EvaluatedModuleRules
     {
-        public ModuleRules ModuleRules { get; }
+        public ModuleRules Module { get; }
 
-        public EvaluatedTargetRules EvaluatedTargetRules { get; }
+        public EvaluatedTargetRules Target { get; }
 
         public List<EvaluatedModuleRules> PublicDependencies { get; } = new List<EvaluatedModuleRules>();
         public List<EvaluatedModuleRules> PrivateDependencies { get; } = new List<EvaluatedModuleRules>();
@@ -24,18 +25,18 @@ namespace Graphyte.Build.Evaluation
         public List<string> PublicDefines { get; } = new List<string>();
         public List<string> PrivateDefines { get; } = new List<string>();
 
-        public EvaluatedModuleRules(ModuleRules moduleRules, EvaluatedTargetRules evaluatedTargetRules)
+        public EvaluatedModuleRules(ModuleRules module, EvaluatedTargetRules target)
         {
-            Validate(moduleRules);
+            Validate(module);
 
-            this.ModuleRules = moduleRules;
+            this.Module = module;
 
-            this.EvaluatedTargetRules = evaluatedTargetRules;
+            this.Target = target;
         }
 
         public override string ToString()
         {
-            return this.ModuleRules.ToString();
+            return this.Module.ToString();
         }
     }
 }
@@ -44,21 +45,21 @@ namespace Graphyte.Build.Evaluation
 {
     public sealed partial class EvaluatedModuleRules
     {
-        private static void Validate(ModuleRules moduleRules)
+        private static void Validate(ModuleRules module)
         {
-            if (moduleRules.ModuleType == ModuleType.Default)
+            if (module.Type == ModuleType.Default)
             {
-                throw new Exception($@"{moduleRules} must specify module type");
+                throw new Exception($@"{module} must specify module type");
             }
 
-            if (moduleRules.ModuleKind == ModuleKind.Default)
+            if (module.Kind == ModuleKind.Default)
             {
-                throw new Exception($@"{moduleRules} must specify module kind");
+                throw new Exception($@"{module} must specify module kind");
             }
 
-            if (moduleRules.ModuleLanguage == ModuleLanguage.Default)
+            if (module.Language == ModuleLanguage.Default)
             {
-                throw new Exception($@"{moduleRules} must specify module language");
+                throw new Exception($@"{module} must specify module language");
             }
         }
     }
@@ -92,40 +93,40 @@ namespace Graphyte.Build.Evaluation
             // Include paths.
             //
 
-            this.PrivateIncludePaths.Import(this.ModuleRules.PublicIncludePaths);
-            this.PrivateIncludePaths.Import(this.ModuleRules.PrivateIncludePaths);
-            this.PublicIncludePaths.Import(this.ModuleRules.PublicIncludePaths);
-            this.PublicIncludePaths.Import(this.ModuleRules.InterfaceIncludePaths);
+            this.PrivateIncludePaths.Import(this.Module.PublicIncludePaths);
+            this.PrivateIncludePaths.Import(this.Module.PrivateIncludePaths);
+            this.PublicIncludePaths.Import(this.Module.PublicIncludePaths);
+            this.PublicIncludePaths.Import(this.Module.InterfaceIncludePaths);
 
 
             //
             // Library paths.
             //
 
-            this.PrivateLibraryPaths.Import(this.ModuleRules.PublicLibraryPaths);
-            this.PrivateLibraryPaths.Import(this.ModuleRules.PrivateLibraryPaths);
-            this.PublicLibraryPaths.Import(this.ModuleRules.PublicLibraryPaths);
-            this.PublicLibraryPaths.Import(this.ModuleRules.InterfaceLibraryPaths);
+            this.PrivateLibraryPaths.Import(this.Module.PublicLibraryPaths);
+            this.PrivateLibraryPaths.Import(this.Module.PrivateLibraryPaths);
+            this.PublicLibraryPaths.Import(this.Module.PublicLibraryPaths);
+            this.PublicLibraryPaths.Import(this.Module.InterfaceLibraryPaths);
 
 
             //
             // Libraries.
             //
 
-            this.PrivateLibraries.Import(this.ModuleRules.PublicLibraries);
-            this.PrivateLibraries.Import(this.ModuleRules.PrivateLibraries);
-            this.PublicLibraries.Import(this.ModuleRules.PublicLibraries);
-            this.PublicLibraries.Import(this.ModuleRules.InterfaceLibraries);
+            this.PrivateLibraries.Import(this.Module.PublicLibraries);
+            this.PrivateLibraries.Import(this.Module.PrivateLibraries);
+            this.PublicLibraries.Import(this.Module.PublicLibraries);
+            this.PublicLibraries.Import(this.Module.InterfaceLibraries);
 
 
             //
             // Defines.
             //
 
-            this.PrivateDefines.Import(this.ModuleRules.PublicDefines);
-            this.PrivateDefines.Import(this.ModuleRules.PrivateDefines);
-            this.PublicDefines.Import(this.ModuleRules.PublicDefines);
-            this.PublicDefines.Import(this.ModuleRules.InterfaceDefines);
+            this.PrivateDefines.Import(this.Module.PublicDefines);
+            this.PrivateDefines.Import(this.Module.PrivateDefines);
+            this.PublicDefines.Import(this.Module.PublicDefines);
+            this.PublicDefines.Import(this.Module.InterfaceDefines);
         }
 
         public void Resolve(Stack<EvaluatedModuleRules> trace)
@@ -141,9 +142,9 @@ namespace Graphyte.Build.Evaluation
                 this.ImportProperties();
 
 
-                var dependenciesPublic = this.ModuleRules.PublicDependencies.Select(this.EvaluatedTargetRules.Find).ToArray();
-                var dependenciesPrivate = this.ModuleRules.PrivateDependencies.Select(this.EvaluatedTargetRules.Find).ToArray();
-                var dependenciesInterface = this.ModuleRules.InterfaceDependencies.Select(this.EvaluatedTargetRules.Find).ToArray();
+                var dependenciesPublic = this.Module.PublicDependencies.Select(this.Target.Find).ToArray();
+                var dependenciesPrivate = this.Module.PrivateDependencies.Select(this.Target.Find).ToArray();
+                var dependenciesInterface = this.Module.InterfaceDependencies.Select(this.Target.Find).ToArray();
 
                 // BUG:
                 //      Validate if specified dependency is specified exactly once.
@@ -183,7 +184,7 @@ namespace Graphyte.Build.Evaluation
             this.PrivateDependencies.Import(dependency);
             this.PublicDependencies.Import(dependency);
 
-            if (dependency.ModuleRules.ModuleType.IsImportable())
+            if (dependency.Module.Type.IsImportable())
             {
                 this.PrivateDependencies.Import(dependency.PublicDependencies);
                 this.PublicDependencies.Import(dependency.PublicDependencies);
@@ -206,7 +207,7 @@ namespace Graphyte.Build.Evaluation
         {
             this.PrivateDependencies.Import(dependency);
 
-            if (dependency.ModuleRules.ModuleType.IsImportable())
+            if (dependency.Module.Type.IsImportable())
             {
                 this.PrivateDependencies.Import(dependency.PublicDependencies);
             }
@@ -224,7 +225,7 @@ namespace Graphyte.Build.Evaluation
         {
             this.PublicDependencies.Import(dependency);
 
-            if (dependency.ModuleRules.ModuleType.IsImportable())
+            if (dependency.Module.Type.IsImportable())
             {
                 this.PublicDependencies.Import(dependency.PublicDependencies);
             }
@@ -236,6 +237,11 @@ namespace Graphyte.Build.Evaluation
             this.PublicLibraries.Import(dependency.PublicLibraries);
 
             this.PublicDefines.Import(dependency.PublicDefines);
+        }
+
+        public void Dump()
+        {
+            Trace.WriteLine($@"{this.Target}-{this.Target.Descriptor.Configuration}-{this}");
         }
     }
 }

@@ -13,15 +13,15 @@ namespace Graphyte.Build.Platforms.Android
     {
         private readonly struct AbiMapping
         {
-            public readonly TargetArchitecture TargetArchitecture;
+            public readonly TargetArchitecture Architecture;
             public readonly string Toolchain;
             public readonly string Platform;
             public readonly string LibPath;
             public readonly int Bitness;
 
-            public AbiMapping(TargetArchitecture targetArchitecture, string toolchain, string platform, string libPath, int bitness) : this()
+            public AbiMapping(TargetArchitecture architecture, string toolchain, string platform, string libPath, int bitness) : this()
             {
-                this.TargetArchitecture = targetArchitecture;
+                this.Architecture = architecture;
                 this.Toolchain = toolchain;
                 this.Platform = platform;
                 this.LibPath = libPath;
@@ -60,9 +60,9 @@ namespace Graphyte.Build.Platforms.Android
             }
         }
 
-        private static (int min, int max) GetMinMaxApiVersion(string ndk_path)
+        private static (int min, int max) GetMinMaxApiVersion(string ndkPath)
         {
-            var content = File.ReadAllBytes(Path.Combine(ndk_path, "meta", "platforms.json"));
+            var content = File.ReadAllBytes(Path.Combine(ndkPath, "meta", "platforms.json"));
             using var document = JsonDocument.Parse(content, new JsonDocumentOptions()
             {
                 AllowTrailingCommas = true,
@@ -76,9 +76,9 @@ namespace Graphyte.Build.Platforms.Android
             return (min: min_prop.Value.GetInt32(), max: max_prop.Value.GetInt32());
         }
 
-        private static IReadOnlyDictionary<string, int> GetSystemLibs(string ndk_path)
+        private static IReadOnlyDictionary<string, int> GetSystemLibs(string ndkPath)
         {
-            var content = File.ReadAllBytes(Path.Combine(ndk_path, "meta", "system_libs.json"));
+            var content = File.ReadAllBytes(Path.Combine(ndkPath, "meta", "system_libs.json"));
             using var document = JsonDocument.Parse(content, new JsonDocumentOptions()
             {
                 AllowTrailingCommas = true,

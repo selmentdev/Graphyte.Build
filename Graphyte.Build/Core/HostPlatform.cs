@@ -1,4 +1,4 @@
-namespace Graphyte.Build.Framework
+namespace Graphyte.Build.Core
 {
     public enum HostPlatform
     {

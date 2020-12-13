@@ -1,9 +1,9 @@
-﻿namespace Graphyte.Build.Toolchains.VisualStudio
+namespace Graphyte.Build.Toolchains.VisualStudio
 {
     /// <summary>
     /// Represents Visual Studio installaction information.
     /// </summary>
-    public readonly struct VisualStudioLocation
+    readonly struct VisualStudioLocation
     {
         /// <summary>
         /// Gets installaction location.

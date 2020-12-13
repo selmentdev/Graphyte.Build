@@ -50,8 +50,7 @@ namespace Graphyte.Build.Framework
 
     public static partial class TargetExtensions
     {
-        public static TargetLinkType GetDefaultTargetLinkType(
-            this TargetType self)
+        public static TargetLinkType GetDefaultTargetLinkType(this TargetType self)
         {
             switch (self)
             {
@@ -68,13 +67,11 @@ namespace Graphyte.Build.Framework
             throw new ArgumentOutOfRangeException(nameof(self));
         }
 
-        public static TargetLinkType GetDefaultForTargetType(
-            this TargetLinkType self,
-            TargetType targetType)
+        public static TargetLinkType GetDefaultForTargetType(this TargetLinkType self, TargetType target)
         {
             if (self == TargetLinkType.Default)
             {
-                return targetType.GetDefaultTargetLinkType();
+                return target.GetDefaultTargetLinkType();
             }
 
             return self;

@@ -9,100 +9,116 @@ namespace Graphyte.Build.Tests
     public class TestDependencyCycle
     {
         [ModuleRules]
-        public sealed class A : ModuleRules
+        public sealed class A
+            : ModuleRules
         {
-            public A(TargetRules targetRules) : base(targetRules)
+            public A(TargetRules target)
+                : base(target)
             {
-                this.ModuleKind = ModuleKind.Runtime;
-                this.ModuleLanguage = ModuleLanguage.CPlusPlus;
-                this.ModuleType = ModuleType.SharedLibrary;
+                this.Kind = ModuleKind.Runtime;
+                this.Language = ModuleLanguage.CPlusPlus;
+                this.Type = ModuleType.SharedLibrary;
 
                 this.PublicDependencies.Add(typeof(B));
             }
         }
 
         [ModuleRules]
-        public sealed class B : ModuleRules
+        public sealed class B
+            : ModuleRules
         {
-            public B(TargetRules targetRules) : base(targetRules)
+            public B(TargetRules target)
+                : base(target)
             {
-                this.ModuleKind = ModuleKind.Runtime;
-                this.ModuleLanguage = ModuleLanguage.CPlusPlus;
-                this.ModuleType = ModuleType.SharedLibrary;
+                this.Kind = ModuleKind.Runtime;
+                this.Language = ModuleLanguage.CPlusPlus;
+                this.Type = ModuleType.SharedLibrary;
 
                 this.PublicDependencies.Add(typeof(C));
             }
         }
 
         [ModuleRules]
-        public sealed class C : ModuleRules
+        public sealed class C
+            : ModuleRules
         {
-            public C(TargetRules targetRules) : base(targetRules)
+            public C(TargetRules target)
+                : base(target)
             {
-                this.ModuleKind = ModuleKind.Runtime;
-                this.ModuleLanguage = ModuleLanguage.CPlusPlus;
-                this.ModuleType = ModuleType.SharedLibrary;
+                this.Kind = ModuleKind.Runtime;
+                this.Language = ModuleLanguage.CPlusPlus;
+                this.Type = ModuleType.SharedLibrary;
 
                 this.PublicDependencies.Add(typeof(D));
             }
         }
 
         [ModuleRules]
-        public sealed class D : ModuleRules
+        public sealed class D
+            : ModuleRules
         {
-            public D(TargetRules targetRules) : base(targetRules)
+            public D(TargetRules target)
+                : base(target)
             {
-                this.ModuleKind = ModuleKind.Runtime;
-                this.ModuleLanguage = ModuleLanguage.CPlusPlus;
-                this.ModuleType = ModuleType.SharedLibrary;
+                this.Kind = ModuleKind.Runtime;
+                this.Language = ModuleLanguage.CPlusPlus;
+                this.Type = ModuleType.SharedLibrary;
 
                 this.PublicDependencies.Add(typeof(E));
             }
         }
 
         [ModuleRules]
-        public sealed class E : ModuleRules
+        public sealed class E
+            : ModuleRules
         {
-            public E(TargetRules targetRules) : base(targetRules)
+            public E(TargetRules target)
+                : base(target)
             {
-                this.ModuleKind = ModuleKind.Runtime;
-                this.ModuleLanguage = ModuleLanguage.CPlusPlus;
-                this.ModuleType = ModuleType.SharedLibrary;
+                this.Kind = ModuleKind.Runtime;
+                this.Language = ModuleLanguage.CPlusPlus;
+                this.Type = ModuleType.SharedLibrary;
 
                 this.PublicDependencies.Add(typeof(F));
             }
         }
 
         [ModuleRules]
-        public sealed class F : ModuleRules
+        public sealed class F
+            : ModuleRules
         {
-            public F(TargetRules targetRules) : base(targetRules)
+            public F(TargetRules target)
+                : base(target)
             {
-                this.ModuleKind = ModuleKind.Runtime;
-                this.ModuleLanguage = ModuleLanguage.CPlusPlus;
-                this.ModuleType = ModuleType.SharedLibrary;
+                this.Kind = ModuleKind.Runtime;
+                this.Language = ModuleLanguage.CPlusPlus;
+                this.Type = ModuleType.SharedLibrary;
 
                 this.PublicDependencies.Add(typeof(G));
             }
         }
 
         [ModuleRules]
-        public sealed class G : ModuleRules
+        public sealed class G
+            : ModuleRules
         {
-            public G(TargetRules targetRules) : base(targetRules)
+            public G(TargetRules target)
+                : base(target)
             {
-                this.ModuleKind = ModuleKind.Runtime;
-                this.ModuleLanguage = ModuleLanguage.CPlusPlus;
-                this.ModuleType = ModuleType.SharedLibrary;
+                this.Kind = ModuleKind.Runtime;
+                this.Language = ModuleLanguage.CPlusPlus;
+                this.Type = ModuleType.SharedLibrary;
 
                 this.PublicDependencies.Add(typeof(A));
             }
         }
 
         [TargetRules]
-        public sealed class SampleTargetRules : TargetRules
+        public sealed class SampleTargetRules
+            : TargetRules
         {
-            public SampleTargetRules(TargetDescriptor descriptor, TargetContext context) : base(descriptor, context)
+            public SampleTargetRules(TargetDescriptor descriptor, TargetContext context)
+                : base(descriptor, context)
             {
             }
         }
@@ -129,11 +145,7 @@ namespace Graphyte.Build.Tests
 
             var context = new TargetContext(null, null);
 
-            Assert.ThrowsException<Exception>(() =>
-            {
-                var e = new EvaluatedTargetRules(typeof(SampleTargetRules), descriptor, context, modules);
-                _ = e;
-            });
+            Assert.ThrowsException<Exception>(() => new EvaluatedTargetRules(typeof(SampleTargetRules), descriptor, context, modules));
         }
     }
 }

@@ -52,11 +52,11 @@ namespace Graphyte.Build.Platforms
         }
 
         public PlatformFactory[] GetPlatformFactories(
-            TargetPlatform targetPlatform,
-            TargetToolchain targetToolchain)
+            TargetPlatform platform,
+            TargetToolchain toolchain)
         {
             return this.Factories
-                .Where(x => x.TargetPlatform == targetPlatform && x.TargetToolchain == targetToolchain)
+                .Where(x => x.Platform == platform && x.Toolchain == toolchain)
                 .ToArray();
         }
     }

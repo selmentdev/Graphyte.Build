@@ -15,7 +15,7 @@ namespace Graphyte.Build.Generators
 
         public Version Version { get; }
 
-        public abstract Generator Create(Profile profile);
+        public abstract GeneratorBase Create(Profile profile);
 
         public override string ToString()
         {

@@ -5,26 +5,25 @@ using System.Runtime.InteropServices;
 
 namespace Graphyte.Build.Toolchains.Clang
 {
-    public sealed class ClangCLToolchain : Toolchain
+    public sealed class ClangCLToolchain
+        : ToolchainBase
     {
-        private readonly ClangCLToolchainSettings m_Settings;
+        public ClangCLToolchainSettings Settings { get; }
 
-        private readonly TargetPlatform m_TargetPlatform;
+        public TargetPlatform Platform { get; }
 
         public ClangCLToolchain(
             Profile profile,
-            TargetPlatform targetPlatform,
-            TargetArchitecture targetArchitecture,
+            TargetPlatform platform,
+            TargetArchitecture architecture,
             ClangCLToolchainSettings settings)
-            : base(profile, targetArchitecture)
+            : base(profile, architecture)
         {
-            this.m_Settings = settings;
-            _ = this.m_Settings;
+            this.Settings = settings;
 
-            this.m_TargetPlatform = targetPlatform;
-            _ = this.m_TargetPlatform;
+            this.Platform = platform;
 
-            var location = this.m_Settings.Location;
+            var location = this.Settings.Location;
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -44,7 +43,7 @@ namespace Graphyte.Build.Toolchains.Clang
             this.LibraryPaths = Array.Empty<string>();
         }
 
-        public override TargetToolchain TargetToolchain => TargetToolchain.ClangCL;
+        public override TargetToolchain Toolchain => TargetToolchain.ClangCL;
 
         public override string FormatDefine(string value)
         {
@@ -99,7 +98,7 @@ namespace Graphyte.Build.Toolchains.Clang
             return $@"/OUT:""{output}""";
         }
 
-        public override IEnumerable<string> GetCompilerCommandLine(TargetRules targetRules)
+        public override IEnumerable<string> GetCompilerCommandLine(TargetRules target)
         {
             yield break;
         }

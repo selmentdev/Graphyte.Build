@@ -1,29 +1,29 @@
-﻿using Graphyte.Build.Framework;
+using Graphyte.Build.Framework;
 using Graphyte.Build.Toolchains;
 using Graphyte.Build.Toolchains.VisualStudio;
 
 namespace Graphyte.Build.Platforms.Windows
 {
     sealed class UniversalWindowsPlatformFactory
-         : PlatformFactory
+        : PlatformFactory
     {
-        public UniversalWindowsPlatformFactory(TargetArchitecture targetArchitecture, TargetToolchain targetToolchain)
-            : base(TargetPlatform.UniversalWindows, targetArchitecture, targetToolchain)
+        public UniversalWindowsPlatformFactory(TargetArchitecture architecture, TargetToolchain toolchain)
+            : base(TargetPlatform.UniversalWindows, architecture, toolchain)
         {
         }
 
-        public override Platform CreatePlatform(Profile profile)
+        public override PlatformBase CreatePlatform(Profile profile)
         {
             var settings = profile.GetSection<UniversalWindowsPlatformSettings>();
 
-            return new UniversalWindowsPlatform(profile, this.TargetArchitecture, settings);
+            return new UniversalWindowsPlatform(profile, this.Architecture, settings);
         }
 
-        public override Toolchain CreateToolchain(Profile profile)
+        public override ToolchainBase CreateToolchain(Profile profile)
         {
             var settings = profile.GetSection<UniversalWindowsPlatformSettings>();
 
-            return new VisualStudioToolchain(profile, this.TargetArchitecture, settings.VisualStudio);
+            return new VisualStudioToolchain(profile, this.Architecture, settings.VisualStudio);
         }
     }
 }

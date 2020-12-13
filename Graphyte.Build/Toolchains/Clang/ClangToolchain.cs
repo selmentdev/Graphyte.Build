@@ -5,25 +5,24 @@ using System.Runtime.InteropServices;
 
 namespace Graphyte.Build.Toolchains.Clang
 {
-    public sealed class ClangToolchain : Toolchain
+    public sealed class ClangToolchain
+        : ToolchainBase
     {
-        private readonly ClangToolchainSettings m_Settings;
-        private readonly TargetPlatform m_TargetPlatform;
+        public ClangToolchainSettings Settings { get; }
+        public TargetPlatform Platform { get; }
 
         public ClangToolchain(
             Profile profile,
-            TargetPlatform targetPlatform,
-            TargetArchitecture targetArchitecture,
+            TargetPlatform platform,
+            TargetArchitecture architecture,
             ClangToolchainSettings settings)
-            : base(profile, targetArchitecture)
+            : base(profile, architecture)
         {
-            this.m_Settings = settings;
-            _ = this.m_Settings;
+            this.Settings = settings;
 
-            this.m_TargetPlatform = targetPlatform;
-            _ = this.m_TargetPlatform;
+            this.Platform = platform;
 
-            var location = this.m_Settings.Location;
+            var location = this.Settings.Location;
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -76,7 +75,7 @@ namespace Graphyte.Build.Toolchains.Clang
         public override string FormatLinkerGroupStart => "-Wl,--start-group ";
         public override string FormatLinkerGroupEnd => " -Wl,--end-group";
 
-        public override TargetToolchain TargetToolchain => TargetToolchain.Clang;
+        public override TargetToolchain Toolchain => TargetToolchain.Clang;
 
         public override string FormatLinkerInputFile(string input)
         {
@@ -98,14 +97,14 @@ namespace Graphyte.Build.Toolchains.Clang
             return $@"""{output}""";
         }
 
-        public override IEnumerable<string> GetCompilerCommandLine(TargetRules targetRules)
+        public override IEnumerable<string> GetCompilerCommandLine(TargetRules target)
         {
             yield return "-std=c++20";
             //yield return "-fconcepts"; -- already in std=c++20
 
             yield return "-fdiagnostics-color=always";
 
-            if (targetRules.Descriptor.Platform != TargetPlatform.Windows && targetRules.Descriptor.Platform != TargetPlatform.UniversalWindows)
+            if (target.Descriptor.Platform != TargetPlatform.Windows && target.Descriptor.Platform != TargetPlatform.UniversalWindows)
             {
                 yield return "-fpic";
                 yield return "-stdlib=libc++";

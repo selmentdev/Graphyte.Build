@@ -3,22 +3,22 @@ using System;
 
 namespace Graphyte.Build.Platforms.Android
 {
-    sealed class AndroidPlatform : Platform
+    sealed class AndroidPlatform
+        : PlatformBase
     {
-        private readonly AndroidPlatformSettings m_Settings;
+        public AndroidPlatformSettings Settings { get; }
 
-        public AndroidPlatform(Profile profile, TargetArchitecture targetArchitecture, AndroidPlatformSettings settings)
-            : base(profile, targetArchitecture)
+        public AndroidPlatform(Profile profile, TargetArchitecture architecture, AndroidPlatformSettings settings)
+            : base(profile, architecture)
         {
-            this.m_Settings = settings;
-            _ = this.m_Settings;
+            this.Settings = settings;
         }
 
-        public override TargetPlatform TargetPlatform => TargetPlatform.Android;
+        public override TargetPlatform Platform => TargetPlatform.Android;
 
-        public override bool IsPlatformKind(TargetPlatformKind platformKind)
+        public override bool IsPlatformKind(TargetPlatformKind kind)
         {
-            switch (platformKind)
+            switch (kind)
             {
                 case TargetPlatformKind.Mobile:
                     return true;
@@ -28,12 +28,12 @@ namespace Graphyte.Build.Platforms.Android
                     return false;
             }
 
-            throw new ArgumentOutOfRangeException(nameof(platformKind));
+            throw new ArgumentOutOfRangeException(nameof(kind));
         }
 
-        public override string AdjustModuleName(string name, ModuleType moduleType)
+        public override string AdjustModuleName(string name, ModuleType type)
         {
-            switch (moduleType)
+            switch (type)
             {
                 case ModuleType.SharedLibrary:
                     return $@"lib{name}.so";
@@ -47,7 +47,7 @@ namespace Graphyte.Build.Platforms.Android
                     break;
             }
 
-            throw new ArgumentOutOfRangeException(nameof(moduleType));
+            throw new ArgumentOutOfRangeException(nameof(type));
         }
     }
 }

@@ -5,33 +5,32 @@ using System;
 
 namespace Graphyte.Build.Platforms.Linux
 {
-    sealed class LinuxPlatformFactory : PlatformFactory
+    sealed class LinuxPlatformFactory
+        : PlatformFactory
     {
-        public LinuxPlatformFactory(
-            TargetArchitecture targetArchitecture,
-            TargetToolchain targetToolchain)
-            : base(TargetPlatform.Linux, targetArchitecture, targetToolchain)
+        public LinuxPlatformFactory(TargetArchitecture architecture, TargetToolchain toolchain)
+            : base(TargetPlatform.Linux, architecture, toolchain)
         {
 
         }
 
-        public override Platform CreatePlatform(Profile profile)
+        public override PlatformBase CreatePlatform(Profile profile)
         {
             var settings = profile.GetSection<LinuxPlatformSettings>();
 
-            return new LinuxPlatform(profile, this.TargetArchitecture, settings);
+            return new LinuxPlatform(profile, this.Architecture, settings);
         }
 
-        public override Toolchain CreateToolchain(Profile profile)
+        public override ToolchainBase CreateToolchain(Profile profile)
         {
             var settings = profile.GetSection<LinuxPlatformSettings>();
 
-            if (this.TargetToolchain == TargetToolchain.Clang)
+            if (this.Toolchain == TargetToolchain.Clang)
             {
                 return new ClangToolchain(
                     profile,
-                    this.TargetPlatform,
-                    this.TargetArchitecture,
+                    this.Platform,
+                    this.Architecture,
                     settings.Clang);
             }
 

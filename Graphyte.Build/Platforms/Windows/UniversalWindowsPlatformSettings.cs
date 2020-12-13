@@ -1,4 +1,4 @@
-﻿using Graphyte.Build.Framework;
+using Graphyte.Build.Framework;
 using Graphyte.Build.Toolchains.VisualStudio;
 
 namespace Graphyte.Build.Platforms.Windows
@@ -7,6 +7,7 @@ namespace Graphyte.Build.Platforms.Windows
     public sealed class UniversalWindowsPlatformSettings
     {
         public string WindowsSdkVersion { get; set; }
+
         public VisualStudioToolchainSettings VisualStudio { get; set; }
     }
 }

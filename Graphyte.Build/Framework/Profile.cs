@@ -8,7 +8,8 @@ using System.Text.Json;
 namespace Graphyte.Build.Framework
 {
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-    public sealed class ProfileSectionAttribute : Attribute
+    public sealed class ProfileSectionAttribute
+        : Attribute
     {
     }
 }

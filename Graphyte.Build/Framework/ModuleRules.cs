@@ -7,12 +7,12 @@ using System.Runtime.CompilerServices;
 namespace Graphyte.Build.Framework
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public sealed class ModuleRulesAttribute : Attribute
+    public sealed class ModuleRulesAttribute
+        : Attribute
     {
         public readonly string Location;
 
-        public ModuleRulesAttribute(
-            [CallerFilePath] string location = "")
+        public ModuleRulesAttribute([CallerFilePath] string location = "")
         {
             this.Location = location;
         }
@@ -28,7 +28,7 @@ namespace Graphyte.Build.Framework
 {
     public abstract class ModuleRules
     {
-        public ModuleRules(TargetRules targetRules)
+        public ModuleRules(TargetRules target)
         {
             var type = this.GetType();
             var location = type.GetCustomAttribute<ModuleRulesAttribute>();
@@ -38,22 +38,24 @@ namespace Graphyte.Build.Framework
                 throw new Exception($@"Module ""{type}"" must declare {nameof(ModuleRulesAttribute)}");
             }
 
-            this.ModuleFile = new FileInfo(location.Location);
-            this.ModuleDirectory = this.ModuleFile.Directory;
+            this.SourceFile = new FileInfo(location.Location);
+            this.SourceDirectory = this.SourceFile.Directory;
 
             this.Guid = Core.Tools.MakeGuid(this.GetType().FullName);
 
-            this.m_TargetRules = targetRules;
+            this.Target = target;
         }
 
-        private readonly TargetRules m_TargetRules;
+        public TargetRules Target { get; }
+
+        public FileInfo SourceFile { get; }
+        public DirectoryInfo SourceDirectory { get; }
 
         public Guid Guid { get; set; }
-        public FileInfo ModuleFile { get; }
-        public DirectoryInfo ModuleDirectory { get; }
-        public ModuleLanguage ModuleLanguage { get; protected init; }
-        public ModuleType ModuleType { get; protected init; }
-        public ModuleKind ModuleKind { get; protected init; }
+
+        public ModuleLanguage Language { get; protected init; }
+        public ModuleType Type { get; protected init; }
+        public ModuleKind Kind { get; protected init; }
 
         public List<Type> PublicDependencies { get; } = new List<Type>();
         public List<Type> PrivateDependencies { get; } = new List<Type>();

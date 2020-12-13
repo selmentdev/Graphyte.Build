@@ -3,64 +3,29 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace Graphyte.Build.Toolchains.VisualStudio
 {
-    public sealed class VisualStudioToolchain : Toolchain
+    public sealed class VisualStudioToolchain
+        : ToolchainBase
     {
-        private static string MapTargetArchitecture(TargetArchitecture targetArchitecture)
-        {
-            switch (targetArchitecture)
-            {
-                case TargetArchitecture.Arm64:
-                    return "arm64";
-
-                case TargetArchitecture.X64:
-                    return "x64";
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(targetArchitecture));
-        }
-
-        private static string HostPathPrefix
-        {
-            get
-            {
-                switch (RuntimeInformation.OSArchitecture)
-                {
-                    case Architecture.Arm:
-                        return "arm";
-                    case Architecture.Arm64:
-                        return "arm64";
-                    case Architecture.X86:
-                        return "Hostx86";
-                    case Architecture.X64:
-                        return "Hostx64";
-
-                    default:
-                        throw new NotSupportedException();
-                }
-            }
-        }
-
         public VisualStudioToolchain(
             Profile profile,
-            TargetArchitecture targetArchitecture,
+            TargetArchitecture architecture,
             VisualStudioToolchainSettings settings)
-            : base(profile, targetArchitecture)
+            : base(profile, architecture)
         {
-            this.m_Settings = settings;
+            this.Settings = settings;
 
             var vsInstances = VisualStudioToolchainProvider.Instances;
 
-            var vsInstance = vsInstances.First(x => x.Toolkit == this.m_Settings.Toolkit);
+            var vsInstance = vsInstances.First(x => x.Toolkit == this.Settings.Toolkit);
 
-            var architectureMnemonic = MapTargetArchitecture(this.TargetArchitecture);
+            var architectureMnemonic = VisualStudioToolchainProvider.MapTargetArchitecture(this.Architecture);
 
             var root = Path.Combine(vsInstance.Location, "VC", "Tools", "MSVC", vsInstance.Toolset);
 
-            this.RootPath = Path.Combine(root, "bin", HostPathPrefix, architectureMnemonic);
+            this.RootPath = Path.Combine(root, "bin", VisualStudioToolchainProvider.HostPathPrefix, architectureMnemonic);
 
             this.CompilerExecutable = Path.Combine(this.RootPath, "cl.exe");
 
@@ -98,9 +63,9 @@ namespace Graphyte.Build.Toolchains.VisualStudio
             };
         }
 
-        private readonly VisualStudioToolchainSettings m_Settings;
+        public VisualStudioToolchainSettings Settings { get; }
 
-        public override TargetToolchain TargetToolchain => TargetToolchain.MSVC;
+        public override TargetToolchain Toolchain => TargetToolchain.MSVC;
 
         public override string FormatDefine(string value)
         {
@@ -152,7 +117,7 @@ namespace Graphyte.Build.Toolchains.VisualStudio
             return $@"/OUT:""{output}""";
         }
 
-        public override IEnumerable<string> GetCompilerCommandLine(TargetRules targetRules)
+        public override IEnumerable<string> GetCompilerCommandLine(TargetRules target)
         {
             yield return "/nologo"; // Don't display compiler logo banner
 

@@ -1,4 +1,4 @@
-﻿using Graphyte.Build.Framework;
+using Graphyte.Build.Framework;
 using Graphyte.Build.Toolchains.Clang;
 using Graphyte.Build.Toolchains.VisualStudio;
 
@@ -8,8 +8,11 @@ namespace Graphyte.Build.Platforms.Windows
     public sealed class WindowsPlatformSettings
     {
         public string WindowsSdkVersion { get; set; }
+
         public VisualStudioToolchainSettings VisualStudio { get; set; }
+
         public ClangToolchainSettings Clang { get; set; }
+
         public ClangCLToolchainSettings ClangCL { get; set; }
     }
 }

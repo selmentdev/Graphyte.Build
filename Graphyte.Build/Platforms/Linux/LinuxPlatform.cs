@@ -3,25 +3,25 @@ using System;
 
 namespace Graphyte.Build.Platforms.Linux
 {
-    sealed class LinuxPlatform : Platform
+    sealed class LinuxPlatform
+        : PlatformBase
     {
-        public LinuxPlatform(Profile profile, TargetArchitecture targetArchitecture, LinuxPlatformSettings settings)
-            : base(profile, targetArchitecture)
+        public LinuxPlatform(Profile profile, TargetArchitecture architecture, LinuxPlatformSettings settings)
+            : base(profile, architecture)
         {
-            this.m_Settings = settings;
-            _ = this.m_Settings;
+            this.Settings = settings;
 
             this.IncludePaths = Array.Empty<string>();
             this.LibraryPaths = Array.Empty<string>();
         }
 
-        private readonly LinuxPlatformSettings m_Settings;
+        public LinuxPlatformSettings Settings { get; }
 
-        public override TargetPlatform TargetPlatform => TargetPlatform.Linux;
+        public override TargetPlatform Platform => TargetPlatform.Linux;
 
-        public override bool IsPlatformKind(TargetPlatformKind platformKind)
+        public override bool IsPlatformKind(TargetPlatformKind kind)
         {
-            switch (platformKind)
+            switch (kind)
             {
                 case TargetPlatformKind.Desktop:
                 case TargetPlatformKind.Server:
@@ -31,12 +31,12 @@ namespace Graphyte.Build.Platforms.Linux
                     return false;
             }
 
-            throw new ArgumentOutOfRangeException(nameof(platformKind));
+            throw new ArgumentOutOfRangeException(nameof(kind));
         }
 
-        public override string AdjustModuleName(string name, ModuleType moduleType)
+        public override string AdjustModuleName(string name, ModuleType type)
         {
-            switch (moduleType)
+            switch (type)
             {
                 case ModuleType.SharedLibrary:
                     return $@"lib{name}.so";
@@ -50,7 +50,7 @@ namespace Graphyte.Build.Platforms.Linux
                     break;
             }
 
-            throw new ArgumentOutOfRangeException(nameof(moduleType));
+            throw new ArgumentOutOfRangeException(nameof(type));
         }
     }
 }

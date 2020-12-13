@@ -14,7 +14,7 @@ namespace Graphyte.Build.Core
             return self;
         }
 
-        public static  List<T> Import<T>(this List<T> self, IEnumerable<T> items)
+        public static List<T> Import<T>(this List<T> self, IEnumerable<T> items)
         {
             foreach (var item in items)
             {

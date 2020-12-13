@@ -29,9 +29,9 @@ namespace Graphyte.Build.Framework
 
         public Type[] Modules { get; }
 
-        public static ModuleRules Create(Type type, TargetRules targetRules)
+        public static ModuleRules Create(Type type, TargetRules target)
         {
-            return Activator.CreateInstance(type, targetRules) as ModuleRules;
+            return Activator.CreateInstance(type, target) as ModuleRules;
         }
 
         [Conditional("DEBUG")]

@@ -6,17 +6,36 @@ using System.Runtime.InteropServices;
 
 namespace Graphyte.Build.Platforms.Windows
 {
-    abstract class BaseWindowsPlatform : Platform
+    static class WindowsSupport
     {
-        protected BaseWindowsPlatform(Profile profile, TargetArchitecture targetArchitecture)
-            : base(profile, targetArchitecture)
-
+        static WindowsSupport()
         {
+            switch (RuntimeInformation.OSArchitecture)
+            {
+                case Architecture.Arm:
+                    WindowsSupport.HostPrefix = "arm";
+                    break;
+
+                case Architecture.Arm64:
+                    WindowsSupport.HostPrefix = "arm64";
+                    break;
+
+                case Architecture.X64:
+                    WindowsSupport.HostPrefix = "x64";
+                    break;
+
+                case Architecture.X86:
+                    WindowsSupport.HostPrefix = "x86";
+                    break;
+
+                default:
+                    throw new NotSupportedException();
+            }
         }
 
-        protected static string MapTargetArchitecture(TargetArchitecture targetArchitecture)
+        public static string MapTargetArchitecture(TargetArchitecture architecture)
         {
-            switch (targetArchitecture)
+            switch (architecture)
             {
                 case TargetArchitecture.Arm64:
                     return "arm64";
@@ -24,27 +43,18 @@ namespace Graphyte.Build.Platforms.Windows
                     return "x64";
             }
 
-            throw new ArgumentOutOfRangeException(nameof(targetArchitecture));
+            throw new ArgumentOutOfRangeException(nameof(architecture));
         }
 
-        private static string GetHostPrefix()
+        public static string HostPrefix { get; }
+    }
+
+    abstract class BaseWindowsPlatform
+        : PlatformBase
+    {
+        protected BaseWindowsPlatform(Profile profile, TargetArchitecture architecture)
+            : base(profile, architecture)
         {
-            switch (RuntimeInformation.OSArchitecture)
-            {
-                case Architecture.Arm:
-                    return "arm";
-                case Architecture.Arm64:
-                    return "arm64";
-                case Architecture.X64:
-                    return "x64";
-                case Architecture.X86:
-                    return "x86";
-
-                default:
-                    break;
-            }
-
-            throw new NotImplementedException();
         }
 
         protected void InitializeBasePath(string version)
@@ -74,7 +84,7 @@ namespace Graphyte.Build.Platforms.Windows
                     Path.Combine(location, "Include", version, "cppwinrt"),
                 };
 
-                var suffix = MapTargetArchitecture(this.TargetArchitecture);
+                var suffix = WindowsSupport.MapTargetArchitecture(this.Architecture);
 
                 this.LibraryPaths = new[]
                 {
@@ -82,7 +92,7 @@ namespace Graphyte.Build.Platforms.Windows
                     Path.Combine(location, "Lib", version, "ucrt", suffix),
                 };
 
-                var binPrefix = GetHostPrefix();
+                var binPrefix = WindowsSupport.HostPrefix;
 
                 this.ResourceCompilerExecutable = Path.Combine(location, "bin", version, binPrefix, "rc.exe");
             }

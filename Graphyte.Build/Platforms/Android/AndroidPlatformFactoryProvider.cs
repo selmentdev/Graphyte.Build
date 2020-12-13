@@ -1,10 +1,11 @@
-﻿using Graphyte.Build.Framework;
+using Graphyte.Build.Framework;
 using System.Collections.Generic;
 
 namespace Graphyte.Build.Platforms.Android
 {
     [PlatformFactoryProvider]
-    public sealed class AndroidPlatformFactoryProvider : PlatformFactoryProvider
+    public sealed class AndroidPlatformFactoryProvider
+        : PlatformFactoryProvider
     {
         public override IEnumerable<PlatformFactory> Provide()
         {

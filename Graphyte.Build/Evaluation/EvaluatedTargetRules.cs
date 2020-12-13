@@ -8,27 +8,27 @@ namespace Graphyte.Build.Evaluation
 {
     public sealed class EvaluatedTargetRules
     {
-        public TargetDescriptor TargetDescriptor { get; }
+        public TargetDescriptor Descriptor { get; }
 
-        public TargetContext TargetContext { get; }
+        public TargetContext Context { get; }
 
-        public TargetRules TargetRules { get; }
+        public TargetRules Target { get; }
 
-        public EvaluatedModuleRules[] ModuleRules { get; }
+        public EvaluatedModuleRules[] Modules { get; }
 
-        public EvaluatedTargetRules(Type type, TargetDescriptor targetDescriptor, TargetContext targetContext, Type[] moduleRules)
+        public EvaluatedTargetRules(Type type, TargetDescriptor descriptor, TargetContext context, Type[] modules)
         {
-            this.TargetDescriptor = targetDescriptor;
+            this.Descriptor = descriptor;
 
-            this.TargetContext = targetContext;
+            this.Context = context;
 
-            this.TargetRules = Activator.CreateInstance(type, targetDescriptor, targetContext) as TargetRules;
+            this.Target = Activator.CreateInstance(type, descriptor, context) as TargetRules;
 
-            this.ModuleRules = moduleRules.Select(this.CreateModuleRules).ToArray();
+            this.Modules = modules.Select(this.CreateModuleRules).ToArray();
 
             var trace = new Stack<EvaluatedModuleRules>();
 
-            foreach (var module in this.ModuleRules)
+            foreach (var module in this.Modules)
             {
                 module.Resolve(trace);
             }
@@ -39,30 +39,30 @@ namespace Graphyte.Build.Evaluation
             }
 
 #if DEBUG
-            foreach (var module in this.ModuleRules)
+            foreach (var module in this.Modules)
             {
-                Debug.Assert(module.EvaluatedTargetRules == this);
-                Debug.Assert(module.EvaluatedTargetRules.TargetRules == this.TargetRules);
+                Debug.Assert(module.Target == this);
+                Debug.Assert(module.Target.Target == this.Target);
             }
 #endif
         }
 
         private EvaluatedModuleRules CreateModuleRules(Type type)
         {
-            var rules = Activator.CreateInstance(type, this.TargetRules) as ModuleRules;
+            var rules = Activator.CreateInstance(type, this.Target) as ModuleRules;
             return new EvaluatedModuleRules(rules, this);
         }
 
         public EvaluatedModuleRules Find(Type type)
         {
-            var found = this.ModuleRules.SingleOrDefault(x => x.ModuleRules.GetType() == type);
+            var found = this.Modules.SingleOrDefault(x => x.Module.GetType() == type);
 
             return found ?? throw new Exception($@"Cannot resolve module of type ""{type}""");
         }
 
         public override string ToString()
         {
-            return this.TargetRules.ToString();
+            return this.Target.ToString();
         }
     }
 }

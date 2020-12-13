@@ -5,14 +5,14 @@ namespace Graphyte.Build.Framework
 {
     public sealed class TargetContext
     {
-        public TargetContext(Platform platform, Toolchain toolchain)
+        public TargetContext(PlatformBase platform, ToolchainBase toolchain)
         {
             this.Platform = platform;
             this.Toolchain = toolchain;
         }
 
-        public Platform Platform { get; private set; }
+        public PlatformBase Platform { get; private set; }
 
-        public Toolchain Toolchain { get; private set; }
+        public ToolchainBase Toolchain { get; private set; }
     }
 }

@@ -8,24 +8,24 @@ namespace Graphyte.Build.Platforms.Windows
     {
         public UniversalWindowsPlatform(
             Profile profile,
-            TargetArchitecture targetArchitecture,
+            TargetArchitecture architecture,
             UniversalWindowsPlatformSettings settings)
-            : base(profile, targetArchitecture)
+            : base(profile, architecture)
         {
-            this.m_Settings = settings;
+            this.Settings = settings;
 
-            var version = this.m_Settings.WindowsSdkVersion;
+            var version = this.Settings.WindowsSdkVersion;
 
             this.InitializeBasePath(version);
         }
 
-        private readonly UniversalWindowsPlatformSettings m_Settings;
+        public UniversalWindowsPlatformSettings Settings { get; }
 
-        public override TargetPlatform TargetPlatform => TargetPlatform.UniversalWindows;
+        public override TargetPlatform Platform => TargetPlatform.UniversalWindows;
 
-        public override bool IsPlatformKind(TargetPlatformKind platformKind)
+        public override bool IsPlatformKind(TargetPlatformKind kind)
         {
-            switch (platformKind)
+            switch (kind)
             {
                 case TargetPlatformKind.Desktop:
                 case TargetPlatformKind.Mobile:
@@ -35,12 +35,12 @@ namespace Graphyte.Build.Platforms.Windows
                     return false;
             }
 
-            throw new ArgumentOutOfRangeException(nameof(platformKind));
+            throw new ArgumentOutOfRangeException(nameof(kind));
         }
 
-        public override string AdjustModuleName(string name, ModuleType moduleType)
+        public override string AdjustModuleName(string name, ModuleType type)
         {
-            switch (moduleType)
+            switch (type)
             {
                 case ModuleType.SharedLibrary:
                     return $@"lib{name}.dll";
@@ -54,7 +54,7 @@ namespace Graphyte.Build.Platforms.Windows
                     break;
             }
 
-            throw new ArgumentOutOfRangeException(nameof(moduleType));
+            throw new ArgumentOutOfRangeException(nameof(type));
         }
     }
 }

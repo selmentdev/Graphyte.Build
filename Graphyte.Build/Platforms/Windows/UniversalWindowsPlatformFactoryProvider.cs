@@ -1,10 +1,11 @@
-﻿using Graphyte.Build.Framework;
+using Graphyte.Build.Framework;
 using System.Collections.Generic;
 
 namespace Graphyte.Build.Platforms.Windows
 {
     [PlatformFactoryProvider]
-    public sealed class UniversalWindowsPlatformFactoryProvider : PlatformFactoryProvider
+    public sealed class UniversalWindowsPlatformFactoryProvider
+        : PlatformFactoryProvider
     {
         public override IEnumerable<PlatformFactory> Provide()
         {

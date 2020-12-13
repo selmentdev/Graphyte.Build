@@ -1,8 +1,8 @@
 namespace Graphyte.Build.Generators
 {
-    public abstract class Generator
+    public abstract class GeneratorBase
     {
-        protected Generator()
+        protected GeneratorBase()
         {
         }
 

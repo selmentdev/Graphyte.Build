@@ -1,3 +1,4 @@
+using Graphyte.Build.Framework;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -7,7 +8,7 @@ using System.Text.Json;
 
 namespace Graphyte.Build.Toolchains.VisualStudio
 {
-    public static class VisualStudioToolchainProvider
+    static class VisualStudioToolchainProvider
     {
         /// <summary>
         /// Gets collection of Visual Studio locations.
@@ -21,6 +22,42 @@ namespace Graphyte.Build.Toolchains.VisualStudio
         {
             VisualStudioToolchainProvider.Instances = VisualStudioToolchainProvider.Discover();
         }
+
+        public static string HostPathPrefix
+        {
+            get
+            {
+                switch (RuntimeInformation.OSArchitecture)
+                {
+                    case Architecture.Arm:
+                        return "arm";
+                    case Architecture.Arm64:
+                        return "arm64";
+                    case Architecture.X86:
+                        return "Hostx86";
+                    case Architecture.X64:
+                        return "Hostx64";
+
+                    default:
+                        throw new NotSupportedException();
+                }
+            }
+        }
+
+        public static string MapTargetArchitecture(TargetArchitecture architecture)
+        {
+            switch (architecture)
+            {
+                case TargetArchitecture.Arm64:
+                    return "arm64";
+
+                case TargetArchitecture.X64:
+                    return "x64";
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(architecture));
+        }
+
 
         /// <summary>
         /// Represents toolkit mapping.

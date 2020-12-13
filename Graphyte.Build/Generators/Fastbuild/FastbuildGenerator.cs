@@ -2,14 +2,14 @@ using Graphyte.Build.Framework;
 
 namespace Graphyte.Build.Generators.FastBuild
 {
-    sealed class FastBuildGenerator : Generator
+    sealed class FastBuildGenerator
+        : GeneratorBase
     {
-        private readonly FastBuildGeneratorSettings m_Settings;
+        public FastBuildGeneratorSettings Settings { get; }
 
         public FastBuildGenerator(Profile profile)
         {
-            this.m_Settings = profile.GetSection<FastBuildGeneratorSettings>();
-            _ = this.m_Settings;
+            this.Settings = profile.GetSection<FastBuildGeneratorSettings>();
         }
 
         public override GeneratorType GeneratorType => GeneratorType.FastBuild;

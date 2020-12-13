@@ -3,19 +3,19 @@ using System.Collections.Generic;
 
 namespace Graphyte.Build.Toolchains
 {
-    public abstract class Toolchain
+    public abstract class ToolchainBase
     {
-        protected Toolchain(Profile profile, TargetArchitecture targetArchitecture)
+        protected ToolchainBase(Profile profile, TargetArchitecture architecture)
         {
             this.Profile = profile;
-            this.TargetArchitecture = targetArchitecture;
+            this.Architecture = architecture;
         }
 
         public Profile Profile { get; }
 
-        public TargetArchitecture TargetArchitecture { get; }
+        public TargetArchitecture Architecture { get; }
 
-        public virtual TargetToolchain TargetToolchain { get; }
+        public abstract TargetToolchain Toolchain { get; }
 
         public string[] IncludePaths { get; protected set; }
 
@@ -48,6 +48,6 @@ namespace Graphyte.Build.Toolchains
         public abstract string FormatLibrarianInputFile(string input);
         public abstract string FormatLibrarianOutputFile(string output);
 
-        public abstract IEnumerable<string> GetCompilerCommandLine(TargetRules targetRules);
+        public abstract IEnumerable<string> GetCompilerCommandLine(TargetRules target);
     }
 }
