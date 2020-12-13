@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 
+#if false
 namespace Graphyte.Build.Tests.Mocks
 {
     sealed class MockPlatform
@@ -58,3 +59,4 @@ namespace Graphyte.Build.Tests.Mocks
         }
     }
 }
+#endif

@@ -1,3 +1,4 @@
+using Graphyte.Build.Framework;
 using System;
 using System.IO;
 using System.Linq;
@@ -5,44 +6,37 @@ using System.Runtime.InteropServices;
 
 namespace Graphyte.Build.Platforms.Windows
 {
-    abstract class BaseWindowsPlatform
-        : BasePlatform
+    abstract class BaseWindowsPlatform : Platform
     {
-        protected BaseWindowsPlatform(
-            Profile profile,
-            ArchitectureType architectureType)
-            : base(
-                  profile,
-                  architectureType)
+        protected BaseWindowsPlatform(Profile profile, TargetArchitecture targetArchitecture)
+            : base(profile, targetArchitecture)
+
         {
         }
 
-        protected static string MapArchitectureType(ArchitectureType architectureType)
+        protected static string MapTargetArchitecture(TargetArchitecture targetArchitecture)
         {
-            switch (architectureType)
+            switch (targetArchitecture)
             {
-                case ArchitectureType.ARM64:
+                case TargetArchitecture.Arm64:
                     return "arm64";
-                case ArchitectureType.X64:
+                case TargetArchitecture.X64:
                     return "x64";
             }
 
-            throw new ArgumentOutOfRangeException(nameof(architectureType));
+            throw new ArgumentOutOfRangeException(nameof(targetArchitecture));
         }
 
-        private static string GetBinPrefix()
+        private static string GetHostPrefix()
         {
             switch (RuntimeInformation.OSArchitecture)
             {
                 case Architecture.Arm:
                     return "arm";
-
                 case Architecture.Arm64:
                     return "arm64";
-
                 case Architecture.X64:
                     return "x64";
-
                 case Architecture.X86:
                     return "x86";
 
@@ -53,7 +47,7 @@ namespace Graphyte.Build.Platforms.Windows
             throw new NotImplementedException();
         }
 
-        protected void InitializeBasePaths(string version)
+        protected void InitializeBasePath(string version)
         {
             if (WindowsSdkProvider.IsSupported)
             {
@@ -80,7 +74,7 @@ namespace Graphyte.Build.Platforms.Windows
                     Path.Combine(location, "Include", version, "cppwinrt"),
                 };
 
-                var suffix = MapArchitectureType(this.ArchitectureType);
+                var suffix = MapTargetArchitecture(this.TargetArchitecture);
 
                 this.LibraryPaths = new[]
                 {
@@ -88,7 +82,7 @@ namespace Graphyte.Build.Platforms.Windows
                     Path.Combine(location, "Lib", version, "ucrt", suffix),
                 };
 
-                var binPrefix = GetBinPrefix();
+                var binPrefix = GetHostPrefix();
 
                 this.ResourceCompilerExecutable = Path.Combine(location, "bin", version, binPrefix, "rc.exe");
             }

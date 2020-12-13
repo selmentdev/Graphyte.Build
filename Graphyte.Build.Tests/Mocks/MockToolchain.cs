@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 
+#if false
 namespace Graphyte.Build.Tests.Mocks
 {
     public class MockToolchain
@@ -72,3 +73,4 @@ namespace Graphyte.Build.Tests.Mocks
         }
     }
 }
+#endif

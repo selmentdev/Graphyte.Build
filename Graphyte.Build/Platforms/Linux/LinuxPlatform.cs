@@ -1,67 +1,56 @@
+using Graphyte.Build.Framework;
 using System;
 
 namespace Graphyte.Build.Platforms.Linux
 {
-    public sealed class LinuxPlatformSettings
-        : BasePlatformSettings
+    sealed class LinuxPlatform : Platform
     {
-    }
-
-    sealed class LinuxPlatform
-        : BasePlatform
-    {
-        public LinuxPlatform(
-            Profile profile,
-            ArchitectureType architectureType)
-            : base(
-                  profile,
-                  architectureType)
+        public LinuxPlatform(Profile profile, TargetArchitecture targetArchitecture, LinuxPlatformSettings settings)
+            : base(profile, targetArchitecture)
         {
-            this.m_Settings = profile.GetSection<LinuxPlatformSettings>();
+            this.m_Settings = settings;
+            _ = this.m_Settings;
 
-            // Default include paths
-            this.IncludePaths = new string[] { };
-
-            // Default library paths
-            this.LibraryPaths = new string[] { };
+            this.IncludePaths = Array.Empty<string>();
+            this.LibraryPaths = Array.Empty<string>();
         }
 
-        public override PlatformType PlatformType => PlatformType.Linux;
+        private readonly LinuxPlatformSettings m_Settings;
 
-        public override bool IsPlatformKind(PlatformKind platformKind)
+        public override TargetPlatform TargetPlatform => TargetPlatform.Linux;
+
+        public override bool IsPlatformKind(TargetPlatformKind platformKind)
         {
             switch (platformKind)
             {
-                case PlatformKind.Desktop:
-                case PlatformKind.Server:
+                case TargetPlatformKind.Desktop:
+                case TargetPlatformKind.Server:
                     return true;
-                case PlatformKind.Mobile:
-                case PlatformKind.Console:
+                case TargetPlatformKind.Mobile:
+                case TargetPlatformKind.Console:
                     return false;
             }
 
             throw new ArgumentOutOfRangeException(nameof(platformKind));
         }
 
-        public override string AdjustTargetName(string name, TargetType targetType)
+        public override string AdjustModuleName(string name, ModuleType moduleType)
         {
-            switch (targetType)
+            switch (moduleType)
             {
-                case TargetType.SharedLibrary:
+                case ModuleType.SharedLibrary:
                     return $@"lib{name}.so";
-                case TargetType.StaticLibrary:
+                case ModuleType.StaticLibrary:
                     return $@"lib{name}.a";
-                case TargetType.HeaderLibrary:
+                case ModuleType.ExternLibrary:
                     return name;
-                case TargetType.Application:
+                case ModuleType.Application:
                     return $@"{name}.elf";
-                case TargetType.Default:
+                case ModuleType.Default:
                     break;
             }
 
-            throw new ArgumentOutOfRangeException(nameof(targetType));
+            throw new ArgumentOutOfRangeException(nameof(moduleType));
         }
-
-        private readonly LinuxPlatformSettings m_Settings;
     }
 }

@@ -1,3 +1,4 @@
+#if false
 using Graphyte.Build.Evaluation;
 using Graphyte.Build.Generators;
 using System;
@@ -45,3 +46,4 @@ namespace Graphyte.Build.Tests.Mocks
         }
     }
 }
+#endif

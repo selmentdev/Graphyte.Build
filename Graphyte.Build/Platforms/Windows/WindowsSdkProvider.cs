@@ -1,4 +1,5 @@
 using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -53,7 +54,7 @@ namespace Graphyte.Build.Platforms.Windows
             else
             {
                 WindowsSdkProvider.Location = string.Empty;
-                WindowsSdkProvider.Versions = new string[0];
+                WindowsSdkProvider.Versions = Array.Empty<string>();
             }
         }
     }

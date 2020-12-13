@@ -1,3 +1,4 @@
+using Graphyte.Build.Framework;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -12,29 +13,24 @@ namespace Graphyte.Build.Platforms.Android
     {
         private readonly struct AbiMapping
         {
-            public readonly ArchitectureType Architecture;
+            public readonly TargetArchitecture TargetArchitecture;
             public readonly string Toolchain;
             public readonly string Platform;
+            public readonly string LibPath;
             public readonly int Bitness;
-            public readonly string LibDirectory;
 
-            public AbiMapping(
-                ArchitectureType architecture,
-                string toolchain,
-                string platform,
-                int bitness,
-                string libDirectory)
+            public AbiMapping(TargetArchitecture targetArchitecture, string toolchain, string platform, string libPath, int bitness) : this()
             {
-                this.Architecture = architecture;
+                this.TargetArchitecture = targetArchitecture;
                 this.Toolchain = toolchain;
                 this.Platform = platform;
+                this.LibPath = libPath;
                 this.Bitness = bitness;
-                this.LibDirectory = libDirectory;
             }
         }
 
         public string SdkPath { get; private set; }
-        public string NdkPath { get; private set; } = @"E:\Downloads\android-ndk-r21d-windows-x86_64\android-ndk-r21d";
+        public string NdkPath { get; private set; }
 
         public int MinApiLevel { get; private set; }
         public int MaxApiLevel { get; private set; }

@@ -1,3 +1,4 @@
+#if false
 using Graphyte.Build.Resolving;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -230,3 +231,4 @@ namespace Graphyte.Build.Tests
         }
     }
 }
+#endif

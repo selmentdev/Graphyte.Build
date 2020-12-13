@@ -1,66 +1,59 @@
+using Graphyte.Build.Framework;
 using System;
 
 namespace Graphyte.Build.Platforms.Windows
 {
-    public sealed class WindowsPlatformSettings
-        : BasePlatformSettings
-    {
-        public string WindowsSdkVersion { get; set; }
-    }
-
     sealed class WindowsPlatform
         : BaseWindowsPlatform
     {
         public WindowsPlatform(
             Profile profile,
-            ArchitectureType architectureType)
-            : base(
-                  profile,
-                  architectureType)
+            TargetArchitecture targetArchitecture,
+            WindowsPlatformSettings settings)
+            : base(profile, targetArchitecture)
         {
-            this.m_Settings = profile.GetSection<WindowsPlatformSettings>();
+            this.m_Settings = settings;
             var version = this.m_Settings.WindowsSdkVersion;
 
-            this.InitializeBasePaths(version);
+            this.InitializeBasePath(version);
         }
 
-        public override PlatformType PlatformType => PlatformType.Windows;
+        private readonly WindowsPlatformSettings m_Settings;
 
-        public override bool IsPlatformKind(PlatformKind platformKind)
+        public override TargetPlatform TargetPlatform => TargetPlatform.Windows;
+
+        public override bool IsPlatformKind(TargetPlatformKind platformKind)
         {
             switch (platformKind)
             {
-                case PlatformKind.Desktop:
-                case PlatformKind.Mobile:
-                case PlatformKind.Server:
+                case TargetPlatformKind.Desktop:
+                case TargetPlatformKind.Mobile:
+                case TargetPlatformKind.Server:
                     return true;
-                case PlatformKind.Console:
+                case TargetPlatformKind.Console:
                     return false;
             }
 
             throw new ArgumentOutOfRangeException(nameof(platformKind));
         }
 
-        public override string AdjustTargetName(string name, TargetType targetType)
+        public override string AdjustModuleName(string name, ModuleType moduleType)
         {
-            switch (targetType)
+            switch (moduleType)
             {
-                case TargetType.SharedLibrary:
+                case ModuleType.SharedLibrary:
                     return $@"lib{name}.dll";
-                case TargetType.StaticLibrary:
+                case ModuleType.StaticLibrary:
                     return $@"lib{name}.lib";
-                case TargetType.HeaderLibrary:
+                case ModuleType.ExternLibrary:
                     return name;
-                case TargetType.Application:
+                case ModuleType.Application:
                     return $@"{name}.exe";
-                case TargetType.Default:
+                case ModuleType.Default:
                     break;
             }
 
-            throw new ArgumentOutOfRangeException(nameof(targetType));
+            throw new ArgumentOutOfRangeException(nameof(moduleType));
         }
-
-        private readonly WindowsPlatformSettings m_Settings;
     }
-
 }

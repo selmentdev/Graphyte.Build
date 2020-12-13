@@ -1,58 +1,47 @@
+using Graphyte.Build.Framework;
+using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace Graphyte.Build.Toolchains.Clang
 {
-    public sealed class ClangToolchainSettings
-        : BaseToolchainSettings
+    public sealed class ClangToolchain : Toolchain
     {
-        public string Location { get; set; }
-        public string Version { get; set; }
-        public bool AddressSanitizer { get; set; }
-        public bool ThreadSanitizer { get; set; }
-        public bool MemorySanitizer { get; set; }
-        public bool UndefinedBehaviorSanitizer { get; set; }
+        private readonly ClangToolchainSettings m_Settings;
+        private readonly TargetPlatform m_TargetPlatform;
 
-        public bool TimeTrace { get; set; }
-
-        public bool PgoOptimize { get; set; }
-        public bool PgoProfile { get; set; }
-        public string PgoDirectory { get; set; }
-        public string PgoPrefix { get; set; }
-    }
-
-    public sealed class ClangToolchain
-        : BaseToolchain
-    {
         public ClangToolchain(
             Profile profile,
-            ArchitectureType architectureType,
-            PlatformType platformType)
-            : base(
-                  profile,
-                  architectureType)
+            TargetPlatform targetPlatform,
+            TargetArchitecture targetArchitecture,
+            ClangToolchainSettings settings)
+            : base(profile, targetArchitecture)
         {
-            this.m_Settings = profile.GetSection<ClangToolchainSettings>();
+            this.m_Settings = settings;
+            _ = this.m_Settings;
 
-            this.m_PlatformType = platformType;
+            this.m_TargetPlatform = targetPlatform;
+            _ = this.m_TargetPlatform;
 
             var location = this.m_Settings.Location;
 
-            this.CompilerExecutable = $@"{location}/bin/clang.exe";
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                this.CompilerExecutable = $@"{location}/bin/clang.exe";
+                this.LinkerExecutable = $@"{location}/bin/lld.exe";
+                this.LibrarianExecutable = $@"{location}/bin/llvm-ar.exe";
+            }
+            else
+            {
+                this.CompilerExecutable = $@"{location}/bin/clang";
+                this.LinkerExecutable = $@"{location}/bin/lld";
+                this.LibrarianExecutable = $@"{location}/bin/llvm-ar";
+            }
 
-            this.LinkerExecutable = $@"{location}/bin/lld.exe";
+            this.IncludePaths = Array.Empty<string>();
 
-            this.LibrarianExecutable = $@"{location}/bin/llvm-ar.exe";
-
-            this.IncludePaths = new string[] {};
-            
-            this.LibraryPaths = new string[] {};
+            this.LibraryPaths = Array.Empty<string>();
         }
-
-        private readonly PlatformType m_PlatformType;
-
-        public override ToolchainType ToolchainType => ToolchainType.Clang;
-
-        private readonly ClangToolchainSettings m_Settings;
 
         public override string FormatDefine(string value)
         {
@@ -87,6 +76,8 @@ namespace Graphyte.Build.Toolchains.Clang
         public override string FormatLinkerGroupStart => "-Wl,--start-group ";
         public override string FormatLinkerGroupEnd => " -Wl,--end-group";
 
+        public override TargetToolchain TargetToolchain => TargetToolchain.Clang;
+
         public override string FormatLinkerInputFile(string input)
         {
             return $@"""{input}""";
@@ -107,14 +98,14 @@ namespace Graphyte.Build.Toolchains.Clang
             return $@"""{output}""";
         }
 
-        public override IEnumerable<string> GetCompilerCommandLine(Target target)
+        public override IEnumerable<string> GetCompilerCommandLine(TargetRules targetRules)
         {
             yield return "-std=c++20";
             //yield return "-fconcepts"; -- already in std=c++20
 
             yield return "-fdiagnostics-color=always";
 
-            if (target.PlatformType != PlatformType.Windows && target.PlatformType != PlatformType.UniversalWindows)
+            if (targetRules.Descriptor.Platform != TargetPlatform.Windows && targetRules.Descriptor.Platform != TargetPlatform.UniversalWindows)
             {
                 yield return "-fpic";
                 yield return "-stdlib=libc++";

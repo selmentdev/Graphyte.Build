@@ -2,6 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using System.Text.Json.Serialization;
 
+#if false
 namespace Graphyte.Build.Tests
 {
     [TestClass]
@@ -100,3 +101,4 @@ namespace Graphyte.Build.Tests
         }
     }
 }
+#endif

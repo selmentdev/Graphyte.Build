@@ -1,71 +1,53 @@
+using Graphyte.Build.Framework;
 using System;
 
 namespace Graphyte.Build.Platforms.Android
 {
-    public sealed class AndroidPlatformSettings
-        : BasePlatformSettings
+    sealed class AndroidPlatform : Platform
     {
-        /// <summary>
-        /// Provides path to Android SDK.
-        /// </summary>
-        public string SdkPath { get; set; }
+        private readonly AndroidPlatformSettings m_Settings;
 
-        /// <summary>
-        /// Provides path to Anrdoid NDK.
-        /// </summary>
-        public string NdkPath { get; set; }
-
-        public int TargetApiLevel { get; set; }
-    }
-
-    sealed class AndroidPlatform
-        : BasePlatform
-    {
-        public AndroidPlatform(
-            Profile profile,
-            ArchitectureType architectureType)
-            : base(
-                  profile,
-                  architectureType)
+        public AndroidPlatform(Profile profile, TargetArchitecture targetArchitecture, AndroidPlatformSettings settings)
+            : base(profile, targetArchitecture)
         {
-            this.m_Settings = profile.GetSection<AndroidPlatformSettings>();
+            this.m_Settings = settings;
+            _ = this.m_Settings;
         }
 
-        public override PlatformType PlatformType => PlatformType.Android;
+        public override TargetPlatform TargetPlatform => TargetPlatform.Android;
 
-        public override bool IsPlatformKind(PlatformKind platformKind)
+        public override bool IsPlatformKind(TargetPlatformKind platformKind)
         {
             switch (platformKind)
             {
-                case PlatformKind.Mobile:
+                case TargetPlatformKind.Mobile:
                     return true;
-                case PlatformKind.Desktop:
-                case PlatformKind.Console:
-                case PlatformKind.Server:
+                case TargetPlatformKind.Desktop:
+                case TargetPlatformKind.Console:
+                case TargetPlatformKind.Server:
                     return false;
             }
 
             throw new ArgumentOutOfRangeException(nameof(platformKind));
         }
 
-        public override string AdjustTargetName(string name, TargetType targetType)
+        public override string AdjustModuleName(string name, ModuleType moduleType)
         {
-            switch (targetType)
+            switch (moduleType)
             {
-                case TargetType.SharedLibrary:
+                case ModuleType.SharedLibrary:
                     return $@"lib{name}.so";
-                case TargetType.StaticLibrary:
+                case ModuleType.StaticLibrary:
                     return $@"lib{name}.a";
-                case TargetType.HeaderLibrary:
-                case TargetType.Application:
+                case ModuleType.ExternLibrary:
+                case ModuleType.Application:
                     return name;
-                case TargetType.Default:
+                case ModuleType.Default:
+                default:
                     break;
-            };
+            }
 
-            throw new ArgumentOutOfRangeException(nameof(targetType));
+            throw new ArgumentOutOfRangeException(nameof(moduleType));
         }
-
-        private readonly AndroidPlatformSettings m_Settings;
     }
 }

@@ -1,6 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
+#if false
 namespace Graphyte.Build.Tests
 {
     [TestClass]
@@ -21,3 +22,4 @@ namespace Graphyte.Build.Tests
         }
     }
 }
+#endif
