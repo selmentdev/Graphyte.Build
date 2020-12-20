@@ -104,15 +104,16 @@ namespace Neobyte.Build
         private static void PrintLogo()
         {
             var previous = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Trace.WriteLine(@"   ______                 __          __         ____        _ __    __");
-            Trace.WriteLine(@"  / ____/________ _____  / /_  __  __/ /____    / __ )__  __(_) /___/ /");
-            Trace.WriteLine(@" / / __/ ___/ __ `/ __ \/ __ \/ / / / __/ _ \  / __  / / / / / / __  /");
-            Trace.WriteLine(@"/ /_/ / /  / /_/ / /_/ / / / / /_/ / /_/  __/ / /_/ / /_/ / / / /_/ /");
-            Trace.WriteLine(@"\____/_/   \__,_/ .___/_/ /_/\__, /\__/\___(_)_____/\__,_/_/_/\__,_/");
-            Trace.WriteLine(@"               /_/          /____/");
-            Trace.WriteLine(string.Empty);
 
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("    _   __           __          __         ____        _ __    __");
+            Console.WriteLine("   / | / /__  ____  / /_  __  __/ /____    / __ )__  __(_) /___/ /");
+            Console.WriteLine("  /  |/ / _ \\/ __ \\/ __ \\/ / / / __/ _ \\  / __  / / / / / / __  /");
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine(" / /|  /  __/ /_/ / /_/ / /_/ / /_/  __/ / /_/ / /_/ / / / /_/ /");
+            Console.WriteLine("/_/ |_/\\___/\\____/_.___/\\__, /\\__/\\___(_)_____/\\__,_/_/_/\\__,_/");
+            Console.WriteLine("                       /____/");
+            Console.WriteLine();
             Console.ForegroundColor = previous;
         }
 
@@ -151,31 +152,35 @@ namespace Neobyte.Build
 
             foreach (var currentPlatformFactory in selectedPlatformsFactories)
             {
-                foreach (var currentConfiguration in selectedConfigurations)
+                foreach (var currentFlavor in Enum.GetValues<TargetFlavor>().Cast<TargetFlavor>())
                 {
-                    var targetDescriptor = new TargetDescriptor(
-                        currentPlatformFactory.Platform,
-                        currentPlatformFactory.Architecture,
-                        currentPlatformFactory.Toolchain,
-                        currentConfiguration);
-
-                    var currentPlatform = currentPlatformFactory.CreatePlatform(this.m_Profile);
-                    var currentToolchain = currentPlatformFactory.CreateToolchain(this.m_Profile);
-
-                    var targetContext = new TargetContext(currentPlatform, currentToolchain);
-
-                    foreach (var currentTarget in targetsProvider.Targets)
+                    foreach (var currentConfiguration in selectedConfigurations)
                     {
-                        var evaluatedTarget = new Evaluation.EvaluatedTargetRules(
-                            currentTarget,
-                            targetDescriptor,
-                            targetContext,
-                            modulesProvider.Modules);
+                        var targetDescriptor = new TargetDescriptor(
+                            currentPlatformFactory.Platform,
+                            currentPlatformFactory.Architecture,
+                            currentPlatformFactory.Toolchain,
+                            currentConfiguration,
+                            currentFlavor);
 
-                        foreach (var module in evaluatedTarget.Modules)
+                        var currentPlatform = currentPlatformFactory.CreatePlatform(this.m_Profile);
+                        var currentToolchain = currentPlatformFactory.CreateToolchain(this.m_Profile);
+
+                        var targetContext = new TargetContext(currentPlatform, currentToolchain);
+
+                        foreach (var currentTarget in targetsProvider.Targets)
                         {
-                            //Debug.WriteLine($@"{module.Target.TargetDescriptor}-{currentTarget.Name}-{module.ModuleRules}");
-                            module.Dump();
+                            var evaluatedTarget = new Evaluation.EvaluatedTargetRules(
+                                currentTarget.Type,
+                                targetDescriptor,
+                                targetContext,
+                                modulesProvider.Modules);
+
+                            foreach (var module in evaluatedTarget.Modules)
+                            {
+                                //Debug.WriteLine($@"{module.Target.TargetDescriptor}-{currentTarget.Name}-{module.ModuleRules}");
+                                module.Dump();
+                            }
                         }
                     }
                 }

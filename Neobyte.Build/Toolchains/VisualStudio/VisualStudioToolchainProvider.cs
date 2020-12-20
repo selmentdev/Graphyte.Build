@@ -104,7 +104,7 @@ namespace Neobyte.Build.Toolchains.VisualStudio
                     var process = Process.Start(new ProcessStartInfo()
                     {
                         FileName = vswhere,
-                        Arguments = "-utf8 -latest -products * -format json",
+                        Arguments = "-utf8 -products * -format json",
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
                     });
@@ -128,24 +128,54 @@ namespace Neobyte.Build.Toolchains.VisualStudio
         /// <returns>The parsed information.</returns>
         private static VisualStudioLocation ParseVisualStudioLocation(JsonElement instance)
         {
-            var properties = instance.EnumerateObject()
+            var properties = instance
+                .EnumerateObject()
                 .ToDictionary(x => x.Name, x => x.Value);
 
-            var name = properties["displayName"].ToString();
-            var path = properties["installationPath"].ToString();
-            var version = properties["catalog"].EnumerateObject()
-                .First(x => x.Name == "productLineVersion").Value.ToString();
+            var name = properties["displayName"].GetString();
+            var path = properties["installationPath"].GetString();
 
-            var toolkit = g_VersionToolkitMappings.First(x => x.Version == version).Toolkit;
+            var catalog = properties["catalog"]
+                .EnumerateObject()
+                .ToDictionary(x => x.Name, x => x.Value);
+
+            var productVersion = catalog["productLineVersion"].GetString();
+
+            var productId = GetVisualStudioProductId(properties["productId"].GetString());
+
+            var toolkit = g_VersionToolkitMappings.First(x => x.Version == productVersion).Toolkit;
 
             var toolset = GetToolsVersion(path, toolkit);
 
             return new VisualStudioLocation(
                 location: path,
                 name: name,
-                version: version,
                 toolkit: toolkit,
-                toolset: toolset);
+                toolset: toolset,
+                productVersion: productVersion,
+                productId: productId);
+        }
+
+        private static VisualStudioProductId GetVisualStudioProductId(string value)
+        {
+            if (value == "Microsoft.VisualStudio.Product.Community")
+            {
+                return VisualStudioProductId.Community;
+            }
+            else if (value == "Microsoft.VisualStudio.Product.Enterprise")
+            {
+                return VisualStudioProductId.Enterprise;
+            }
+            else if (value == "Microsoft.VisualStudio.Product.Professional")
+            {
+                return VisualStudioProductId.Professional;
+            }
+            else if (value == "Microsoft.VisualStudio.Product.BuildTools")
+            {
+                return VisualStudioProductId.BuildTools;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         /// <summary>

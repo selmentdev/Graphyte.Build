@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Graphyte.Build\Graphyte.Build.csproj" />
+    <ProjectReference Include="..\Neobyte.Build\Neobyte.Build.csproj" />
   </ItemGroup>
 
 </Project>

@@ -141,7 +141,8 @@ namespace Neobyte.Build.Tests
                 TargetPlatform.Windows,
                 TargetArchitecture.X64,
                 TargetToolchain.MSVC,
-                TargetConfiguration.Debug);
+                TargetConfiguration.Debug,
+                TargetFlavor.Game);
 
             var context = new TargetContext(null, null);
 

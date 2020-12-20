@@ -239,9 +239,10 @@ namespace Neobyte.Build.Evaluation
             this.PublicDefines.Import(dependency.PublicDefines);
         }
 
+        [Conditional("DEBUG")]
         public void Dump()
         {
-            Trace.WriteLine($@"{this.Target}-{this.Target.Descriptor.Configuration}-{this}");
+            Trace.WriteLine($@"{this.Target}-{this.Target.Descriptor}-{this}");
         }
     }
 }

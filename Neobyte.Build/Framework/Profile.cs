@@ -7,15 +7,6 @@ using System.Text.Json;
 
 namespace Neobyte.Build.Framework
 {
-    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-    public sealed class ProfileSectionAttribute
-        : Attribute
-    {
-    }
-}
-
-namespace Neobyte.Build.Framework
-{
     public sealed class Profile
     {
         private static bool IsProfileSection(Type type)
