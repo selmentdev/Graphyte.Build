@@ -84,6 +84,7 @@ namespace Neobyte.Build
             public string Platform;
             public string Toolchain;
             public string Generator;
+            public FileInfo LogFile;
 
             [Conditional("DEBUG")]
             public void Dump()
@@ -96,6 +97,7 @@ namespace Neobyte.Build
                 Trace.WriteLine($@"Platform:  {this.Platform}");
                 Trace.WriteLine($@"Toolchain: {this.Toolchain}");
                 Trace.WriteLine($@"Generator: {this.Generator}");
+                Trace.WriteLine($@"Log file:  {this.LogFile}");
 
                 Trace.Unindent();
             }
@@ -108,9 +110,11 @@ namespace Neobyte.Build
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("    _   __           __          __         ____        _ __    __");
             Console.WriteLine("   / | / /__  ____  / /_  __  __/ /____    / __ )__  __(_) /___/ /");
-            Console.WriteLine("  /  |/ / _ \\/ __ \\/ __ \\/ / / / __/ _ \\  / __  / / / / / / __  /");
             Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine("  /  |/ / _ \\/ __ \\/ __ \\/ / / / __/ _ \\  / __  / / / / / / __  /");
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(" / /|  /  __/ /_/ / /_/ / /_/ / /_/  __/ / /_/ / /_/ / / / /_/ /");
+            Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine("/_/ |_/\\___/\\____/_.___/\\__, /\\__/\\___(_)_____/\\__,_/_/_/\\__,_/");
             Console.WriteLine("                       /____/");
             Console.WriteLine();
@@ -124,6 +128,11 @@ namespace Neobyte.Build
         {
             this.m_Options = Core.CommandLineParser.Parse<Options>(args);
             this.m_Options.Dump();
+
+            if (this.m_Options.LogFile != null)
+            {
+                Trace.Listeners.Add(new TextWriterTraceListener(this.m_Options.LogFile.FullName, "LogFile"));
+            }
 
             this.m_Profile = new Profile(this.m_Options.Profile.OpenRead().ReadAllBytes());
         }
