@@ -128,14 +128,16 @@ namespace Neobyte.Build.Tests
         {
             var modules = new[]
             {
-                typeof(A),
-                typeof(B),
-                typeof(C),
-                typeof(D),
-                typeof(E),
-                typeof(F),
-                typeof(G),
+                new ModuleRulesMetadata(typeof(A)),
+                new ModuleRulesMetadata(typeof(B)),
+                new ModuleRulesMetadata(typeof(C)),
+                new ModuleRulesMetadata(typeof(D)),
+                new ModuleRulesMetadata(typeof(E)),
+                new ModuleRulesMetadata(typeof(F)),
+                new ModuleRulesMetadata(typeof(G)),
             };
+
+            var target = new TargetRulesMetadata(typeof(SampleTargetRules));
 
             var descriptor = new TargetDescriptor(
                 TargetPlatform.Windows,
@@ -146,7 +148,7 @@ namespace Neobyte.Build.Tests
 
             var context = new TargetContext(null, null);
 
-            Assert.ThrowsException<Exception>(() => new EvaluatedTargetRules(typeof(SampleTargetRules), descriptor, context, modules));
+            Assert.ThrowsException<Exception>(() => new EvaluatedTargetRules(target, descriptor, context, modules));
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime;
 using System.Runtime.InteropServices;
 using Neobyte.Build.Platforms;
+using Neobyte.Build.Evaluation;
 
 [assembly: Neobyte.Build.Core.TypesProvider]
 
@@ -154,16 +155,18 @@ namespace Neobyte.Build
             var selectedPlatformsFactories = platformsProvider.GetPlatformFactories(targetPlatform, targetToolchain);
             ValidatePlatformFactories(selectedPlatformsFactories);
 
-            var selectedConfigurations = Enum
-                .GetValues(typeof(TargetConfiguration))
-                .Cast<TargetConfiguration>()
-                .ToArray();
+            var evaluatedContext = new EvaluatedContext(
+                targetsProvider.Targets,
+                modulesProvider.Modules,
+                this.m_Profile,
+                selectedPlatformsFactories);
+            evaluatedContext.Dump();
 
             foreach (var currentPlatformFactory in selectedPlatformsFactories)
             {
-                foreach (var currentFlavor in Enum.GetValues<TargetFlavor>().Cast<TargetFlavor>())
+                foreach (var currentFlavor in EvaluatedContext.Flavors)
                 {
-                    foreach (var currentConfiguration in selectedConfigurations)
+                    foreach (var currentConfiguration in EvaluatedContext.Configurations)
                     {
                         var targetDescriptor = new TargetDescriptor(
                             currentPlatformFactory.Platform,
@@ -180,7 +183,7 @@ namespace Neobyte.Build
                         foreach (var currentTarget in targetsProvider.Targets)
                         {
                             var evaluatedTarget = new Evaluation.EvaluatedTargetRules(
-                                currentTarget.Type,
+                                currentTarget,
                                 targetDescriptor,
                                 targetContext,
                                 modulesProvider.Modules);

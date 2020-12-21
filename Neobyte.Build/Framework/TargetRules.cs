@@ -42,11 +42,19 @@ namespace Neobyte.Build.Framework
 
         public TargetLinkType LinkType { get; protected set; } = TargetLinkType.Monolithic;
 
+        /// <summary>
+        /// Gets or sets module used when target is being executed.
+        /// </summary>
         public Type LaunchModule { get; protected set; }
 
         /// <summary>
-        /// Gets list of modules required to build this target.
+        /// Gets list of additional modules.
         /// </summary>
+        /// <remarks>
+        /// This list must include additional modules required to launch this target, but not
+        /// explicitely defined as dependencies. Example of such modules are dynamically discovered
+        /// plugins which are not implicit dependencies of launch module.
+        /// </remarks>
         public List<Type> Modules { get; } = new List<Type>();
 
         public override string ToString()

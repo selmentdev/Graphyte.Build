@@ -1,7 +1,56 @@
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+
+namespace Neobyte.Build.Framework
+{
+    public readonly struct ModuleRulesMetadata
+    {
+        public readonly Type Type;
+
+        public ModuleRulesMetadata(Type type)
+        {
+            this.Type = type;
+        }
+
+        public ModuleRules Create(TargetRules target)
+        {
+            return Activator.CreateInstance(this.Type, target) as ModuleRules;
+        }
+
+        public override string ToString()
+        {
+            return this.Type.ToString();
+        }
+
+        public bool Equals([AllowNull] ModuleRulesMetadata other)
+        {
+            return this.Type.Equals(other.Type);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is ModuleRulesMetadata other && this.Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Type.GetHashCode();
+        }
+
+        public static bool operator ==(ModuleRulesMetadata left, ModuleRulesMetadata right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(ModuleRulesMetadata left, ModuleRulesMetadata right)
+        {
+            return !(left == right);
+        }
+    }
+}
 
 namespace Neobyte.Build.Framework
 {
@@ -15,6 +64,7 @@ namespace Neobyte.Build.Framework
                 .Where(x => x.IsDefined(typeof(Core.TypesProviderAttribute)))
                 .SelectMany(x => x.GetTypes())
                 .Where(Filter)
+                .Select(x => new ModuleRulesMetadata(x))
                 .ToArray();
         }
 
@@ -27,12 +77,7 @@ namespace Neobyte.Build.Framework
                 && x.IsDefined(typeof(ModuleRulesAttribute));
         }
 
-        public Type[] Modules { get; }
-
-        public static ModuleRules Create(Type type, TargetRules target)
-        {
-            return Activator.CreateInstance(type, target) as ModuleRules;
-        }
+        public ModuleRulesMetadata[] Modules { get; }
 
         [Conditional("DEBUG")]
         public void Dump()

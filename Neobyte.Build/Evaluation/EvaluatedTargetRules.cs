@@ -16,26 +16,29 @@ namespace Neobyte.Build.Evaluation
 
         public EvaluatedModuleRules[] Modules { get; }
 
-        public EvaluatedTargetRules(Type type, TargetDescriptor descriptor, TargetContext context, Type[] modules)
+        public EvaluatedModuleRules LaunchModule { get; }
+
+        public EvaluatedTargetRules(
+            TargetRulesMetadata target,
+            TargetDescriptor descriptor,
+            TargetContext context,
+            ModuleRulesMetadata[] modules)
         {
             this.Descriptor = descriptor;
 
             this.Context = context;
 
-            this.Target = Activator.CreateInstance(type, descriptor, context) as TargetRules;
+            this.Target = target.Create(descriptor, context);
 
             this.Modules = modules.Select(this.CreateModuleRules).ToArray();
 
-            var trace = new Stack<EvaluatedModuleRules>();
+            this.LaunchModule = this.Find(this.Target.LaunchModule);
 
-            foreach (var module in this.Modules)
-            {
-                module.Resolve(trace);
-            }
+            this.ResolveModules();
 
-            if (trace.Count > 0)
+            if (this.LaunchModule.Module.Type != ModuleType.Application)
             {
-                throw new Exception($@"Internal resolving error");
+                throw new Exception($@"Launch module {this.LaunchModule} for target {this} must be application");
             }
 
 #if DEBUG
@@ -47,9 +50,24 @@ namespace Neobyte.Build.Evaluation
 #endif
         }
 
-        private EvaluatedModuleRules CreateModuleRules(Type type)
+        private void ResolveModules()
         {
-            var rules = Activator.CreateInstance(type, this.Target) as ModuleRules;
+            var trace = new Stack<EvaluatedModuleRules>();
+
+            foreach (var module in this.Modules)
+            {
+                module.Resolve(trace);
+            }
+
+            if (trace.Count > 0)
+            {
+                throw new Exception($@"Internal resolving error");
+            }
+        }
+
+        private EvaluatedModuleRules CreateModuleRules(ModuleRulesMetadata type)
+        {
+            var rules = type.Create(this.Target);
             return new EvaluatedModuleRules(rules, this);
         }
 

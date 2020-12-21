@@ -1,19 +1,19 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
 namespace Neobyte.Build.Framework
 {
-    public readonly struct TargetRuleTypeDescriptor
+    public readonly struct TargetRulesMetadata
     {
         public readonly Type Type;
-        public readonly TargetFlavor[] Flavors;
 
-        public TargetRuleTypeDescriptor(Type type)
+        public TargetRulesMetadata(Type type)
         {
             this.Type = type;
-            this.Flavors = GetTargetFlavors(type);
         }
 
         public TargetRules Create(TargetDescriptor descriptor, TargetContext context)
@@ -21,12 +21,41 @@ namespace Neobyte.Build.Framework
             return Activator.CreateInstance(this.Type, descriptor, context) as TargetRules;
         }
 
-        private static TargetFlavor[] GetTargetFlavors(Type type)
+        public override string ToString()
         {
-            return type
+            return this.Type.ToString();
+        }
+
+        public bool Equals([AllowNull] TargetRulesMetadata other)
+        {
+            return this.Type.Equals(other.Type);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is TargetRulesMetadata other && this.Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Type.GetHashCode();
+        }
+
+        public static bool operator ==(TargetRulesMetadata left, TargetRulesMetadata right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(TargetRulesMetadata left, TargetRulesMetadata right)
+        {
+            return !(left == right);
+        }
+
+        public IEnumerable<TargetFlavor> GetSupportedFlavors()
+        {
+            return this.Type
                 .GetCustomAttributes<TargetRulesFlavorAttribute>()
-                .Select(x => x.Flavor)
-                .ToArray();
+                .Select(x => x.Flavor);
         }
     }
 
@@ -40,7 +69,7 @@ namespace Neobyte.Build.Framework
                 .Where(x => x.IsDefined(typeof(Core.TypesProviderAttribute)))
                 .SelectMany(x => x.GetTypes())
                 .Where(Filter)
-                .Select(x => new TargetRuleTypeDescriptor(x))
+                .Select(x => new TargetRulesMetadata(x))
                 .ToArray();
         }
 
@@ -53,7 +82,7 @@ namespace Neobyte.Build.Framework
                 && type.IsDefined(typeof(TargetRulesAttribute));
         }
 
-        public TargetRuleTypeDescriptor[] Targets { get; }
+        public TargetRulesMetadata[] Targets { get; }
 
         [Conditional("DEBUG")]
         public void Dump()

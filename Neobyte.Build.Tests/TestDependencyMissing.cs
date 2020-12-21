@@ -68,10 +68,11 @@ namespace Neobyte.Build.Tests
         {
             var modules = new[]
             {
-                typeof(A),
-                typeof(B),
+                new ModuleRulesMetadata(typeof(A)),
+                new ModuleRulesMetadata(typeof(B)),
             };
 
+            var target = new TargetRulesMetadata(typeof(SampleTargetRules));
 
             var descriptor = new TargetDescriptor(
                 TargetPlatform.Windows,
@@ -82,7 +83,7 @@ namespace Neobyte.Build.Tests
 
             var context = new TargetContext(null, null);
 
-            Assert.ThrowsException<Exception>(() => new EvaluatedTargetRules(typeof(SampleTargetRules), descriptor, context, modules));
+            Assert.ThrowsException<Exception>(() => new EvaluatedTargetRules(target, descriptor, context, modules));
         }
     }
 }
