@@ -14,17 +14,22 @@ namespace Neobyte.Build.Platforms.Linux
 
         }
 
-        public override PlatformBase CreatePlatform(Profile profile)
+        public override TargetContext CreateContext(Profile profile)
         {
             var settings = profile.GetSection<LinuxPlatformSettings>();
 
+            return new TargetContext(
+                this.CreatePlatform(settings, profile),
+                this.CreateToolchain(settings, profile));
+        }
+
+        private PlatformBase CreatePlatform(LinuxPlatformSettings settings, Profile profile)
+        {
             return new LinuxPlatform(profile, this.Architecture, settings);
         }
 
-        public override ToolchainBase CreateToolchain(Profile profile)
+        private ToolchainBase CreateToolchain(LinuxPlatformSettings settings, Profile profile)
         {
-            var settings = profile.GetSection<LinuxPlatformSettings>();
-
             if (this.Toolchain == TargetToolchain.Clang)
             {
                 return new ClangToolchain(

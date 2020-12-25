@@ -13,9 +13,7 @@ namespace Neobyte.Build.Core
         /// <returns></returns>
         public static Guid MakeGuid(string value)
         {
-            var provider = SHA256.Create();
-            var hash = provider
-                .ComputeHash(Encoding.UTF8.GetBytes(value))
+            var hash = SHA256.HashData(Encoding.UTF8.GetBytes(value))
                 .AsSpan(0, 16);
 
             return new Guid(hash);

@@ -68,11 +68,11 @@ namespace Neobyte.Build.Tests
         {
             var modules = new[]
             {
-                new ModuleRulesMetadata(typeof(A)),
-                new ModuleRulesMetadata(typeof(B)),
+                new ModuleRulesFactory(typeof(A)),
+                new ModuleRulesFactory(typeof(B)),
             };
 
-            var target = new TargetRulesMetadata(typeof(SampleTargetRules));
+            var target = new TargetRulesFactory(typeof(SampleTargetRules));
 
             var descriptor = new TargetDescriptor(
                 TargetPlatform.Windows,

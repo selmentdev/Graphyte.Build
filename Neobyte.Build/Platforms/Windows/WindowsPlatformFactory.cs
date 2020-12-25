@@ -14,17 +14,22 @@ namespace Neobyte.Build.Platforms.Windows
         {
         }
 
-        public override PlatformBase CreatePlatform(Profile profile)
+        public override TargetContext CreateContext(Profile profile)
         {
             var settings = profile.GetSection<WindowsPlatformSettings>();
 
+            return new TargetContext(
+                this.CreatePlatform(settings, profile),
+                this.CreateToolchain(settings, profile));
+        }
+
+        private PlatformBase CreatePlatform(WindowsPlatformSettings settings, Profile profile)
+        {
             return new WindowsPlatform(profile, this.Architecture, settings);
         }
 
-        public override ToolchainBase CreateToolchain(Profile profile)
+        private ToolchainBase CreateToolchain(WindowsPlatformSettings settings, Profile profile)
         {
-            var settings = profile.GetSection<WindowsPlatformSettings>();
-
             if (this.Toolchain == TargetToolchain.MSVC)
             {
                 return new VisualStudioToolchain(

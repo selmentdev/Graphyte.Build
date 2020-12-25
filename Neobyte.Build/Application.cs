@@ -1,13 +1,13 @@
-using Neobyte.Build.Framework;
 using Neobyte.Build.Core;
+using Neobyte.Build.Evaluation;
+using Neobyte.Build.Framework;
+using Neobyte.Build.Platforms;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime;
 using System.Runtime.InteropServices;
-using Neobyte.Build.Platforms;
-using Neobyte.Build.Evaluation;
 
 [assembly: Neobyte.Build.Core.TypesProvider]
 
@@ -106,19 +106,20 @@ namespace Neobyte.Build
 
         private static void PrintLogo()
         {
+            // Slant: (http://patorjk.com/software/taag/#p=display&f=Slant&t=Anemone.Build
             var previous = Console.ForegroundColor;
 
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("    _   __           __          __         ____        _ __    __");
-            Console.WriteLine("   / | / /__  ____  / /_  __  __/ /____    / __ )__  __(_) /___/ /");
+            Console.WriteLine("    ___                                            ____        _ __    __");
+            Console.WriteLine("   /   |  ____  ___  ____ ___  ____  ____  ___    / __ )__  __(_) /___/ /");
             Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine("  /  |/ / _ \\/ __ \\/ __ \\/ / / / __/ _ \\  / __  / / / / / / __  /");
+            Console.WriteLine("  / /| | / __ \\/ _ \\/ __ `__ \\/ __ \\/ __ \\/ _ \\  / __  / / / / / / __  / ");
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(" / /|  /  __/ /_/ / /_/ / /_/ / /_/  __/ / /_/ / /_/ / / / /_/ /");
+            Console.WriteLine(" / ___ |/ / / /  __/ / / / / / /_/ / / / /  __/ / /_/ / /_/ / / / /_/ /  ");
             Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine("/_/ |_/\\___/\\____/_.___/\\__, /\\__/\\___(_)_____/\\__,_/_/_/\\__,_/");
-            Console.WriteLine("                       /____/");
+            Console.WriteLine("/_/  |_/_/ /_/\\___/_/ /_/ /_/\\____/_/ /_/\\___(_)_____/\\__,_/_/_/\\__,_/   ");
             Console.WriteLine();
+
             Console.ForegroundColor = previous;
         }
 
@@ -155,50 +156,17 @@ namespace Neobyte.Build
             var selectedPlatformsFactories = platformsProvider.GetPlatformFactories(targetPlatform, targetToolchain);
             ValidatePlatformFactories(selectedPlatformsFactories);
 
-            var evaluatedContext = new EvaluatedContext(
+            var workspace = new Workspace(
                 targetsProvider.Targets,
                 modulesProvider.Modules,
-                this.m_Profile,
-                selectedPlatformsFactories);
-            evaluatedContext.Dump();
+                selectedPlatformsFactories,
+                this.m_Profile);
 
-            foreach (var currentPlatformFactory in selectedPlatformsFactories)
-            {
-                foreach (var currentFlavor in EvaluatedContext.Flavors)
-                {
-                    foreach (var currentConfiguration in EvaluatedContext.Configurations)
-                    {
-                        var targetDescriptor = new TargetDescriptor(
-                            currentPlatformFactory.Platform,
-                            currentPlatformFactory.Architecture,
-                            currentPlatformFactory.Toolchain,
-                            currentConfiguration,
-                            currentFlavor);
+            var evaluatedWorkspace = new EvaluatedWorkspace(workspace);
 
-                        var currentPlatform = currentPlatformFactory.CreatePlatform(this.m_Profile);
-                        var currentToolchain = currentPlatformFactory.CreateToolchain(this.m_Profile);
+            evaluatedWorkspace.Dump();
 
-                        var targetContext = new TargetContext(currentPlatform, currentToolchain);
-
-                        foreach (var currentTarget in targetsProvider.Targets)
-                        {
-                            var evaluatedTarget = new Evaluation.EvaluatedTargetRules(
-                                currentTarget,
-                                targetDescriptor,
-                                targetContext,
-                                modulesProvider.Modules);
-
-                            foreach (var module in evaluatedTarget.Modules)
-                            {
-                                //Debug.WriteLine($@"{module.Target.TargetDescriptor}-{currentTarget.Name}-{module.ModuleRules}");
-                                module.Dump();
-                            }
-                        }
-                    }
-                }
-            }
-
-            return 0;
+            return evaluatedWorkspace.Targets.Count() > 0? 0 : 1;
         }
 
         private static void ValidatePlatformFactories(PlatformFactory[] platformFactories)

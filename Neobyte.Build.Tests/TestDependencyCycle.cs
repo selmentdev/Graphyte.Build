@@ -128,16 +128,16 @@ namespace Neobyte.Build.Tests
         {
             var modules = new[]
             {
-                new ModuleRulesMetadata(typeof(A)),
-                new ModuleRulesMetadata(typeof(B)),
-                new ModuleRulesMetadata(typeof(C)),
-                new ModuleRulesMetadata(typeof(D)),
-                new ModuleRulesMetadata(typeof(E)),
-                new ModuleRulesMetadata(typeof(F)),
-                new ModuleRulesMetadata(typeof(G)),
+                new ModuleRulesFactory(typeof(A)),
+                new ModuleRulesFactory(typeof(B)),
+                new ModuleRulesFactory(typeof(C)),
+                new ModuleRulesFactory(typeof(D)),
+                new ModuleRulesFactory(typeof(E)),
+                new ModuleRulesFactory(typeof(F)),
+                new ModuleRulesFactory(typeof(G)),
             };
 
-            var target = new TargetRulesMetadata(typeof(SampleTargetRules));
+            var target = new TargetRulesFactory(typeof(SampleTargetRules));
 
             var descriptor = new TargetDescriptor(
                 TargetPlatform.Windows,

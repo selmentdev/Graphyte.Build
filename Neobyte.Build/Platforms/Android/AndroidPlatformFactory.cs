@@ -11,17 +11,22 @@ namespace Neobyte.Build.Platforms.Android
             : base(TargetPlatform.Android, architecture, toolchain)
         { }
 
-        public override PlatformBase CreatePlatform(Profile profile)
+        public override TargetContext CreateContext(Profile profile)
         {
             var settings = profile.GetSection<AndroidPlatformSettings>();
+            return new TargetContext(
+                this.CreatePlatform(settings, profile),
+                this.CreateToolchain(settings, profile));
+        }
+
+        private PlatformBase CreatePlatform(AndroidPlatformSettings settings, Profile profile)
+        {
 
             return new AndroidPlatform(profile, this.Architecture, settings);
         }
 
-        public override ToolchainBase CreateToolchain(Profile profile)
+        private ToolchainBase CreateToolchain(AndroidPlatformSettings settings, Profile profile)
         {
-            var settings = profile.GetSection<AndroidPlatformSettings>();
-
             return new ClangToolchain(profile, this.Platform, this.Architecture, settings.Clang);
         }
     }

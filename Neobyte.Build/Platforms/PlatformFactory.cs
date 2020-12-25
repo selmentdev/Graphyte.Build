@@ -1,5 +1,4 @@
 using Neobyte.Build.Framework;
-using Neobyte.Build.Toolchains;
 
 namespace Neobyte.Build.Platforms
 {
@@ -19,9 +18,7 @@ namespace Neobyte.Build.Platforms
             this.Toolchain = toolchain;
         }
 
-        public abstract PlatformBase CreatePlatform(Profile profile);
-
-        public abstract ToolchainBase CreateToolchain(Profile profile);
+        public abstract TargetContext CreateContext(Profile profile);
 
         public override string ToString()
         {

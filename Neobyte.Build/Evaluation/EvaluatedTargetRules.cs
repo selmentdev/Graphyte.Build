@@ -19,10 +19,10 @@ namespace Neobyte.Build.Evaluation
         public EvaluatedModuleRules LaunchModule { get; }
 
         public EvaluatedTargetRules(
-            TargetRulesMetadata target,
+            TargetRulesFactory target,
             TargetDescriptor descriptor,
             TargetContext context,
-            ModuleRulesMetadata[] modules)
+            IEnumerable<ModuleRulesFactory> modules)
         {
             this.Descriptor = descriptor;
 
@@ -65,7 +65,7 @@ namespace Neobyte.Build.Evaluation
             }
         }
 
-        private EvaluatedModuleRules CreateModuleRules(ModuleRulesMetadata type)
+        private EvaluatedModuleRules CreateModuleRules(ModuleRulesFactory type)
         {
             var rules = type.Create(this.Target);
             return new EvaluatedModuleRules(rules, this);
@@ -81,6 +81,19 @@ namespace Neobyte.Build.Evaluation
         public override string ToString()
         {
             return this.Target.ToString();
+        }
+
+        public void Dump()
+        {
+            Trace.WriteLine($@"{this}-{this.Descriptor}");
+            Trace.Indent();
+
+            foreach (var module in this.Modules)
+            {
+                Trace.WriteLine(module);
+            }
+
+            Trace.Unindent();
         }
     }
 }

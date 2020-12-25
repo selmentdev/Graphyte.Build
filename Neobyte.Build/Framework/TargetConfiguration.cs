@@ -1,3 +1,5 @@
+using System;
+
 namespace Neobyte.Build.Framework
 {
     public enum TargetConfiguration
@@ -7,5 +9,10 @@ namespace Neobyte.Build.Framework
         Development,
         Testing,
         Release,
+    }
+
+    public static partial class TargetExtensions
+    {
+        public static TargetConfiguration[] Configurations => Enum.GetValues<TargetConfiguration>();
     }
 }
