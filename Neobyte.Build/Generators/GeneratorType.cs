@@ -6,17 +6,10 @@ namespace Neobyte.Build.Generators
     public readonly struct GeneratorType
         : IEquatable<GeneratorType>
     {
-        public static readonly GeneratorType MSBuild
-            = new GeneratorType("MSBuild");
-
-        public static readonly GeneratorType FastBuild
-            = new GeneratorType("FastBuild");
-
-        public static readonly GeneratorType CMake
-            = new GeneratorType("CMake");
-
-        public static readonly GeneratorType MakeFile
-            = new GeneratorType("MakeFile");
+        public static readonly GeneratorType MSBuild = new("MSBuild");
+        public static readonly GeneratorType FastBuild = new("FastBuild");
+        public static readonly GeneratorType CMake = new("CMake");
+        public static readonly GeneratorType MakeFile = new("MakeFile");
 
         private readonly string m_Value;
 
@@ -37,7 +30,7 @@ namespace Neobyte.Build.Generators
 
         public static GeneratorType Create(string value)
         {
-            return new GeneratorType(value);
+            return new(value);
         }
 
         public override string ToString()

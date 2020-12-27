@@ -144,7 +144,7 @@ namespace Neobyte.Build
             var targetPlatform = TargetPlatform.Create(this.m_Options.Platform);
             var targetToolchain = TargetToolchain.Create(this.m_Options.Toolchain);
 
-            var platformsProvider = new Platforms.PlatformProvider();
+            var platformsProvider = new PlatformProvider();
             platformsProvider.Dump();
 
             var targetsProvider = new TargetRulesProvider();

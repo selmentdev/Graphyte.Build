@@ -28,7 +28,7 @@ namespace Neobyte.Build.Framework
             return types;
         }
 
-        private static readonly JsonReaderOptions g_ReaderOptions = new JsonReaderOptions()
+        private static readonly JsonReaderOptions g_ReaderOptions = new()
         {
             AllowTrailingCommas = true,
             CommentHandling = JsonCommentHandling.Skip,

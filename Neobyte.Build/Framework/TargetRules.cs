@@ -54,7 +54,7 @@ namespace Neobyte.Build.Framework
         /// explicitely defined as dependencies. Example of such modules are dynamically discovered
         /// plugins which are not implicit dependencies of launch module.
         /// </remarks>
-        public List<Type> Modules { get; } = new List<Type>();
+        public List<Type> Modules { get; } = new();
 
         public override string ToString()
         {

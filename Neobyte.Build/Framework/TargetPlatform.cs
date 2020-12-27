@@ -6,23 +6,12 @@ namespace Neobyte.Build.Framework
     public readonly struct TargetPlatform
         : IEquatable<TargetPlatform>
     {
-        public static readonly TargetPlatform Windows
-            = new TargetPlatform("Windows");
-
-        public static readonly TargetPlatform UniversalWindows
-            = new TargetPlatform("UniversalWindows");
-
-        public static readonly TargetPlatform Linux
-            = new TargetPlatform("Linux");
-
-        public static readonly TargetPlatform Android
-            = new TargetPlatform("Android");
-
-        public static readonly TargetPlatform MacOS
-            = new TargetPlatform("MacOS");
-
-        public static readonly TargetPlatform IOS
-            = new TargetPlatform("IOS");
+        public static readonly TargetPlatform Windows = new("Windows");
+        public static readonly TargetPlatform UniversalWindows = new("UniversalWindows");
+        public static readonly TargetPlatform Linux = new("Linux");
+        public static readonly TargetPlatform Android = new("Android");
+        public static readonly TargetPlatform MacOS = new("MacOS");
+        public static readonly TargetPlatform IOS = new("IOS");
 
         private readonly string m_Value;
 
@@ -43,7 +32,7 @@ namespace Neobyte.Build.Framework
 
         public static TargetPlatform Create(string value)
         {
-            return new TargetPlatform(value);
+            return new(value);
         }
 
         public override string ToString()

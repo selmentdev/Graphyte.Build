@@ -60,14 +60,16 @@ namespace Neobyte.Build.Platforms.Android
             }
         }
 
+        private static readonly JsonDocumentOptions g_ReaderOptions = new()
+        {
+            AllowTrailingCommas = true,
+            CommentHandling = JsonCommentHandling.Skip,
+        };
+
         private static (int min, int max) GetMinMaxApiVersion(string ndkPath)
         {
             var content = File.ReadAllBytes(Path.Combine(ndkPath, "meta", "platforms.json"));
-            using var document = JsonDocument.Parse(content, new JsonDocumentOptions()
-            {
-                AllowTrailingCommas = true,
-                CommentHandling = JsonCommentHandling.Skip,
-            });
+            using var document = JsonDocument.Parse(content, g_ReaderOptions);
 
             var properties = document.RootElement.EnumerateObject().ToArray();
             var min_prop = properties.FirstOrDefault(x => x.Name == "min");
@@ -79,11 +81,7 @@ namespace Neobyte.Build.Platforms.Android
         private static IReadOnlyDictionary<string, int> GetSystemLibs(string ndkPath)
         {
             var content = File.ReadAllBytes(Path.Combine(ndkPath, "meta", "system_libs.json"));
-            using var document = JsonDocument.Parse(content, new JsonDocumentOptions()
-            {
-                AllowTrailingCommas = true,
-                CommentHandling = JsonCommentHandling.Skip,
-            });
+            using var document = JsonDocument.Parse(content, g_ReaderOptions);
 
             return document.RootElement.EnumerateObject()
                 .ToImmutableDictionary(

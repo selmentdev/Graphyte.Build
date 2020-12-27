@@ -6,20 +6,11 @@ namespace Neobyte.Build.Framework
     public readonly struct TargetToolchain
         : IEquatable<TargetToolchain>
     {
-        public static readonly TargetToolchain MSVC
-            = new TargetToolchain("MSVC");
-
-        public static readonly TargetToolchain Clang
-            = new TargetToolchain("Clang");
-
-        public static readonly TargetToolchain ClangCL
-            = new TargetToolchain("ClangCL");
-
-        public static readonly TargetToolchain GCC
-            = new TargetToolchain("GCC");
-
-        public static readonly TargetToolchain ICC
-            = new TargetToolchain("ICC");
+        public static readonly TargetToolchain MSVC = new("MSVC");
+        public static readonly TargetToolchain Clang = new("Clang");
+        public static readonly TargetToolchain ClangCL = new("ClangCL");
+        public static readonly TargetToolchain GCC = new("GCC");
+        public static readonly TargetToolchain ICC = new("ICC");
 
         private readonly string m_Value;
 
@@ -40,7 +31,7 @@ namespace Neobyte.Build.Framework
 
         public static TargetToolchain Create(string value)
         {
-            return new TargetToolchain(value);
+            return new(value);
         }
 
         public override string ToString()

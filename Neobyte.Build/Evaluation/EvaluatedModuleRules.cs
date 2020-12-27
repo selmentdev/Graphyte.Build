@@ -14,16 +14,16 @@ namespace Neobyte.Build.Evaluation
 
         public EvaluatedTargetRules Target { get; }
 
-        public List<EvaluatedModuleRules> PublicDependencies { get; } = new List<EvaluatedModuleRules>();
-        public List<EvaluatedModuleRules> PrivateDependencies { get; } = new List<EvaluatedModuleRules>();
-        public List<string> PublicIncludePaths { get; } = new List<string>();
-        public List<string> PrivateIncludePaths { get; } = new List<string>();
-        public List<string> PublicLibraryPaths { get; } = new List<string>();
-        public List<string> PrivateLibraryPaths { get; } = new List<string>();
-        public List<string> PublicLibraries { get; } = new List<string>();
-        public List<string> PrivateLibraries { get; } = new List<string>();
-        public List<string> PublicDefines { get; } = new List<string>();
-        public List<string> PrivateDefines { get; } = new List<string>();
+        public List<EvaluatedModuleRules> PublicDependencies { get; } = new();
+        public List<EvaluatedModuleRules> PrivateDependencies { get; } = new();
+        public List<string> PublicIncludePaths { get; } = new();
+        public List<string> PrivateIncludePaths { get; } = new();
+        public List<string> PublicLibraryPaths { get; } = new();
+        public List<string> PrivateLibraryPaths { get; } = new();
+        public List<string> PublicLibraries { get; } = new();
+        public List<string> PrivateLibraries { get; } = new();
+        public List<string> PublicDefines { get; } = new();
+        public List<string> PrivateDefines { get; } = new();
 
         public EvaluatedModuleRules(ModuleRules module, EvaluatedTargetRules target)
         {

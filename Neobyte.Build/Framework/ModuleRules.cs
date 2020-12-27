@@ -35,25 +35,25 @@ namespace Neobyte.Build.Framework
         public ModuleType Type { get; protected init; }
         public ModuleKind Kind { get; protected init; }
 
-        public List<Type> PublicDependencies { get; } = new List<Type>();
-        public List<Type> PrivateDependencies { get; } = new List<Type>();
-        public List<Type> InterfaceDependencies { get; } = new List<Type>();
+        public List<Type> PublicDependencies { get; } = new();
+        public List<Type> PrivateDependencies { get; } = new();
+        public List<Type> InterfaceDependencies { get; } = new();
 
-        public List<string> PublicIncludePaths { get; } = new List<string>();
-        public List<string> PrivateIncludePaths { get; } = new List<string>();
-        public List<string> InterfaceIncludePaths { get; } = new List<string>();
+        public List<string> PublicIncludePaths { get; } = new();
+        public List<string> PrivateIncludePaths { get; } = new();
+        public List<string> InterfaceIncludePaths { get; } = new();
 
-        public List<string> PublicLibraryPaths { get; } = new List<string>();
-        public List<string> PrivateLibraryPaths { get; } = new List<string>();
-        public List<string> InterfaceLibraryPaths { get; } = new List<string>();
+        public List<string> PublicLibraryPaths { get; } = new();
+        public List<string> PrivateLibraryPaths { get; } = new();
+        public List<string> InterfaceLibraryPaths { get; } = new();
 
-        public List<string> PublicLibraries { get; } = new List<string>();
-        public List<string> PrivateLibraries { get; } = new List<string>();
-        public List<string> InterfaceLibraries { get; } = new List<string>();
+        public List<string> PublicLibraries { get; } = new();
+        public List<string> PrivateLibraries { get; } = new();
+        public List<string> InterfaceLibraries { get; } = new();
 
-        public List<string> PublicDefines { get; } = new List<string>();
-        public List<string> PrivateDefines { get; } = new List<string>();
-        public List<string> InterfaceDefines { get; } = new List<string>();
+        public List<string> PublicDefines { get; } = new();
+        public List<string> PrivateDefines { get; } = new();
+        public List<string> InterfaceDefines { get; } = new();
 
         public override string ToString()
         {
