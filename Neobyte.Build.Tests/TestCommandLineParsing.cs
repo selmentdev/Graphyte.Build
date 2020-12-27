@@ -5,6 +5,7 @@ using System.IO;
 
 [assembly: Neobyte.Build.Core.TypesProvider]
 
+#if false
 namespace Neobyte.Build.Tests
 {
     [TestClass]
@@ -117,3 +118,4 @@ namespace Neobyte.Build.Tests
         }
     }
 }
+#endif

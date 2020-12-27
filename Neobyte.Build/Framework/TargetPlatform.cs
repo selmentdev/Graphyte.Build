@@ -15,7 +15,7 @@ namespace Neobyte.Build.Framework
 
         private readonly string m_Value;
 
-        private TargetPlatform(string value)
+        public TargetPlatform(string value)
         {
             if (value == null)
             {
@@ -28,11 +28,6 @@ namespace Neobyte.Build.Framework
             }
 
             this.m_Value = value;
-        }
-
-        public static TargetPlatform Create(string value)
-        {
-            return new(value);
         }
 
         public override string ToString()

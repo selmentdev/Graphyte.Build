@@ -1,155 +1,222 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
 namespace Neobyte.Build.Core
 {
-    public static class CommandLineParser
+    internal static class CommandLineValueConverter
     {
-        public static T Parse<T>(string[] args)
-            where T : new()
+        private static ConstructorInfo? TryGetConstructor(this Type self, Type type)
         {
-            //
-            // Algorithm:
-            //
-            //  - get all fields and use their names as options
-            //  - iterate over args and consume elements
-            //
-            //
-            // Syntax:
-            //
-            //  -Param:Value
-            //  -Param:"string value"
-            //  -BooleanSwitch
-            //
+            return self.GetConstructors().SingleOrDefault(x =>
+            {
+                var parameters = x.GetParameters();
+                return x.IsPublic && parameters.Length == 1 && parameters[0].ParameterType == type;
+            });
+        }
 
-            var type = typeof(T);
-            var fields = type.GetFields()
-                .Where(x => x.IsPublic && !x.IsStatic && !x.IsInitOnly && !x.FieldType.IsArray)
-                .ToArray();
 
-            var options = new Dictionary<FieldInfo, string>();
+        public static object? ConvertFromString(Type type, string value)
+        {
+            // 1. Try get type descriptor.
 
+            if (TypeDescriptor.GetConverter(type) is { } converter)
+            {
+                if (converter.CanConvertFrom(typeof(string)))
+                {
+                    return converter.ConvertFromInvariantString(value);
+                }
+            }
+
+            // 2. Find proper constructor.
+            var constructor = type.TryGetConstructor(typeof(string));
+
+            if (constructor != null)
+            {
+                var instance = constructor.Invoke(new[] { value });
+                return instance;
+            }
+
+            return null;
+        }
+    }
+}
+
+namespace Neobyte.Build.Core
+{
+    [AttributeUsage(AttributeTargets.Method, Inherited = true)]
+    public class CommandLineOptionAttribute : Attribute
+    {
+        public readonly string Name;
+        public readonly string? Description;
+
+        public CommandLineOptionAttribute(string name)
+        {
+            this.Name = name;
+        }
+
+        public CommandLineOptionAttribute(string name, string description)
+        {
+            this.Name = name;
+            this.Description = description;
+        }
+    }
+}
+
+namespace Neobyte.Build.Core
+{
+    public class CommandLine
+    {
+        private readonly Dictionary<string, string?> m_Values = new();
+
+        public CommandLine(string[] args)
+        {
             foreach (var arg in args)
             {
-                var argument = arg.AsSpan();
+                var view = arg.AsSpan();
 
-                if (argument.Length <= 1)
+                var separator = view.IndexOfAny(':', '=');
+
+                if (separator >= 0)
                 {
-                    throw new Exception(arg);
+                    var name = view.Slice(start: 0, length: separator);
+                    var value = view[(separator + 1)..];
+
+                    this.m_Values.Add(name.ToString(), value.ToString());
                 }
-
-                if (argument[0] != '-')
+                else
                 {
-                    throw new Exception(arg);
-                }
-
-                // Remove '-' character
-                var nameAndValue = argument[1..];
-
-                (var name, var value) = SplitNameValue(nameAndValue);
-
-                var field = fields.FirstOrDefault(x => x.Name == name);
-
-                if (field == null)
-                {
-                    throw new Exception($@"Command line argument ""{name}"" not found");
-                }
-
-                if (!options.TryAdd(field, value))
-                {
-                    throw new Exception($@"Command line argument ""{name}"" specified more than once");
+                    this.m_Values.Add(arg, null);
                 }
             }
-
-            return ConstructParams<T>(options);
         }
 
-        private static T ConstructParams<T>(IReadOnlyDictionary<FieldInfo, string> options)
-            where T : new()
+        public void Apply(object instance)
         {
-            var processed = options.ToDictionary(
-                x => x.Key,
-                x =>
-                {
-                    (var field, var value) = x;
-
-                    var type = Nullable.GetUnderlyingType(field.FieldType) ?? field.FieldType;
-
-                    if (type.IsEnum)
-                    {
-                        return Enum.Parse(type, value);
-                    }
-                    else if (type == typeof(int))
-                    {
-                        return int.Parse(value, CultureInfo.InvariantCulture);
-                    }
-                    else if (type == typeof(float))
-                    {
-                        return float.Parse(value, CultureInfo.InvariantCulture);
-                    }
-                    else if (type == typeof(bool))
-                    {
-                        return value switch
-                        {
-                            null => true,
-                            _ => bool.Parse(value)
-                        };
-                    }
-                    else if (type == typeof(string))
-                    {
-                        if (value.StartsWith('"') && value.EndsWith('"') && value.Length > 1)
-                        {
-                            return value[1..^1];
-                        }
-                        else
-                        {
-                            return value;
-                        }
-                    }
-                    else if (type == typeof(FileInfo))
-                    {
-                        return new FileInfo(value);
-                    }
-                    else if (type == typeof(DirectoryInfo))
-                    {
-                        return new DirectoryInfo(value);
-                    }
-                    else
-                    {
-                        throw new Exception($@"Type ""{type}"" is not supported");
-                    }
-                });
-
-            var result = new T();
-
-            foreach ((var field, var value) in processed)
-            {
-                field.SetValue(result, value);
-            }
-
-            return result;
+            this.Apply(instance.GetType(), instance, isStatic: false);
         }
 
-        private static (string, string) SplitNameValue(ReadOnlySpan<char> line)
+        public void Apply(Type type)
         {
-            var separator = line.IndexOfAny(':', '=');
-
-            if (separator >= 0)
-            {
-                var name = line.Slice(start: 0, length: separator);
-                var value = line[(separator + 1)..];
-
-                return (name.ToString(), value.ToString());
-            }
-            else
-            {
-                return (line.ToString(), null);
-            }
+            this.Apply(type, null, isStatic: true);
         }
 
+        public void Apply<T>()
+        {
+            this.Apply(typeof(T));
+        }
+
+        private void Apply(Type type, object? instance, bool isStatic)
+        {
+            var methods = type.GetMethods();
+
+            foreach (var method in methods)
+            {
+                if (method.IsStatic == isStatic)
+                {
+                    var option = method.GetCustomAttribute<CommandLineOptionAttribute>();
+
+                    if (option != null)
+                    {
+                        if (this.m_Values.TryGetValue(option.Name, out var argValue))
+                        {
+                            var parameters = method.GetParameters();
+
+                            if (parameters.Length == 0)
+                            {
+                                if (argValue == null)
+                                {
+                                    method.Invoke(instance, null);
+                                }
+                                else
+                                {
+                                    throw new NotSupportedException($@"Command line option {option.Name} requires no arguments");
+                                }
+                            }
+                            else if (parameters.Length == 1)
+                            {
+                                var parameterType = parameters[0].ParameterType;
+                                var underlying = Nullable.GetUnderlyingType(parameterType) ?? parameterType;
+
+                                if (argValue != null)
+                                {
+                                    var value = CommandLineValueConverter.ConvertFromString(underlying, argValue);
+
+                                    method.Invoke(instance, new[] { value });
+                                }
+                                else
+                                {
+                                    throw new NotSupportedException($@"Command line option {option.Name} requires exactly one argument of type {underlying}");
+                                }
+                            }
+                            else
+                            {
+                                throw new NotSupportedException($@"Command line option {option.Name} has more than one option");
+                            }
+                        }
+                    }
+                }
+            }
+
+#if false
+            var fields = type.GetFields();
+
+            foreach (var field in fields)
+            {
+                if (field.IsStatic == isStatic)
+                {
+                    var option = field.GetCustomAttribute<CommandLineOptionAttribute>();
+
+                    if (option != null)
+                    {
+                        if (this.m_Values.TryGetValue(option.Name, out var argValue))
+                        {
+                            if (argValue != null)
+                            {
+                                var value = CommandLineValueConverter.ConvertFromString(field.FieldType, argValue);
+                                field.SetValue(instance, value);
+                            }
+                            else
+                            {
+                                throw new NotSupportedException($@"Command line option {option.Name} is not supported");
+                            }
+                        }
+                    }
+                }
+            }
+
+            var properties = type.GetProperties();
+
+            foreach (var property in properties)
+            {
+                var setter = property.SetMethod;
+                if (setter != null)
+                {
+                    if (setter.Attributes.HasFlag(MethodAttributes.Static) == isStatic)
+                    {
+                        var option = property.GetCustomAttribute<CommandLineOptionAttribute>();
+
+                        if (option != null)
+                        {
+                            if (this.m_Values.TryGetValue(option.Name, out var argValue))
+                            {
+                                if (argValue != null)
+                                {
+                                    var value = CommandLineValueConverter.ConvertFromString(property.PropertyType, argValue);
+                                    setter.Invoke(instance, new[] { value });
+                                }
+                                else
+                                {
+                                    throw new NotSupportedException($@"Command line option {option.Name} is not supported");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+#endif
+        }
     }
 }

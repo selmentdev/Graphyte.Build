@@ -14,7 +14,7 @@ namespace Neobyte.Build.Framework
 
         private readonly string m_Value;
 
-        private TargetToolchain(string value)
+        public TargetToolchain(string value)
         {
             if (value == null)
             {
@@ -27,11 +27,6 @@ namespace Neobyte.Build.Framework
             }
 
             this.m_Value = value;
-        }
-
-        public static TargetToolchain Create(string value)
-        {
-            return new(value);
         }
 
         public override string ToString()

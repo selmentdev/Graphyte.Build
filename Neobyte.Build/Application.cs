@@ -1,6 +1,7 @@
 using Neobyte.Build.Core;
 using Neobyte.Build.Evaluation;
 using Neobyte.Build.Framework;
+using Neobyte.Build.Generators;
 using Neobyte.Build.Platforms;
 using System;
 using System.Diagnostics;
@@ -17,6 +18,14 @@ namespace Neobyte.Build
     {
         private static readonly Version Current = new Version(1, 0, 0, 0);
 
+        private static bool g_PrintLogo = true;
+
+        [CommandLineOption("-NoLogo")]
+        public static void OnNoLogo()
+        {
+            g_PrintLogo = false;
+        }
+
         public static int Main(string[] args)
         {
             var watch = Stopwatch.StartNew();
@@ -29,12 +38,19 @@ namespace Neobyte.Build
             GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
 
 
+            var commandLine = new CommandLine(args);
+            commandLine.Apply<Application>();
+
             //
             // Setup console tracing.
             //
 
             Trace.Listeners.Add(new ConsoleTraceListener());
-            Application.PrintLogo();
+
+            if (g_PrintLogo)
+            {
+                Application.PrintLogo();
+            }
 
             Trace.WriteLine($@"Neobyte Build version {Application.Current}");
             Trace.WriteLine($@"{RuntimeInformation.OSDescription} ({RuntimeInformation.FrameworkDescription})");
@@ -42,7 +58,9 @@ namespace Neobyte.Build
 
             try
             {
-                var app = new Application(args);
+                var app = new Application();
+                commandLine.Apply(app);
+
                 return app.Run();
             }
             catch (Exception e)
@@ -78,32 +96,6 @@ namespace Neobyte.Build
 {
     public sealed partial class Application
     {
-        public sealed class Options
-        {
-            public FileInfo? Profile;
-            public DirectoryInfo? OutputPath;
-            public string? Platform;
-            public string? Toolchain;
-            public string? Generator;
-            public FileInfo? LogFile;
-
-            [Conditional("DEBUG")]
-            public void Dump()
-            {
-                Trace.WriteLine("Options:");
-                Trace.Indent();
-
-                Trace.WriteLine($@"Profile:   {this.Profile}");
-                Trace.WriteLine($@"Output:    {this.OutputPath}");
-                Trace.WriteLine($@"Platform:  {this.Platform}");
-                Trace.WriteLine($@"Toolchain: {this.Toolchain}");
-                Trace.WriteLine($@"Generator: {this.Generator}");
-                Trace.WriteLine($@"Log file:  {this.LogFile}");
-
-                Trace.Unindent();
-            }
-        }
-
         private static void PrintLogo()
         {
             // Slant: (http://patorjk.com/software/taag/#p=display&f=Slant&t=Anemone.Build
@@ -123,36 +115,81 @@ namespace Neobyte.Build
             Console.ForegroundColor = previous;
         }
 
-        private readonly Options m_Options;
-        private readonly Profile m_Profile;
+        private Profile? m_Profile;
 
-        private Application(string[] args)
+        private TargetPlatform? m_TargetPlatform;
+        private TargetToolchain? m_TargetToolchain;
+        private DirectoryInfo? m_OutputDirectory;
+
+        [CommandLineOption("-Profile")]
+        public void OnProfile(FileInfo path)
         {
-            this.m_Options = Core.CommandLineParser.Parse<Options>(args);
-            this.m_Options.Dump();
+            Trace.WriteLine($@"Profile: {path}");
+            this.m_Profile = new Profile(path.OpenRead().ReadAllBytes());
+        }
 
-            if (this.m_Options.LogFile != null)
-            {
-                Trace.Listeners.Add(new TextWriterTraceListener(this.m_Options.LogFile.FullName, "LogFile"));
-            }
+        [CommandLineOption("-LogFile")]
+        public void OnLogFile(FileInfo path)
+        {
+            Trace.WriteLine($@"LogFile: {path}");
+            Trace.Listeners.Add(new TextWriterTraceListener(path.FullName, "LogFile"));
+        }
 
-            if (this.m_Options.Profile == null)
-            {
-                throw new Exception("Profile file not specified");
-            }
+        [CommandLineOption("-Platform")]
+        public void OnPlatform(TargetPlatform value)
+        {
+            Trace.WriteLine($@"Platform: {value}");
+            this.m_TargetPlatform = value;
+        }
 
-            if (this.m_Options.Platform == null)
-            {
-                throw new Exception("Platform not specified");
-            }
+        [CommandLineOption("-Toolchain")]
+        public void OnToolchain(TargetToolchain? value)
+        {
+            Trace.WriteLine($@"Toolchain: {value}");
+            this.m_TargetToolchain = value;
+        }
 
-            this.m_Profile = new Profile(this.m_Options.Profile.OpenRead().ReadAllBytes());
+        [CommandLineOption("-OutputPath")]
+        public void OnOutputPath(DirectoryInfo? path)
+        {
+            Trace.WriteLine($@"OutputPath: {path}");
+            this.m_OutputDirectory = path;
+        }
+
+        [CommandLineOption("-Generator")]
+        public void OnGenerator(GeneratorType value)
+        {
+            Trace.WriteLine($@"Generator: {value}");
+        }
+
+        private Application()
+        {
         }
 
         private int Run()
         {
-            var targetPlatform = TargetPlatform.Create(this.m_Options.Platform!);
-            var targetToolchain = TargetToolchain.Create(this.m_Options.Toolchain!);
+            if (this.m_Profile == null)
+            {
+                throw new Exception("Profile file not specified");
+            }
+
+            if (this.m_OutputDirectory == null)
+            {
+                //throw new Exception("Invalid output directory");
+            }
+
+            if (this.m_TargetPlatform == null)
+            {
+                throw new Exception("Target platform not specified");
+            }
+
+            if (this.m_TargetToolchain == null)
+            {
+                throw new Exception("Target platform not specified");
+            }
+
+            var targetPlatform = this.m_TargetPlatform.Value;
+            var targetToolchain = this.m_TargetToolchain.Value;
 
             var platformsProvider = new PlatformProvider();
             platformsProvider.Dump();
@@ -174,9 +211,9 @@ namespace Neobyte.Build
 
             var evaluatedWorkspace = new EvaluatedWorkspace(workspace);
 
-            evaluatedWorkspace.Dump();
+            //evaluatedWorkspace.Dump();
 
-            return evaluatedWorkspace.Targets.Count() > 0? 0 : 1;
+            return evaluatedWorkspace.Targets.Count() > 0 ? 0 : 1;
         }
 
         private static void ValidatePlatformFactories(PlatformFactory[] platformFactories)

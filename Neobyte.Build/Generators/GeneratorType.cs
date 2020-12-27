@@ -13,7 +13,7 @@ namespace Neobyte.Build.Generators
 
         private readonly string m_Value;
 
-        private GeneratorType(string value)
+        public GeneratorType(string value)
         {
             if (value == null)
             {
@@ -26,11 +26,6 @@ namespace Neobyte.Build.Generators
             }
 
             this.m_Value = value;
-        }
-
-        public static GeneratorType Create(string value)
-        {
-            return new(value);
         }
 
         public override string ToString()
