@@ -16,7 +16,7 @@ namespace Neobyte.Build.Evaluation
 
         public EvaluatedModuleRules[] Modules { get; }
 
-        public EvaluatedModuleRules LaunchModule { get; }
+        public EvaluatedModuleRules? LaunchModule { get; }
 
         public EvaluatedTargetRules(
             TargetRulesFactory target,
@@ -32,14 +32,19 @@ namespace Neobyte.Build.Evaluation
 
             this.Modules = modules.Select(this.CreateModuleRules).ToArray();
 
-            this.LaunchModule = this.Find(this.Target.LaunchModule);
+            var launchModule = this.Target.LaunchModule;
+            if (launchModule != null)
+            {
+                this.LaunchModule = this.Find(launchModule);
+
+                if (this.LaunchModule.Module.Type != ModuleType.Application)
+                {
+                    throw new Exception($@"Launch module {this.LaunchModule} for target {this} must be application");
+                }
+            }
 
             this.ResolveModules();
 
-            if (this.LaunchModule.Module.Type != ModuleType.Application)
-            {
-                throw new Exception($@"Launch module {this.LaunchModule} for target {this} must be application");
-            }
 
 #if DEBUG
             foreach (var module in this.Modules)

@@ -176,7 +176,7 @@ namespace Neobyte.Build.Validation
 
         [DebuggerStepThrough]
         [TargetedPatchingOptOut("Performance critical to inline across NGen image boundaries")]
-        public static void Range(bool condition, string name, string message = null)
+        public static void Range(bool condition, string name, string? message = null)
         {
             if (!condition)
             {
@@ -186,7 +186,7 @@ namespace Neobyte.Build.Validation
 
         [DebuggerStepThrough]
         [TargetedPatchingOptOut("Performance critical to inline across NGen image boundaries")]
-        public static Exception FailRange(string name, string message = null)
+        public static Exception FailRange(string name, string? message = null)
         {
             if (string.IsNullOrEmpty(message))
             {

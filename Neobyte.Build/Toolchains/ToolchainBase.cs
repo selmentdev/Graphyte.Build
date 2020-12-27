@@ -1,4 +1,5 @@
 using Neobyte.Build.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace Neobyte.Build.Toolchains
@@ -17,19 +18,19 @@ namespace Neobyte.Build.Toolchains
 
         public abstract TargetToolchain Toolchain { get; }
 
-        public string[] IncludePaths { get; protected set; }
+        public string[] IncludePaths { get; protected set; } = Array.Empty<string>();
 
-        public string[] LibraryPaths { get; protected set; }
+        public string[] LibraryPaths { get; protected set; } = Array.Empty<string>();
 
-        public string RootPath { get; protected set; }
+        public string RootPath { get; protected set; } = string.Empty;
 
-        public string CompilerExecutable { get; protected set; }
+        public string CompilerExecutable { get; protected set; } = string.Empty;
 
-        public string[] CompilerExtraFiles { get; protected set; }
+        public string[] CompilerExtraFiles { get; protected set; } = Array.Empty<string>();
 
-        public string LinkerExecutable { get; protected set; }
+        public string LinkerExecutable { get; protected set; } = string.Empty;
 
-        public string LibrarianExecutable { get; protected set; }
+        public string LibrarianExecutable { get; protected set; } = string.Empty;
 
         public virtual string FormatLinkerGroupStart => string.Empty;
         public virtual string FormatLinkerGroupEnd => string.Empty;

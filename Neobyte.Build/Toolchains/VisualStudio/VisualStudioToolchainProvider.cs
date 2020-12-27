@@ -109,6 +109,11 @@ namespace Neobyte.Build.Toolchains.VisualStudio
                         RedirectStandardOutput = true,
                     });
 
+                    if (process == null)
+                    {
+                        throw new NotSupportedException("Visual Studio not found");
+                    }
+
                     var content = process.StandardOutput.ReadToEnd();
                     var document = JsonDocument.Parse(content);
 
@@ -132,20 +137,21 @@ namespace Neobyte.Build.Toolchains.VisualStudio
                 .EnumerateObject()
                 .ToDictionary(x => x.Name, x => x.Value);
 
-            var name = properties["displayName"].GetString();
-            var path = properties["installationPath"].GetString();
-
             var catalog = properties["catalog"]
                 .EnumerateObject()
                 .ToDictionary(x => x.Name, x => x.Value);
 
-            var productVersion = catalog["productLineVersion"].GetString();
+            var name = properties["displayName"].GetString()!;
+            var path = properties["installationPath"].GetString()!;
 
-            var productId = GetVisualStudioProductId(properties["productId"].GetString());
+            var productVersion = catalog["productLineVersion"].GetString()!;
+            var productIdValue = properties["productId"].GetString()!;
+
+            var productId = GetVisualStudioProductId(productIdValue);
 
             var toolkit = g_VersionToolkitMappings.First(x => x.Version == productVersion).Toolkit;
 
-            var toolset = GetToolsVersion(path, toolkit);
+            var toolset = GetToolsVersion(path!, toolkit);
 
             return new VisualStudioLocation(
                 location: path,

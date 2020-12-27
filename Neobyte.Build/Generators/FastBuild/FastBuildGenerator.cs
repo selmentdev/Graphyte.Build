@@ -5,7 +5,7 @@ namespace Neobyte.Build.Generators.FastBuild
     sealed class FastBuildGenerator
         : GeneratorBase
     {
-        public FastBuildGeneratorSettings Settings { get; }
+        public FastBuildGeneratorSettings? Settings { get; }
 
         public FastBuildGenerator(Profile profile)
         {

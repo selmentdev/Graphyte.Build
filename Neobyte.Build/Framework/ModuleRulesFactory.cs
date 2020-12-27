@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Neobyte.Build.Framework
@@ -14,7 +14,7 @@ namespace Neobyte.Build.Framework
 
         public ModuleRules Create(TargetRules target)
         {
-            return Activator.CreateInstance(this.Type, target) as ModuleRules;
+            return (ModuleRules)Activator.CreateInstance(this.Type, target)!;
         }
 
         public override string ToString()
@@ -27,7 +27,7 @@ namespace Neobyte.Build.Framework
             return this.Type.Equals(other.Type);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is ModuleRulesFactory other && this.Equals(other);
         }

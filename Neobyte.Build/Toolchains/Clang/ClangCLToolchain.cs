@@ -37,10 +37,6 @@ namespace Neobyte.Build.Toolchains.Clang
                 this.LinkerExecutable = $@"{location}/bin/lld";
                 this.LibrarianExecutable = $@"{location}/bin/llvm-ar";
             }
-
-            this.IncludePaths = Array.Empty<string>();
-
-            this.LibraryPaths = Array.Empty<string>();
         }
 
         public override TargetToolchain Toolchain => TargetToolchain.ClangCL;

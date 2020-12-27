@@ -13,6 +13,6 @@ namespace Neobyte.Build.Generators.FastBuild
 
         public bool? Report { get; set; }
 
-        public string CachePath { get; set; }
+        public string? CachePath { get; set; }
     }
 }

@@ -71,7 +71,10 @@ namespace Neobyte.Build.Framework
 
                             var section = JsonSerializer.Deserialize(ref reader, type);
 
-                            result.Add(section);
+                            if (section != null)
+                            {
+                                result.Add(section);
+                            }
                         }
                         else if (reader.TokenType == JsonTokenType.EndObject)
                         {
@@ -92,7 +95,7 @@ namespace Neobyte.Build.Framework
             return result;
         }
 
-        public T GetSection<T>()
+        public T? GetSection<T>()
         {
             var type = typeof(T);
 

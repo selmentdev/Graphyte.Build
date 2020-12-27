@@ -57,7 +57,7 @@ namespace Neobyte.Build
             }
         }
 
-        private static void ReportException(Exception e)
+        private static void ReportException(Exception? e)
         {
             while (e != null)
             {
@@ -80,12 +80,12 @@ namespace Neobyte.Build
     {
         public sealed class Options
         {
-            public FileInfo Profile;
-            public DirectoryInfo OutputPath;
-            public string Platform;
-            public string Toolchain;
-            public string Generator;
-            public FileInfo LogFile;
+            public FileInfo? Profile;
+            public DirectoryInfo? OutputPath;
+            public string? Platform;
+            public string? Toolchain;
+            public string? Generator;
+            public FileInfo? LogFile;
 
             [Conditional("DEBUG")]
             public void Dump()
@@ -136,13 +136,23 @@ namespace Neobyte.Build
                 Trace.Listeners.Add(new TextWriterTraceListener(this.m_Options.LogFile.FullName, "LogFile"));
             }
 
+            if (this.m_Options.Profile == null)
+            {
+                throw new Exception("Profile file not specified");
+            }
+
+            if (this.m_Options.Platform == null)
+            {
+                throw new Exception("Platform not specified");
+            }
+
             this.m_Profile = new Profile(this.m_Options.Profile.OpenRead().ReadAllBytes());
         }
 
         private int Run()
         {
-            var targetPlatform = TargetPlatform.Create(this.m_Options.Platform);
-            var targetToolchain = TargetToolchain.Create(this.m_Options.Toolchain);
+            var targetPlatform = TargetPlatform.Create(this.m_Options.Platform!);
+            var targetToolchain = TargetToolchain.Create(this.m_Options.Toolchain!);
 
             var platformsProvider = new PlatformProvider();
             platformsProvider.Dump();

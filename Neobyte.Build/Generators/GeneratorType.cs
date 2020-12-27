@@ -48,7 +48,7 @@ namespace Neobyte.Build.Generators
             return string.Equals(this.m_Value, value, StringComparison.Ordinal);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is GeneratorType other && this.Equals(other);
         }

@@ -1,6 +1,7 @@
 using Neobyte.Build.Framework;
 using Neobyte.Build.Toolchains;
 using Neobyte.Build.Toolchains.VisualStudio;
+using System;
 
 namespace Neobyte.Build.Platforms.Windows
 {
@@ -16,6 +17,11 @@ namespace Neobyte.Build.Platforms.Windows
         {
             var settings = profile.GetSection<UniversalWindowsPlatformSettings>();
 
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(profile));
+            }
+
             return new TargetContext(
                 this.CreatePlatform(settings, profile),
                 this.CreateToolchain(settings, profile));
@@ -28,7 +34,7 @@ namespace Neobyte.Build.Platforms.Windows
 
         private ToolchainBase CreateToolchain(UniversalWindowsPlatformSettings settings, Profile profile)
         {
-            return new VisualStudioToolchain(profile, this.Architecture, settings.VisualStudio);
+            return new VisualStudioToolchain(profile, this.Architecture, settings.VisualStudio!);
         }
     }
 }

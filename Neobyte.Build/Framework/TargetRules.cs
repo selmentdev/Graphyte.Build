@@ -31,7 +31,7 @@ namespace Neobyte.Build.Framework
 
         public FileInfo SourceFile { get; }
 
-        public DirectoryInfo SourceDirectory => this.SourceFile.Directory;
+        public DirectoryInfo? SourceDirectory => this.SourceFile.Directory;
 
         public TargetDescriptor Descriptor { get; }
 
@@ -44,7 +44,7 @@ namespace Neobyte.Build.Framework
         /// <summary>
         /// Gets or sets module used when target is being executed.
         /// </summary>
-        public Type LaunchModule { get; protected set; }
+        public Type? LaunchModule { get; protected set; }
 
         /// <summary>
         /// Gets list of additional modules.

@@ -7,12 +7,12 @@ namespace Neobyte.Build.Platforms.Windows
     [ProfileSection]
     public sealed class WindowsPlatformSettings
     {
-        public string WindowsSdkVersion { get; set; }
+        public string? WindowsSdkVersion { get; set; }
 
-        public VisualStudioToolchainSettings VisualStudio { get; set; }
+        public VisualStudioToolchainSettings? VisualStudio { get; set; }
 
-        public ClangToolchainSettings Clang { get; set; }
+        public ClangToolchainSettings? Clang { get; set; }
 
-        public ClangCLToolchainSettings ClangCL { get; set; }
+        public ClangCLToolchainSettings? ClangCL { get; set; }
     }
 }

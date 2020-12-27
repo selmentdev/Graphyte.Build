@@ -16,7 +16,7 @@ namespace Neobyte.Build.Platforms.Windows
 
         public override TargetContext CreateContext(Profile profile)
         {
-            var settings = profile.GetSection<WindowsPlatformSettings>();
+            var settings = profile.GetSection<WindowsPlatformSettings>()!;
 
             return new TargetContext(
                 this.CreatePlatform(settings, profile),
@@ -35,7 +35,7 @@ namespace Neobyte.Build.Platforms.Windows
                 return new VisualStudioToolchain(
                     profile,
                     this.Architecture,
-                    settings.VisualStudio);
+                    settings.VisualStudio!);
             }
             else if (this.Toolchain == TargetToolchain.Clang)
             {
@@ -43,7 +43,7 @@ namespace Neobyte.Build.Platforms.Windows
                     profile,
                     this.Platform,
                     this.Architecture,
-                    settings.Clang);
+                    settings.Clang!);
             }
             else if (this.Toolchain == TargetToolchain.ClangCL)
             {
@@ -51,7 +51,7 @@ namespace Neobyte.Build.Platforms.Windows
                     profile,
                     this.Platform,
                     this.Architecture,
-                    settings.ClangCL);
+                    settings.ClangCL!);
             }
 
             throw new NotSupportedException("Toolchain not supported");

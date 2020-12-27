@@ -17,7 +17,7 @@ namespace Neobyte.Build.Framework
 
         public TargetRules Create(TargetDescriptor descriptor, TargetContext context)
         {
-            return Activator.CreateInstance(this.Type, descriptor, context) as TargetRules;
+            return (TargetRules)Activator.CreateInstance(this.Type, descriptor, context)!;
         }
 
         public override string ToString()
@@ -30,7 +30,7 @@ namespace Neobyte.Build.Framework
             return this.Type.Equals(other.Type);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is TargetRulesFactory other && this.Equals(other);
         }

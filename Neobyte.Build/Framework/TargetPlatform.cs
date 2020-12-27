@@ -50,7 +50,7 @@ namespace Neobyte.Build.Framework
             return string.Equals(this.m_Value, value, StringComparison.Ordinal);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is TargetPlatform other && this.Equals(other);
         }

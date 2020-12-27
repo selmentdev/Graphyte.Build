@@ -14,7 +14,7 @@ namespace Neobyte.Base.SourceControl
                 RedirectStandardOutput = true,
             });
 
-            return handle.StandardOutput.ReadLine();
+            return handle?.StandardOutput?.ReadLine()!;
         }
 
         /// <summary>

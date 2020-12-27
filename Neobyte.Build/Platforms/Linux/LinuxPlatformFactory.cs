@@ -18,6 +18,11 @@ namespace Neobyte.Build.Platforms.Linux
         {
             var settings = profile.GetSection<LinuxPlatformSettings>();
 
+            if (settings == null)
+            {
+                throw new NotSupportedException();
+            }
+
             return new TargetContext(
                 this.CreatePlatform(settings, profile),
                 this.CreateToolchain(settings, profile));
@@ -36,7 +41,7 @@ namespace Neobyte.Build.Platforms.Linux
                     profile,
                     this.Platform,
                     this.Architecture,
-                    settings.Clang);
+                    settings.Clang!);
             }
 
             throw new NotSupportedException();

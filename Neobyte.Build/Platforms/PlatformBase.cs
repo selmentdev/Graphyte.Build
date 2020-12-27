@@ -1,4 +1,5 @@
 using Neobyte.Build.Framework;
+using System;
 
 namespace Neobyte.Build.Platforms
 {
@@ -20,8 +21,8 @@ namespace Neobyte.Build.Platforms
 
         public abstract string AdjustModuleName(string name, ModuleType type);
 
-        public string[] IncludePaths { get; protected set; }
+        public string[] IncludePaths { get; protected set; } = Array.Empty<string>();
 
-        public string[] LibraryPaths { get; protected set; }
+        public string[] LibraryPaths { get; protected set; } = Array.Empty<string>();
     }
 }

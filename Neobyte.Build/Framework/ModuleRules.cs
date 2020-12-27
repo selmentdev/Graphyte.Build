@@ -19,7 +19,7 @@ namespace Neobyte.Build.Framework
 
             this.SourceFile = new FileInfo(location.Location);
 
-            this.Guid = Core.Tools.MakeGuid(this.GetType().FullName);
+            this.Guid = Core.Tools.MakeGuid(this.GetType().FullName!);
 
             this.Target = target;
         }
@@ -27,7 +27,7 @@ namespace Neobyte.Build.Framework
         public TargetRules Target { get; }
 
         public FileInfo SourceFile { get; }
-        public DirectoryInfo SourceDirectory => this.SourceFile.Directory;
+        public DirectoryInfo? SourceDirectory => this.SourceFile.Directory;
 
         public Guid Guid { get; set; }
 

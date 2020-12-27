@@ -1,6 +1,7 @@
 using Neobyte.Build.Framework;
 using Neobyte.Build.Toolchains;
 using Neobyte.Build.Toolchains.Clang;
+using System;
 
 namespace Neobyte.Build.Platforms.Android
 {
@@ -14,6 +15,12 @@ namespace Neobyte.Build.Platforms.Android
         public override TargetContext CreateContext(Profile profile)
         {
             var settings = profile.GetSection<AndroidPlatformSettings>();
+
+            if (settings == null)
+            {
+                throw new NotSupportedException();
+            }
+
             return new TargetContext(
                 this.CreatePlatform(settings, profile),
                 this.CreateToolchain(settings, profile));
@@ -27,7 +34,7 @@ namespace Neobyte.Build.Platforms.Android
 
         private ToolchainBase CreateToolchain(AndroidPlatformSettings settings, Profile profile)
         {
-            return new ClangToolchain(profile, this.Platform, this.Architecture, settings.Clang);
+            return new ClangToolchain(profile, this.Platform, this.Architecture, settings.Clang!);
         }
     }
 }

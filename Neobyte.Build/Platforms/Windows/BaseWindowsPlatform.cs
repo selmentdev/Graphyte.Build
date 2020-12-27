@@ -57,18 +57,18 @@ namespace Neobyte.Build.Platforms.Windows
         {
         }
 
-        protected void InitializeBasePath(string version)
+        protected void InitializeBasePath(string? version)
         {
             if (WindowsSdkProvider.IsSupported)
             {
-                var location = WindowsSdkProvider.Location;
-
-                var available = WindowsSdkProvider.Versions;
-
                 if (string.IsNullOrEmpty(version))
                 {
                     throw new Exception($@"Windows SDK with version ""{version}"" is not available");
                 }
+
+                var location = WindowsSdkProvider.Location;
+
+                var available = WindowsSdkProvider.Versions;
 
                 if (!available.Contains(version))
                 {
@@ -94,10 +94,10 @@ namespace Neobyte.Build.Platforms.Windows
 
                 var binPrefix = WindowsSupport.HostPrefix;
 
-                this.ResourceCompilerExecutable = Path.Combine(location, "bin", version, binPrefix, "rc.exe");
+                this.ResourceCompilerExecutable = new FileInfo(Path.Combine(location, "bin", version, binPrefix, "rc.exe"));
             }
         }
 
-        public string ResourceCompilerExecutable { get; private set; }
+        public FileInfo? ResourceCompilerExecutable { get; private set; }
     }
 }
