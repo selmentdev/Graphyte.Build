@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 
@@ -19,7 +18,6 @@ namespace Neobyte.Build.Framework
             }
 
             this.SourceFile = new FileInfo(location.Location);
-            this.SourceDirectory = this.SourceFile.Directory;
 
             this.Guid = Core.Tools.MakeGuid(this.GetType().FullName);
 
@@ -29,7 +27,7 @@ namespace Neobyte.Build.Framework
         public TargetRules Target { get; }
 
         public FileInfo SourceFile { get; }
-        public DirectoryInfo SourceDirectory { get; }
+        public DirectoryInfo SourceDirectory => this.SourceFile.Directory;
 
         public Guid Guid { get; set; }
 

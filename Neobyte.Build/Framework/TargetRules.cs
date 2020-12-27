@@ -27,12 +27,11 @@ namespace Neobyte.Build.Framework
             }
 
             this.SourceFile = new FileInfo(location.Location);
-            this.SourceDirectory = this.SourceFile.Directory;
         }
 
         public FileInfo SourceFile { get; }
 
-        public DirectoryInfo SourceDirectory { get; }
+        public DirectoryInfo SourceDirectory => this.SourceFile.Directory;
 
         public TargetDescriptor Descriptor { get; }
 
