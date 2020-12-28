@@ -18,17 +18,57 @@ namespace Neobyte.Build
     {
         private static readonly Version Current = new Version(1, 0, 0, 0);
 
-        private static bool g_PrintLogo = true;
+        private static readonly Cli.Option<bool> OptionHelp = new("--help", "Print this help.");
 
-        [CommandLineOption("-NoLogo")]
-        public static void OnNoLogo()
+        private static readonly Cli.Option<bool> OptionNoBanner = new("--no-banner", "Don't print banner.");
+
+        private static readonly Cli.Option<FileInfo> OptionProfileFile = new("--profile", "Profile file path.")
         {
-            g_PrintLogo = false;
-        }
+            Argument = new Cli.Argument<FileInfo>("PROFILE")
+            {
+                Arity = Cli.ArgumentArity.One
+            }
+        };
+        private static readonly Cli.Option<FileInfo> OptionLogFile = new("--log", "Log file path.")
+        {
+            Argument = new Cli.Argument<FileInfo>("LOG")
+            {
+                Arity = Cli.ArgumentArity.One
+            }
+        };
+        private static readonly Cli.Option<DirectoryInfo> OptionOutputPath = new("--output", "Output generator working directory.")
+        {
+            Argument = new Cli.Argument<DirectoryInfo>("OUTPUT")
+            {
+                Arity = Cli.ArgumentArity.One
+            }
+        };
+        private static readonly Cli.Option<TargetPlatform> OptionTargetPlatform = new("--platform", "Target platform.")
+        {
+            Argument = new Cli.Argument<TargetPlatform>("PLATFORM")
+            {
+                Arity = Cli.ArgumentArity.One
+            }
+        };
+        private static readonly Cli.Option<TargetToolchain> OptionTargetToolchain = new("--toolchain", "Target toolchain.")
+        {
+            Argument = new Cli.Argument<TargetToolchain>("TOOLCHAIN")
+            {
+                Arity = Cli.ArgumentArity.One
+            }
+        };
+        private static readonly Cli.Option<GeneratorType> OptionGeneratorType = new("--generator", "Target generator type.")
+        {
+            Argument = new Cli.Argument<GeneratorType>("GENERATOR")
+            {
+                Arity = Cli.ArgumentArity.One
+            }
+        };
 
         public static int Main(string[] args)
         {
             var watch = Stopwatch.StartNew();
+
 
             //
             // Setup GC
@@ -38,30 +78,65 @@ namespace Neobyte.Build
             GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
 
 
-            var commandLine = new CommandLine(args);
-            commandLine.Apply<Application>();
-
             //
             // Setup console tracing.
             //
 
             Trace.Listeners.Add(new ConsoleTraceListener());
 
-            if (g_PrintLogo)
-            {
-                Application.PrintLogo();
-            }
-
-            Trace.WriteLine($@"Neobyte Build version {Application.Current}");
-            Trace.WriteLine($@"{RuntimeInformation.OSDescription} ({RuntimeInformation.FrameworkDescription})");
-            Trace.WriteLine($@"Working directory: {Environment.CurrentDirectory}");
-
             try
             {
-                var app = new Application();
-                commandLine.Apply(app);
+                var commandLine = new Cli.Parser();
 
-                return app.Run();
+                commandLine.Add(OptionNoBanner);
+                commandLine.Add(OptionHelp);
+                commandLine.Add(OptionProfileFile);
+                commandLine.Add(OptionLogFile);
+                commandLine.Add(OptionOutputPath);
+                commandLine.Add(OptionTargetPlatform);
+                commandLine.Add(OptionTargetToolchain);
+                commandLine.Add(OptionGeneratorType);
+
+                var parseResult = commandLine.Parse(args);
+
+                if (parseResult.TryGet(OptionLogFile, out var logFilePath) && logFilePath != null)
+                {
+                    Trace.Listeners.Add(new TextWriterTraceListener(logFilePath.CreateText(), "LogFile"));
+                }
+
+                if (!parseResult.Has(OptionNoBanner))
+                {
+                    Application.PrintLogo();
+                }
+
+                Trace.WriteLine($@"Neobyte Build version {Application.Current}");
+                Trace.WriteLine($@"{RuntimeInformation.OSDescription} ({RuntimeInformation.FrameworkDescription})");
+                Trace.WriteLine($@"Working directory: {Environment.CurrentDirectory}");
+
+                var unmatched = parseResult.Unmatched.FirstOrDefault();
+
+                if (unmatched != null)
+                {
+                    throw new Exception($@"Unknown command line option ""{unmatched}""");
+                }
+
+                if (parseResult.Has(OptionHelp))
+                {
+                    Trace.WriteLine($@"Help:");
+                    commandLine.Help(Console.Out);
+
+                    foreach (var r in parseResult.Unmatched)
+                    {
+                        Trace.WriteLine(r);
+                    }
+
+                    return 0;
+                }
+                else
+                {
+                    var app = new Application(parseResult);
+                    return app.Run();
+                }
             }
             catch (Exception e)
             {
@@ -72,16 +147,36 @@ namespace Neobyte.Build
             {
                 watch.Stop();
                 Trace.WriteLine($@"Execution time: {watch.Elapsed.TotalSeconds:0.0.00}");
+                Trace.Flush();
             }
+        }
+
+        private static void PrintLogo()
+        {
+            // Slant: (http://patorjk.com/software/taag/#p=display&f=Slant&t=Anemone.Build
+            var previous = Console.ForegroundColor;
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("    ___                                            ____        _ __    __");
+            Console.WriteLine("   /   |  ____  ___  ____ ___  ____  ____  ___    / __ )__  __(_) /___/ /");
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine("  / /| | / __ \\/ _ \\/ __ `__ \\/ __ \\/ __ \\/ _ \\  / __  / / / / / / __  /");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(" / ___ |/ / / /  __/ / / / / / /_/ / / / /  __/ / /_/ / /_/ / / / /_/ /");
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("/_/  |_/_/ /_/\\___/_/ /_/ /_/\\____/_/ /_/\\___(_)_____/\\__,_/_/_/\\__,_/");
+            Console.WriteLine();
+
+            Console.ForegroundColor = previous;
         }
 
         private static void ReportException(Exception? e)
         {
             while (e != null)
             {
-                Trace.WriteLine($@"Failed with exception: {e.Message}");
+                Trace.WriteLine($@"Failure: {e.Message}");
 
-#if TRACE
+#if DEBUG
                 Trace.WriteLine($@"Stacktrace:");
                 Trace.WriteLine(e.StackTrace);
 #endif
@@ -96,100 +191,51 @@ namespace Neobyte.Build
 {
     public sealed partial class Application
     {
-        private static void PrintLogo()
-        {
-            // Slant: (http://patorjk.com/software/taag/#p=display&f=Slant&t=Anemone.Build
-            var previous = Console.ForegroundColor;
-
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("    ___                                            ____        _ __    __");
-            Console.WriteLine("   /   |  ____  ___  ____ ___  ____  ____  ___    / __ )__  __(_) /___/ /");
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine("  / /| | / __ \\/ _ \\/ __ `__ \\/ __ \\/ __ \\/ _ \\  / __  / / / / / / __  / ");
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(" / ___ |/ / / /  __/ / / / / / /_/ / / / /  __/ / /_/ / /_/ / / / /_/ /  ");
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine("/_/  |_/_/ /_/\\___/_/ /_/ /_/\\____/_/ /_/\\___(_)_____/\\__,_/_/_/\\__,_/   ");
-            Console.WriteLine();
-
-            Console.ForegroundColor = previous;
-        }
-
         private Profile? m_Profile;
-
         private TargetPlatform? m_TargetPlatform;
         private TargetToolchain? m_TargetToolchain;
         private DirectoryInfo? m_OutputDirectory;
 
-        [CommandLineOption("-Profile")]
-        public void OnProfile(FileInfo path)
+        private Application(Cli.Result result)
         {
-            Trace.WriteLine($@"Profile: {path}");
-            this.m_Profile = new Profile(path.OpenRead().ReadAllBytes());
-        }
+            var path = result.Get(OptionProfileFile);
 
-        [CommandLineOption("-LogFile")]
-        public void OnLogFile(FileInfo path)
-        {
-            Trace.WriteLine($@"LogFile: {path}");
-            Trace.Listeners.Add(new TextWriterTraceListener(path.FullName, "LogFile"));
-        }
-
-        [CommandLineOption("-Platform")]
-        public void OnPlatform(TargetPlatform value)
-        {
-            Trace.WriteLine($@"Platform: {value}");
-            this.m_TargetPlatform = value;
-        }
-
-        [CommandLineOption("-Toolchain")]
-        public void OnToolchain(TargetToolchain? value)
-        {
-            Trace.WriteLine($@"Toolchain: {value}");
-            this.m_TargetToolchain = value;
-        }
-
-        [CommandLineOption("-OutputPath")]
-        public void OnOutputPath(DirectoryInfo? path)
-        {
-            Trace.WriteLine($@"OutputPath: {path}");
-            this.m_OutputDirectory = path;
-        }
-
-        [CommandLineOption("-Generator")]
-        public void OnGenerator(GeneratorType value)
-        {
-            Trace.WriteLine($@"Generator: {value}");
-        }
-
-        private Application()
-        {
-        }
-
-        private int Run()
-        {
-            if (this.m_Profile == null)
+            if (path != null && path.Exists)
+            {
+                using var fs = path.OpenRead();
+                this.m_Profile = new Profile(fs.ReadAllBytes());
+            }
+            else
             {
                 throw new Exception("Profile file not specified");
             }
 
-            if (this.m_OutputDirectory == null)
-            {
-                //throw new Exception("Invalid output directory");
-            }
 
-            if (this.m_TargetPlatform == null)
+            if (result.TryGet(OptionTargetPlatform, out var platform))
             {
-                throw new Exception("Target platform not specified");
+                this.m_TargetPlatform = platform;
             }
-
-            if (this.m_TargetToolchain == null)
+            else
             {
                 throw new Exception("Target platform not specified");
             }
 
-            var targetPlatform = this.m_TargetPlatform.Value;
-            var targetToolchain = this.m_TargetToolchain.Value;
+            if (result.TryGet(OptionTargetToolchain, out var toolchain))
+            {
+                this.m_TargetToolchain = toolchain;
+            }
+            else
+            {
+                throw new Exception("Target platform not specified");
+            }
+
+            result.TryGet(OptionOutputPath, out this.m_OutputDirectory);
+        }
+
+        private int Run()
+        {
+            var targetPlatform = this.m_TargetPlatform!.Value;
+            var targetToolchain = this.m_TargetToolchain!.Value;
 
             var platformsProvider = new PlatformProvider();
             platformsProvider.Dump();
@@ -207,7 +253,7 @@ namespace Neobyte.Build
                 targetsProvider.Targets,
                 modulesProvider.Modules,
                 selectedPlatformsFactories,
-                this.m_Profile);
+                this.m_Profile!);
 
             var evaluatedWorkspace = new EvaluatedWorkspace(workspace);
 
