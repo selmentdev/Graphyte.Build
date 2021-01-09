@@ -129,11 +129,9 @@ namespace Neobyte.Build.Evaluation
             this.PublicDefines.Import(this.Module.InterfaceDefines);
         }
 
-        public void Resolve(Stack<EvaluatedModuleRules> trace)
+        public void Resolve(ModuleResolver resolver)
         {
-            this.ValidateDependencyCycle(trace);
-
-            trace.Push(this);
+            resolver.BeginTracking(this);
 
             if (this.m_IsResolved == false)
             {
@@ -142,16 +140,16 @@ namespace Neobyte.Build.Evaluation
                 this.ImportProperties();
 
 
-                var dependenciesPublic = this.Module.PublicDependencies.Select(this.Target.Find).ToArray();
-                var dependenciesPrivate = this.Module.PrivateDependencies.Select(this.Target.Find).ToArray();
-                var dependenciesInterface = this.Module.InterfaceDependencies.Select(this.Target.Find).ToArray();
+                var dependenciesPublic = this.Module.PublicDependencies.Select(resolver.Resolve).ToArray();
+                var dependenciesPrivate = this.Module.PrivateDependencies.Select(resolver.Resolve).ToArray();
+                var dependenciesInterface = this.Module.InterfaceDependencies.Select(resolver.Resolve).ToArray();
 
                 // BUG:
                 //      Validate if specified dependency is specified exactly once.
 
-                Array.ForEach(dependenciesPublic, x => x.Resolve(trace));
-                Array.ForEach(dependenciesPrivate, x => x.Resolve(trace));
-                Array.ForEach(dependenciesInterface, x => x.Resolve(trace));
+                Array.ForEach(dependenciesPublic, x => x.Resolve(resolver));
+                Array.ForEach(dependenciesPrivate, x => x.Resolve(resolver));
+                Array.ForEach(dependenciesInterface, x => x.Resolve(resolver));
 
                 //
                 // Import properties from dependencies.
@@ -176,7 +174,7 @@ namespace Neobyte.Build.Evaluation
 
             }
 
-            trace.Pop();
+            resolver.EndTracking(this);
         }
 
         private void ResolvePublicDependency(EvaluatedModuleRules dependency)

@@ -14,36 +14,61 @@ namespace Neobyte.Build.Evaluation
 
         public TargetRules Target { get; }
 
+        /// <summary>
+        /// Gets additional modules required by this target.
+        /// </summary>
         public EvaluatedModuleRules[] Modules { get; }
 
+        /// <summary>
+        /// Gets module used to launch this target.
+        /// </summary>
         public EvaluatedModuleRules? LaunchModule { get; }
+
+        /// <summary>
+        /// Gets resolved modules required to build this target.
+        /// </summary>
+        public EvaluatedModuleRules[] ResolvedModules { get; }
+
+        public Workspace Workspace { get; }
 
         public EvaluatedTargetRules(
             TargetRulesFactory target,
             TargetDescriptor descriptor,
             TargetContext context,
-            IEnumerable<ModuleRulesFactory> modules)
+            Workspace workspace)
         {
+            this.Workspace = workspace;
+
             this.Descriptor = descriptor;
 
             this.Context = context;
 
             this.Target = target.Create(descriptor, context);
 
-            this.Modules = modules.Select(this.CreateModuleRules).ToArray();
-
-            var launchModule = this.Target.LaunchModule;
-            if (launchModule != null)
+            using (var resolver = new ModuleResolver(this))
             {
-                this.LaunchModule = this.Find(launchModule);
+                this.Modules = this.Target.Modules.Select(resolver.Resolve).ToArray();
 
-                if (this.LaunchModule.Module.Type != ModuleType.Application)
+                foreach (var module in this.Modules)
                 {
-                    throw new Exception($@"Launch module {this.LaunchModule} for target {this} must be application");
+                    module.Resolve(resolver);
                 }
-            }
 
-            this.ResolveModules();
+                var launchModule = this.Target.LaunchModule;
+                if (launchModule != null)
+                {
+                    this.LaunchModule = resolver.Resolve(launchModule);
+
+                    if (this.LaunchModule.Module.Type != ModuleType.Application)
+                    {
+                        throw new Exception($@"Launch module {this.LaunchModule} for target {this} must be application");
+                    }
+
+                    this.LaunchModule.Resolve(resolver);
+                }
+
+                this.ResolvedModules = resolver.GetModules().ToArray();
+            }
 
 
 #if DEBUG
@@ -55,33 +80,6 @@ namespace Neobyte.Build.Evaluation
 #endif
         }
 
-        private void ResolveModules()
-        {
-            var trace = new Stack<EvaluatedModuleRules>();
-
-            foreach (var module in this.Modules)
-            {
-                module.Resolve(trace);
-            }
-
-            if (trace.Count > 0)
-            {
-                throw new Exception($@"Internal resolving error");
-            }
-        }
-
-        private EvaluatedModuleRules CreateModuleRules(ModuleRulesFactory type)
-        {
-            var rules = type.Create(this.Target);
-            return new EvaluatedModuleRules(rules, this);
-        }
-
-        public EvaluatedModuleRules Find(Type type)
-        {
-            var found = this.Modules.SingleOrDefault(x => x.Module.GetType() == type);
-
-            return found ?? throw new Exception($@"Cannot resolve module of type ""{type}""");
-        }
 
         public override string ToString()
         {

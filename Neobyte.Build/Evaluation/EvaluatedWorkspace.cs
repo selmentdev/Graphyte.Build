@@ -18,7 +18,7 @@ namespace Neobyte.Build.Evaluation
             this.Targets = Evaluate(workspace).ToArray();
         }
 
-        public static IEnumerable<EvaluatedTargetRules> Evaluate(Workspace workspace)
+        private static IEnumerable<EvaluatedTargetRules> Evaluate(Workspace workspace)
         {
             foreach (var factory in workspace.Platforms)
             {
@@ -41,7 +41,7 @@ namespace Neobyte.Build.Evaluation
                                 target,
                                 descriptor,
                                 context,
-                                workspace.Modules);
+                                workspace);
 
                             yield return evaluated;
                         }
