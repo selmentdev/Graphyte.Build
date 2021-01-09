@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -9,7 +10,7 @@ namespace Neobyte.Build.Generators.FastBuild
         {
             get
             {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                if (OperatingSystem.IsWindows())
                 {
                     switch (RuntimeInformation.OSArchitecture)
                     {
@@ -20,7 +21,7 @@ namespace Neobyte.Build.Generators.FastBuild
                             break;
                     }
                 }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                else if (OperatingSystem.IsLinux())
                 {
                     switch (RuntimeInformation.OSArchitecture)
                     {
@@ -31,7 +32,7 @@ namespace Neobyte.Build.Generators.FastBuild
                             break;
                     }
                 }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                else if (OperatingSystem.IsMacOS())
                 {
                     switch (RuntimeInformation.OSArchitecture)
                     {

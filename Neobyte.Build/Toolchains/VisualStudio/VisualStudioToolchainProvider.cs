@@ -89,7 +89,7 @@ namespace Neobyte.Build.Toolchains.VisualStudio
         /// <returns></returns>
         private static VisualStudioLocation[] Discover()
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (OperatingSystem.IsWindows())
             {
                 var programFiles = Environment.GetEnvironmentVariable("ProgramFiles(x86)");
 

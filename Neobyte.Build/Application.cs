@@ -14,6 +14,31 @@ using System.Runtime.InteropServices;
 
 namespace Neobyte.Build
 {
+    public static class SemanticVersion
+    {
+        private static readonly DateTime Base = new(2000, 1, 8);
+
+        public static int GetBuildNumber(DateTime dateTime)
+        {
+            return (int)((dateTime - Base).TotalHours / 32.0) * 16;
+        }
+
+        public static Version FromDateTime(DateTime dateTime)
+        {
+            var major = dateTime.Year - Base.Year;
+            var minor = dateTime.Month;
+            var release = dateTime.DayOfYear;
+
+            var build = GetBuildNumber(dateTime);
+
+            return new Version(major, minor, release, build);
+
+        }
+    }
+}
+
+namespace Neobyte.Build
+{
     public sealed partial class Application
     {
         private static readonly Version Current = new Version(1, 0, 0, 0);
@@ -21,6 +46,14 @@ namespace Neobyte.Build
         private static readonly Cli.Option<bool> OptionHelp = new("--help", "Print this help.");
 
         private static readonly Cli.Option<bool> OptionNoBanner = new("--no-banner", "Don't print banner.");
+
+        private static readonly Cli.Option<string[]> OptionStrings = new("--strings")
+        {
+            Argument = new Cli.Argument<string[]>("STRINGS")
+            {
+                Arity = Cli.ArgumentArity.OneOrMore
+            }
+        };
 
         private static readonly Cli.Option<FileInfo> OptionProfileFile = new("--profile", "Profile file path.")
         {
@@ -96,6 +129,7 @@ namespace Neobyte.Build
                 commandLine.Add(OptionTargetPlatform);
                 commandLine.Add(OptionTargetToolchain);
                 commandLine.Add(OptionGeneratorType);
+                commandLine.Add(OptionStrings);
 
                 var parseResult = commandLine.Parse(args);
 
@@ -108,6 +142,8 @@ namespace Neobyte.Build
                 {
                     Application.PrintLogo();
                 }
+
+                Trace.WriteLine($@"{SemanticVersion.FromDateTime(DateTime.Now)}");
 
                 Trace.WriteLine($@"Neobyte Build version {Application.Current}");
                 Trace.WriteLine($@"{RuntimeInformation.OSDescription} ({RuntimeInformation.FrameworkDescription})");

@@ -2,7 +2,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace Neobyte.Build.Platforms.Windows
 {
@@ -14,47 +14,72 @@ namespace Neobyte.Build.Platforms.Windows
             "OptionId.DesktopCPParm64",
             "OptionId.SigningTools",
             "OptionId.UWPCPP",
+            "OptionId.SigningTools",
         };
 
-        public static readonly string[] Versions;
-        public static readonly string Location;
-        public static readonly bool IsSupported;
+        public static readonly string[] Versions = Array.Empty<string>();
+        public static readonly string Location = string.Empty;
+        public static readonly bool IsSupported = false;
 
         static WindowsSdkProvider()
         {
-            WindowsSdkProvider.IsSupported = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-
-            if (WindowsSdkProvider.IsSupported)
+            if (OperatingSystem.IsWindows())
             {
-                var root = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
-                var roots = root.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Windows Kits\Installed Roots");
+                using var rootKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
 
-                var kitsroot10name = roots.GetValueNames().Where(x => x.StartsWith(@"KitsRoot10")).First();
-
-                var sdkNames = roots.GetSubKeyNames().Where(x => x.StartsWith("10."));
-                var sdksFound = new List<string>();
-
-                foreach (var sdkName in sdkNames)
+                if (rootKey != null)
                 {
-                    var sdk = roots.OpenSubKey(sdkName);
-                    var installedOptions = sdk.OpenSubKey("Installed Options");
-                    var options = installedOptions.GetValueNames();
+                    using var installedRootsKey = rootKey
+                        .OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Windows Kits\Installed Roots");
 
-                    var all = WindowsSdkProvider.CPlusPlusSdkOptions.All(x => options.Contains(x));
-
-                    if (all)
+                    if (installedRootsKey != null)
                     {
-                        sdksFound.Add(sdkName);
+                        var windowsRootKeyName10 = installedRootsKey
+                            .GetValueNames()
+                            .Where(x => x.StartsWith(@"KitsRoot10"))
+                            .Single();
+
+                        var location = (string?)installedRootsKey.GetValue(windowsRootKeyName10);
+
+                        if (location != null)
+                        {
+                            Location = location;
+                        }
+
+                        var sdkNames = installedRootsKey
+                            .GetSubKeyNames()
+                            .Where(x => x.StartsWith("10."));
+
+                        var sdksFound = GetMatchingVersions(installedRootsKey, sdkNames);
+                        Versions = sdksFound.ToArray();
                     }
                 }
-
-                WindowsSdkProvider.Location = (string)roots.GetValue(kitsroot10name);
-                WindowsSdkProvider.Versions = sdksFound.ToArray();
             }
-            else
+        }
+
+        [SupportedOSPlatform("windows")]
+        private static IEnumerable<string> GetMatchingVersions(RegistryKey rootKey, IEnumerable<string> names)
+        {
+            foreach (var name in names)
             {
-                WindowsSdkProvider.Location = string.Empty;
-                WindowsSdkProvider.Versions = Array.Empty<string>();
+                using var sdkKey = rootKey.OpenSubKey(name);
+
+                if (sdkKey != null)
+                {
+                    using var optionsKey = sdkKey.OpenSubKey("Installed Options");
+
+                    if (optionsKey != null)
+                    {
+                        var options = optionsKey.GetValueNames();
+
+                        var matches = CPlusPlusSdkOptions.All(x => options.Contains(x));
+
+                        if (matches)
+                        {
+                            yield return name;
+                        }
+                    }
+                }
             }
         }
     }

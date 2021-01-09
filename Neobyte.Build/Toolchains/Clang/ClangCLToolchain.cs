@@ -25,7 +25,7 @@ namespace Neobyte.Build.Toolchains.Clang
 
             var location = this.Settings.Location;
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (OperatingSystem.IsWindows())
             {
                 this.CompilerExecutable = $@"{location}/bin/clang-cl.exe";
                 this.LinkerExecutable = $@"{location}/bin/lld.exe";
